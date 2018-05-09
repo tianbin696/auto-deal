@@ -33,7 +33,8 @@ logging.getLogger('').addHandler(console)
 #################################################################################################
 
 stock_codes = ['002024', '002647', '600570']
-stock_positions = {'002024':3000, '002647':300, '600570':600}
+stock_positions = {}
+stock_ordered = []
 
 maxMoney = 10000
 sleepTime = 1.0
@@ -116,6 +117,53 @@ class OperationOfThs:
             return True
         return False
 
+    def refresh(self, t=0.5):
+        """
+        点击刷新按钮
+        :param t:刷新后的等待时间
+        """
+        self.__dialog_window.Button4.Click()
+        time.sleep(t)
+
+    def getPosition(self):
+        try:
+            position = self.__getCleanedData()
+            for index in range(1, len(position)):
+                code = position[index][1]
+                amount = position[index][4]
+                stock_positions[code] = int(amount)
+
+            logging.info("Positions: %s" % stock_positions)
+        except:
+            logging.error("Failed to get position")
+            position = self.__getCleanedData()
+            pass
+
+    def __getCleanedData(self, cols = 16):
+        self.maxWindow()
+        time.sleep(sleepTime)
+
+        keyboard.SendKeys("{F4}")
+        time.sleep(sleepTime)
+
+        # self.__dialog_window.print_control_identifiers()
+        # self.refresh(sleepTime)
+
+        self.__dialog_window.CVirtualGridCtrl.RightClick(coords=(30, 30))
+        time.sleep(sleepTime)
+        self.__main_window.TypeKeys('C')
+        time.sleep(sleepTime)
+
+        data = pywinauto.clipboard.GetData()
+        lst = data.strip().split("\r\n")
+        matrix = []
+        for i in range(0, len(lst)):
+            subList = lst[i].split("\t")
+            matrix.append(subList)
+
+        self.minWindow()
+        return matrix
+
     def order(self, code, direction, price, quantity):
         logging.info("Trying to order: [%s - %s - %d - %d]" % (code, direction, price, quantity))
         try:
@@ -169,6 +217,8 @@ class Monitor:
         logging.info("Avgs 10: %s" % self.avg10)
         logging.info("Avgs 20: %s" % self.avg20)
 
+        self.operation.getPosition() #开盘前获取持仓情况
+
         while True:
             for code in stock_codes:
                 price = self.getRealTimeData(code)
@@ -178,22 +228,27 @@ class Monitor:
     def makeDecision(self, code, price):
         direction = self.getDirection(code, price)
         logging.info("Direction for %s: %s" % (code, direction))
-        if direction == 'B':
-            if code not in stock_positions or stock_positions[code] <= 0:
-                buyPrice = self.getBuyPrice(price)
-                buyAmount = self.getBuyAmount(price)
-                self.operation.order(code, direction, buyPrice, buyAmount)
-                stock_positions[code] = buyAmount
-        elif direction == 'HS' or direction == 'FS':
-            if code in stock_positions and stock_positions[code] > 0:
-                sellPrice = self.getSellPrice(price)
-                sellAmount = self.getSellAmount(code)
-                if direction == 'FS':
-                    sellAmount = stock_positions[code]
-                self.operation.order(code, direction, sellPrice, sellAmount)
-                stock_positions[code] -= sellAmount
+        if code not in stock_ordered:
+            if direction == 'B':
+                if code not in stock_positions or stock_positions[code] <= 0:
+                    buyPrice = self.getBuyPrice(price)
+                    buyAmount = self.getBuyAmount(price)
+                    self.operation.order(code, direction, buyPrice, buyAmount)
+                    stock_positions[code] = buyAmount
+                    stock_ordered.append(code)
+            elif direction == 'HS' or direction == 'FS':
+                if code in stock_positions and stock_positions[code] > 0:
+                    sellPrice = self.getSellPrice(price)
+                    sellAmount = self.getSellAmount(code)
+                    if direction == 'FS':
+                        sellAmount = stock_positions[code]
+                    self.operation.order(code, direction, sellPrice, sellAmount)
+                    stock_positions[code] -= sellAmount
+                    stock_ordered.append(code)
+            else:
+                logging.info("No action for %s" % code)
         else:
-            logging.info("No action for %s" % code)
+            logging.info("Already ordered today, ignore %s" % code)
 
     def getRealTimeData(self, code):
         df = ts.get_realtime_quotes(code)
@@ -246,7 +301,10 @@ class MainGui:
         logging.info("Trying to init MainGui ...")
 
 if __name__ == '__main__':
-    t1 = threading.Thread(target=MainGui)
-    t1.start()
-    t2 = threading.Thread(target=Monitor)
-    t2.start()
+    operation = OperationOfThs()
+    operation.getPosition()
+
+    # t1 = threading.Thread(target=MainGui)
+    # t1.start()
+    # t2 = threading.Thread(target=Monitor)
+    # t2.start()
