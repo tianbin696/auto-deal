@@ -134,6 +134,9 @@ class OperationOfThs:
             stock_positions[code] = int(amount)
 
         logging.info("Positions: %s" % stock_positions)
+        if len(stock_positions) <= 0:
+            logging.error("Failed to get current position")
+            exit(1)
 
     def __getCleanedData(self, cols = 16):
         self.maxWindow()
