@@ -27,7 +27,7 @@ logging.basicConfig(level=logging.DEBUG,
 #定义一个StreamHandler，将INFO级别或更高的日志信息打印到标准错误，并将其添加到当前的日志处理对象#
 console = logging.StreamHandler()
 console.setLevel(logging.INFO)
-formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+formatter = logging.Formatter('%(asctime)s - %(levelname)-8s %(message)s')
 console.setFormatter(formatter)
 logging.getLogger('').addHandler(console)
 #################################################################################################
@@ -127,18 +127,13 @@ class OperationOfThs:
         time.sleep(t)
 
     def getPosition(self):
-        try:
-            position = self.__getCleanedData()
-            for index in range(1, len(position)):
-                code = position[index][1]
-                amount = position[index][4]
-                stock_positions[code] = int(amount)
+        position = self.__getCleanedData()
+        for index in range(1, len(position)):
+            code = position[index][1]
+            amount = position[index][4]
+            stock_positions[code] = int(amount)
 
-            logging.info("Positions: %s" % stock_positions)
-        except:
-            logging.error("Failed to get position")
-            position = self.__getCleanedData()
-            pass
+        logging.info("Positions: %s" % stock_positions)
 
     def __getCleanedData(self, cols = 16):
         self.maxWindow()
@@ -225,6 +220,8 @@ class Monitor:
             if now.tm_hour > 15:
                 logging.info("Closing deal") #闭市
                 break
+            print()
+            logging.info("looping monitor stocks")
             for code in stock_codes:
                 price = self.getRealTimeData(code)
                 self.makeDecision(code, price)
