@@ -32,12 +32,13 @@ console.setFormatter(formatter)
 logging.getLogger('').addHandler(console)
 #################################################################################################
 
-stock_codes = ['002024', '002647', '600570']
+stock_codes = ['002024', '002647', '600570', '600585','600690','001979','600048','600201','000333','002120','600801','002372','600566']
 stock_positions = {}
 stock_ordered = []
 
 maxMoney = 10000
 sleepTime = 1.0
+monitorInterval = 30
 
 class OperationOfThs:
     def __init__(self):
@@ -220,10 +221,15 @@ class Monitor:
         self.operation.getPosition() #开盘前获取持仓情况
 
         while True:
+            now = time.localtime(time.time())
+            if now.tm_hour > 15:
+                logging.info("Closing deal") #闭市
+                break
             for code in stock_codes:
                 price = self.getRealTimeData(code)
                 self.makeDecision(code, price)
-            break
+
+            time.sleep(monitorInterval)
 
     def makeDecision(self, code, price):
         direction = self.getDirection(code, price)
@@ -301,10 +307,10 @@ class MainGui:
         logging.info("Trying to init MainGui ...")
 
 if __name__ == '__main__':
-    operation = OperationOfThs()
-    operation.getPosition()
+    # operation = OperationOfThs()
+    # operation.getPosition()
 
-    # t1 = threading.Thread(target=MainGui)
-    # t1.start()
-    # t2 = threading.Thread(target=Monitor)
-    # t2.start()
+    t1 = threading.Thread(target=MainGui)
+    t1.start()
+    t2 = threading.Thread(target=Monitor)
+    t2.start()
