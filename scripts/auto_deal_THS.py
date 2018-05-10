@@ -44,8 +44,7 @@ sleepTime = 0.5
 monitorInterval = 30
 sellThreshold = 0.02
 buyThreshold = 0.03  # [1-threshold ~ 1+threshold]
-startHour = 7
-startMin = 30
+startTime = '0930'
 
 class OperationOfThs:
     def __init__(self):
@@ -252,14 +251,17 @@ class Monitor:
                 logging.info("Closing deal") #闭市
                 break
 
-            print()
-            logging.info("looping monitor stocks")
-            for code in stock_codes:
-                try:
-                    price = self.getRealTimeData(code)
-                    self.makeDecision(code, price)
-                except Exception as e:
-                    logging.error("Failed to monitor %s" % code)
+            if "%d%d" % (now.tm_hour, now.tm_min) > startTime:
+                print()
+                logging.info("looping monitor stocks")
+                for code in stock_codes:
+                    try:
+                        price = self.getRealTimeData(code)
+                        self.makeDecision(code, price)
+                    except Exception as e:
+                        logging.error("Failed to monitor %s" % code)
+            else:
+                logging.info("Wait start time")
 
     def makeDecision(self, code, price):
         direction = self.getDirection(code, price)
