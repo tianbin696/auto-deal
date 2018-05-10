@@ -34,14 +34,16 @@ logging.getLogger('').addHandler(console)
 #################################################################################################
 
 stock_codes = ['002024', '002647', '600570', '600585','600690','001979','600048','600201','000333','002120','600801','002372','600566']
-stock_codes = ['002024', '002647', '600570']
+# stock_codes = ['002024', '002647', '600570']
 stock_positions = {}
 stock_ordered = []
 maxMoney = 10000
+maxMoneyPerStock = 20000
 availableMoney = 20000
 sleepTime = 0.5
 monitorInterval = 30
-threshold = 0.10  # [1-threshold ~ 1+threshold]
+sellThreshold = 0.02
+buyThreshold = 0.03  # [1-threshold ~ 1+threshold]
 
 class OperationOfThs:
     def __init__(self):
@@ -210,7 +212,7 @@ class Monitor:
         self.avg10 = {}
         self.avg20 = {}
         self.operation = OperationOfThs()
-        self.operation.maxWindow()
+        # self.operation.maxWindow()
 
         self.loopMonitor()
 
@@ -243,14 +245,17 @@ class Monitor:
 
         while True:
             now = time.localtime(time.time())
-            # if now.tm_hour > 15:
-            #     logging.info("Closing deal") #闭市
-            #     break
-            # print()
+            if now.tm_hour > 15:
+                logging.info("Closing deal") #闭市
+                break
+            print()
             logging.info("looping monitor stocks")
             for code in stock_codes:
-                price = self.getRealTimeData(code)
-                self.makeDecision(code, price)
+                try:
+                    price = self.getRealTimeData(code)
+                    self.makeDecision(code, price)
+                except Exception as e:
+                    logging.error("Failed to monitor %s" % code)
 
             time.sleep(monitorInterval)
 
@@ -258,31 +263,32 @@ class Monitor:
         direction = self.getDirection(code, price)
         logging.info("Direction for %s: %s" % (code, direction))
         global availableMoney
-        if code not in stock_ordered:
-            if direction == 'B':
-                if code not in stock_positions or stock_positions[code] <= 0:
-                    buyPrice = self.getBuyPrice(price)
-                    buyAmount = self.getBuyAmount(price)
-                    if self.operation.order(code, direction, buyPrice, buyAmount):
-                        stock_positions[code] = buyAmount
-                        availableMoney -= buyPrice * buyAmount
-                        stock_ordered.append(code)
-                        logging.info("current availabeMoney = %d, stock_ordered = %s, stock_positions = %s" % (availableMoney, stock_ordered, stock_positions))
-            elif direction == 'HS' or direction == 'FS':
-                if code in stock_positions and stock_positions[code] > 0:
-                    sellPrice = self.getSellPrice(price)
-                    sellAmount = self.getSellAmount(code)
-                    if direction == 'FS':
-                        sellAmount = stock_positions[code]
-                    if self.operation.order(code, 'S', sellPrice, sellAmount):
-                        stock_positions[code] -= sellAmount
-                        availableMoney += sellAmount * sellPrice
-                        stock_ordered.append(code)
-                        logging.info("current availabeMoney = %d, stock_ordered = %s, stock_positions = %s" % (availableMoney, stock_ordered, stock_positions))
-            else:
-                logging.info("No action for %s" % code)
+        if direction == 'B':
+            buyPrice = self.getBuyPrice(price)
+            buyAmount = self.getBuyAmount(price)
+            if buyPrice <= 0 or buyAmount <= 0:
+                return
+            if self.operation.order(code, direction, buyPrice, buyAmount):
+                if code not in stock_positions:
+                    stock_positions[code] = 0
+                stock_positions[code] += buyAmount
+                availableMoney -= buyPrice * buyAmount
+                stock_ordered.append(code)
+                logging.info("current availabeMoney = %d, stock_ordered = %s, stock_positions = %s"
+                             % (availableMoney, stock_ordered, stock_positions))
+        elif direction == 'HS' or direction == 'FS':
+            sellPrice = self.getSellPrice(price)
+            sellAmount = self.getSellAmount(code)
+            if direction == 'FS':
+                sellAmount = stock_positions[code]
+            if self.operation.order(code, 'S', sellPrice, sellAmount):
+                stock_positions[code] -= sellAmount
+                availableMoney += sellAmount * sellPrice
+                stock_ordered.append(code)
+                logging.info("current availabeMoney = %d, stock_ordered = %s, stock_positions = %s"
+                             % (availableMoney, stock_ordered, stock_positions))
         else:
-            logging.info("Already ordered today, ignore %s" % code)
+            logging.info("No action for %s" % code)
 
     def getRealTimeData(self, code):
         df = ts.get_realtime_quotes(code)
@@ -306,17 +312,28 @@ class Monitor:
         avg10 = float(self.avg10[code])
         avg20 = float(self.avg20[code])
         price = float(price)
+        logging.info("%s status: %f, %f, %f, %f" % (code, price, avg1, avg10, avg20))
 
-        if code in stock_positions and price < avg1 and price < avg10 and price > avg10 * (1-threshold):
+        if code in stock_ordered:
+            # 控制当日单只股票操作次数
+            return 'N'
+
+        if code in stock_positions:
+            # 控制单只股票市值
+            position = stock_positions[code] * price
+            if position > maxMoneyPerStock:
+                return 'N'
+
+        if code in stock_positions and price < avg1 and price < avg10 and price > avg10 * (1-sellThreshold):
             # 股价跌破10日均值，卖半仓
             return 'HS'
 
-        if code in stock_positions and price < avg1 and price < avg20 and price > avg20 * (1-threshold):
+        if code in stock_positions and price < avg1 and avg20 < avg10 and  price < avg20 and price > avg20 * (1-sellThreshold):
             # 股价跌破20日均值，卖全仓
             return 'FS'
 
-        if price > avg1 and avg10 > avg20 and price > avg10 and price < avg10 * (1+threshold):
-            # 股价突破10日均值，且大于20日均值
+        if price > avg1 * (1-buyThreshold) and price > avg10 and avg10 > avg20 and price < avg10 * (1+buyThreshold):
+            # 股价突破10日均值
             return 'B'
 
         return 'N'
