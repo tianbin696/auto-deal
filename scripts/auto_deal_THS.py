@@ -44,6 +44,8 @@ sleepTime = 0.5
 monitorInterval = 30
 sellThreshold = 0.02
 buyThreshold = 0.03  # [1-threshold ~ 1+threshold]
+startHour = 7
+startMin = 30
 
 class OperationOfThs:
     def __init__(self):
@@ -244,10 +246,12 @@ class Monitor:
         self.operation.getPosition() #开盘前获取持仓情况
 
         while True:
+            time.sleep(monitorInterval)
             now = time.localtime(time.time())
-            if now.tm_hour > 15:
+            if now.tm_hour >= 15:
                 logging.info("Closing deal") #闭市
                 break
+
             print()
             logging.info("looping monitor stocks")
             for code in stock_codes:
@@ -256,8 +260,6 @@ class Monitor:
                     self.makeDecision(code, price)
                 except Exception as e:
                     logging.error("Failed to monitor %s" % code)
-
-            time.sleep(monitorInterval)
 
     def makeDecision(self, code, price):
         direction = self.getDirection(code, price)
@@ -324,15 +326,15 @@ class Monitor:
             if position > maxMoneyPerStock:
                 return 'N'
 
-        if code in stock_positions and price < avg1 and price < avg10 and price > avg10 * (1-sellThreshold):
+        if code in stock_positions and price < avg1 * 1.01 and price < avg10 and price > avg10 * (1-sellThreshold):
             # 股价跌破10日均值，卖半仓
             return 'HS'
 
-        if code in stock_positions and price < avg1 and avg20 < avg10 and  price < avg20 and price > avg20 * (1-sellThreshold):
+        if code in stock_positions and price < avg1 * 1.01 and avg20 < avg10 and  price < avg20 and price > avg20 * (1-sellThreshold):
             # 股价跌破20日均值，卖全仓
             return 'FS'
 
-        if price > avg1 * (1-buyThreshold) and price > avg10 and avg10 > avg20 and price < avg10 * (1+buyThreshold):
+        if price > avg1 * 0.99 and price > avg10 and avg10 > avg20 and price < avg10 * (1+buyThreshold):
             # 股价突破10日均值
             return 'B'
 
