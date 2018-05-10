@@ -6,6 +6,7 @@ import time
 import pickle
 import math
 import logging
+import traceback
 
 import tkinter.messagebox
 
@@ -33,12 +34,14 @@ logging.getLogger('').addHandler(console)
 #################################################################################################
 
 stock_codes = ['002024', '002647', '600570', '600585','600690','001979','600048','600201','000333','002120','600801','002372','600566']
+stock_codes = ['002024', '002647', '600570']
 stock_positions = {}
 stock_ordered = []
-
 maxMoney = 10000
-sleepTime = 1.0
+availableMoney = 20000
+sleepTime = 0.5
 monitorInterval = 30
+threshold = 0.10  # [1-threshold ~ 1+threshold]
 
 class OperationOfThs:
     def __init__(self):
@@ -56,18 +59,19 @@ class OperationOfThs:
 
             self.__main_window = self.__app.window_(handle=top_window)
             self.__dialog_window = self.__app.window_(handle=dialog_window)
-        except:
-            logging.info("Error during init THS")
+        except Exception as e:
+            logging.info("Error during init THS: %s" % e)
 
     def __buy(self, code, price, quantity):
         keyboard.SendKeys("{F1}")
         time.sleep(sleepTime)
+        self.__init__()
 
-        # self.__dialog_window.logging.info_control_identifiers()
+        # self.__dialog_window.print_control_identifiers()
 
-        self.__dialog_window.Edit1.SetFocus()
+        self.__dialog_window.Edit0.SetFocus()
         time.sleep(sleepTime)
-        self.__dialog_window.Edit1.SetEditText(code)
+        self.__dialog_window.Edit0.SetEditText(code)
         time.sleep(sleepTime)
 
         self.__dialog_window.Edit2.SetFocus()
@@ -75,21 +79,24 @@ class OperationOfThs:
         self.__dialog_window.Edit2.SetEditText(price)
         time.sleep(sleepTime)
 
-        if quantity > 0:
-            self.__dialog_window.Edit3.SetEditText(quantity)
-            time.sleep(sleepTime)
-        self.__dialog_window.Button6.Click()
+        self.__dialog_window.Edit3.SetFocus()
+        time.sleep(sleepTime)
+        self.__dialog_window.Edit3.SetEditText(quantity)
+        time.sleep(sleepTime)
+
+        self.__dialog_window['买入Button'].Click()
         time.sleep(sleepTime)
 
     def __sell(self, code, price, quantity):
         keyboard.SendKeys("{F2}")
         time.sleep(sleepTime)
+        self.__init__()
 
-        # self.__dialog_window.logging.info_control_identifiers()
+        # self.__dialog_window.print_control_identifiers()
 
-        self.__dialog_window.Edit1.SetFocus()
+        self.__dialog_window.Edit0.SetFocus()
         time.sleep(sleepTime)
-        self.__dialog_window.Edit1.SetEditText(code)
+        self.__dialog_window.Edit0.SetEditText(code)
         time.sleep(sleepTime)
 
         self.__dialog_window.Edit2.SetFocus()
@@ -97,10 +104,12 @@ class OperationOfThs:
         self.__dialog_window.Edit2.SetEditText(price)
         time.sleep(sleepTime)
 
-        if quantity > 0:
-            self.__dialog_window.Edit3.SetEditText(quantity)
-            time.sleep(sleepTime)
-        self.__dialog_window.Button6.Click()
+        self.__dialog_window.Edit3.SetFocus()
+        time.sleep(sleepTime)
+        self.__dialog_window.Edit3.SetEditText(quantity)
+        time.sleep(sleepTime)
+
+        self.__dialog_window.child_window(title="卖出", class_name="Button").Click()
         time.sleep(sleepTime)
 
     def __closePopupWindows(self):
@@ -139,49 +148,53 @@ class OperationOfThs:
             exit(1)
 
     def __getCleanedData(self, cols = 16):
-        self.maxWindow()
-        time.sleep(sleepTime)
+        # self.maxWindow()
+        # time.sleep(sleepTime)
 
-        keyboard.SendKeys("{F4}")
-        time.sleep(sleepTime)
+        # keyboard.SendKeys("{F4}")
+        # time.sleep(sleepTime)
 
         # self.__dialog_window.print_control_identifiers()
         # self.refresh(sleepTime)
 
-        self.__dialog_window.CVirtualGridCtrl.RightClick(coords=(30, 30))
-        time.sleep(sleepTime)
-        self.__main_window.TypeKeys('C')
-        time.sleep(sleepTime)
+        # self.__dialog_window.CVirtualGridCtrl.RightClick(coords=(30, 30))
+        # time.sleep(sleepTime)
+        # self.__main_window.TypeKeys('C')
+        # time.sleep(sleepTime)
 
-        data = pywinauto.clipboard.GetData()
+        data = pywinauto.clipboard.GetData() # Copy from clipboard directly after manual copy
         lst = data.strip().split("\r\n")
         matrix = []
         for i in range(0, len(lst)):
             subList = lst[i].split("\t")
             matrix.append(subList)
 
-        self.minWindow()
+        # self.minWindow()
         return matrix
 
     def order(self, code, direction, price, quantity):
         logging.info("Trying to order: [%s - %s - %d - %d]" % (code, direction, price, quantity))
         try:
-            self.maxWindow()
+            # self.maxWindow()
+
             price = "%.2f" % price
             if direction == 'B':
                 self.__buy(code, price, quantity)
             if direction == 'S':
                 self.__sell(code, price, quantity)
             self.__closePopupWindows()
-            self.minWindow()
-        except:
-            pass
+            # self.minWindow()
+            return True
+        except Exception as e:
+            logging.error("Failed to order: %s" % e)
+            return False
 
     def maxWindow(self):
         # logging.info("Max current window")
         if self.__main_window.GetShowState() != 3:
             self.__main_window.Maximize()
         self.__main_window.SetFocus()
+        time.sleep(sleepTime)
 
     def minWindow(self):
         # logging.info("Min current window")
@@ -197,11 +210,21 @@ class Monitor:
         self.avg10 = {}
         self.avg20 = {}
         self.operation = OperationOfThs()
+        self.operation.maxWindow()
 
         self.loopMonitor()
 
+    def testSellBeforeDeal(self):
+        self.operation.order('600570', 'S', 0, 200)
+
+    def testBuyBeforeDeal(self):
+        self.operation.order('600570', 'B', 0, 200)
+
     def loopMonitor(self):
         logging.info("Start loop monitor ...")
+        self.testSellBeforeDeal()
+        time.sleep(5)
+        self.testBuyBeforeDeal()
 
         for code in stock_codes:
             avg = self.getHistoryDayKAvgData(code, 1)
@@ -220,10 +243,10 @@ class Monitor:
 
         while True:
             now = time.localtime(time.time())
-            if now.tm_hour > 15:
-                logging.info("Closing deal") #闭市
-                break
-            print()
+            # if now.tm_hour > 15:
+            #     logging.info("Closing deal") #闭市
+            #     break
+            # print()
             logging.info("looping monitor stocks")
             for code in stock_codes:
                 price = self.getRealTimeData(code)
@@ -234,23 +257,28 @@ class Monitor:
     def makeDecision(self, code, price):
         direction = self.getDirection(code, price)
         logging.info("Direction for %s: %s" % (code, direction))
+        global availableMoney
         if code not in stock_ordered:
             if direction == 'B':
                 if code not in stock_positions or stock_positions[code] <= 0:
                     buyPrice = self.getBuyPrice(price)
                     buyAmount = self.getBuyAmount(price)
-                    self.operation.order(code, direction, buyPrice, buyAmount)
-                    stock_positions[code] = buyAmount
-                    stock_ordered.append(code)
+                    if self.operation.order(code, direction, buyPrice, buyAmount):
+                        stock_positions[code] = buyAmount
+                        availableMoney -= buyPrice * buyAmount
+                        stock_ordered.append(code)
+                        logging.info("current availabeMoney = %d, stock_ordered = %s, stock_positions = %s" % (availableMoney, stock_ordered, stock_positions))
             elif direction == 'HS' or direction == 'FS':
                 if code in stock_positions and stock_positions[code] > 0:
                     sellPrice = self.getSellPrice(price)
                     sellAmount = self.getSellAmount(code)
                     if direction == 'FS':
                         sellAmount = stock_positions[code]
-                    self.operation.order(code, direction, sellPrice, sellAmount)
-                    stock_positions[code] -= sellAmount
-                    stock_ordered.append(code)
+                    if self.operation.order(code, 'S', sellPrice, sellAmount):
+                        stock_positions[code] -= sellAmount
+                        availableMoney += sellAmount * sellPrice
+                        stock_ordered.append(code)
+                        logging.info("current availabeMoney = %d, stock_ordered = %s, stock_positions = %s" % (availableMoney, stock_ordered, stock_positions))
             else:
                 logging.info("No action for %s" % code)
         else:
@@ -279,13 +307,16 @@ class Monitor:
         avg20 = float(self.avg20[code])
         price = float(price)
 
-        if price < avg1 and price < avg10 and price > avg10 * 0.98: #股价跌破10日均值，卖半仓
+        if code in stock_positions and price < avg1 and price < avg10 and price > avg10 * (1-threshold):
+            # 股价跌破10日均值，卖半仓
             return 'HS'
 
-        if price < avg1 and price < avg20 and price > avg20 * 0.98: #股价跌破20日均值，卖全仓
+        if code in stock_positions and price < avg1 and price < avg20 and price > avg20 * (1-threshold):
+            # 股价跌破20日均值，卖全仓
             return 'FS'
 
-        if price > avg1 and avg10 > avg20 and price > avg10 and price < avg10 * 1.02: #股价突破10日均值，且大于20日均值
+        if price > avg1 and avg10 > avg20 and price > avg10 and price < avg10 * (1+threshold):
+            # 股价突破10日均值，且大于20日均值
             return 'B'
 
         return 'N'
@@ -297,7 +328,7 @@ class Monitor:
         return price * 0.98
 
     def getBuyAmount(self, price):
-        return math.floor(maxMoney/price/100) * 100
+        return math.floor(min(maxMoney, availableMoney)/price/100) * 100
 
     def getSellAmount(self, code):
         return math.ceil(stock_positions[code]/2/100) * 100
