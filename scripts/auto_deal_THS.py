@@ -331,6 +331,10 @@ class Monitor:
             # 控制当日单只股票操作次数, 监控异常
             return 'N'
 
+        if avg1 * 0.99 < price and price < avg1 * 1.01:
+            # 如果股价波动过小，则不操作
+            return 'N'
+
         if code in stock_positions:
             # 控制单只股票市值
             position = stock_positions[code] * price
