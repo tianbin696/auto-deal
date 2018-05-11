@@ -5,6 +5,7 @@ import math
 import threading
 import time
 import tkinter.messagebox
+import operator
 
 import pywinauto
 import pywinauto.application
@@ -16,8 +17,7 @@ from timezone_logging.timezone_logging import get_timezone_logger
 logger = get_timezone_logger('auto_deal', fmt="%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s", log_level=logging.INFO)
 
 
-# stock_codes = ['002024', '002647', '600570']
-stock_codes = []
+stock_codes = ['002024', '002647', '600570']
 stock_positions = {}
 stock_ordered = []
 stock_exception = []
@@ -220,10 +220,15 @@ class Monitor:
         time.sleep(5)
         self.testBuyBeforeDeal()
 
-        self.operation.getPosition() #开盘前获取持仓情况
+        # self.operation.getPosition() #开盘前获取持仓情况
+
+        global stock_codes
+        stock2changes = {}
         for code in stock_codes:
-            avg = self.getHistoryDayKAvgData(code, 1)
+            p_changes = []
+            avg = self.getHistoryDayKAvgData(code, 1, p_changes)
             self.avg1[code] = avg
+            stock2changes[code] = p_changes[0]
 
             avg = self.getHistoryDayKAvgData(code, 10)
             self.avg10[code] = avg
@@ -233,9 +238,11 @@ class Monitor:
         logger.info("Avgs 1: %s" % self.avg1)
         logger.info("Avgs 10: %s" % self.avg10)
         logger.info("Avgs 20: %s" % self.avg20)
+        stock_codes = self.sortStocks(stock2changes)
+        logger.info("stock scores: %s" % stock2changes)
+        logger.info("sorted codes: %s" % stock_codes)
 
         isStarted = False
-
         while True:
             time.sleep(monitorInterval)
             if (self.compare("09", "35") and not self.compare("11", "25")) or (self.compare("13", "05") and not self.compare("14", "55")):
@@ -306,16 +313,17 @@ class Monitor:
         # logger.info("Realtime data of %s: %s" %(code, price))
         return float(price)
 
-    def getHistoryDayKAvgData(self, code, days):
+    def getHistoryDayKAvgData(self, code, days, p_changes = []):
         df = ts.get_hist_data(code)
         total = 0.0
         i = 0
         try:
             while i < days and 'close' in df:
                 total += df['close'][i]
+                p_changes.append(df['p_change'][i])
                 i += 1
         except Exception as e:
-            logger.error("Error: %s" % e)
+            logger.error("Error while get code %s: %s" % (code, e))
             stock_exception.append(code)
         avg = total/days
         logger.debug("Historical %d avg data of %s: %f" % (days, code, avg))
@@ -356,6 +364,13 @@ class Monitor:
 
         return 'N'
 
+    def sortStocks(self, stock2score):
+        sortedCodes = sorted(stock2score.items(), key=operator.itemgetter(1))
+        codes = []
+        for i in range(0, len(sortedCodes)):
+            codes.append(sortedCodes[i][0])
+        return codes
+
     def getBuyPrice(self, price):
         return price * 1.02
 
@@ -373,10 +388,7 @@ class MainGui:
         logger.info("Trying to init MainGui ...")
 
 if __name__ == '__main__':
-    # operation = OperationOfThs()
-    # operation.getPosition()
-
-    readCodes()
+    # readCodes()
 
     t1 = threading.Thread(target=MainGui)
     t1.start()
