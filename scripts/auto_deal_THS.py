@@ -19,11 +19,12 @@ stock_codes = ['002024', '002647', '600570', '600585','600690','001979','600048'
 # stock_codes = ['002024', '002647', '600570']
 stock_positions = {}
 stock_ordered = []
+stock_exception = []
 maxMoney = 10000
 maxMoneyPerStock = 20000
 availableMoney = 20000
 sleepTime = 0.5
-monitorInterval = 30
+monitorInterval = 10
 sellThreshold = 0.02
 buyThreshold = 0.02  # [1-threshold ~ 1+threshold]
 
@@ -254,6 +255,7 @@ class Monitor:
                     self.makeDecision(code, price)
                 except Exception as e:
                     logger.error("Failed to monitor %s" % code)
+            logger.info("stock_orders = %s, stock_exceptions = %s" % (stock_ordered, stock_exception))
 
     def format(self, num):
         if num < 10:
@@ -307,9 +309,13 @@ class Monitor:
         df = ts.get_hist_data(code)
         total = 0.0
         i = 0
-        while i < days:
-            total += df['close'][i]
-            i += 1
+        try:
+            while i < days and 'close' in df:
+                total += df['close'][i]
+                i += 1
+        except Exception as e:
+            logger.error("Error: %s" % e)
+            stock_exception.append(code)
         avg = total/days
         logger.info("Historical %d avg data of %s: %f" % (days, code, avg))
         return float(avg)
@@ -321,8 +327,8 @@ class Monitor:
         price = float(price)
         logger.info("%s status: %f, %f, %f, %f" % (code, price, avg1, avg10, avg20))
 
-        if code in stock_ordered:
-            # 控制当日单只股票操作次数
+        if code in stock_ordered or code in stock_exception:
+            # 控制当日单只股票操作次数, 监控异常
             return 'N'
 
         if code in stock_positions:
