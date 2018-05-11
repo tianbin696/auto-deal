@@ -43,8 +43,7 @@ availableMoney = 20000
 sleepTime = 0.5
 monitorInterval = 30
 sellThreshold = 0.02
-buyThreshold = 0.03  # [1-threshold ~ 1+threshold]
-startTime = '930'
+buyThreshold = 0.02  # [1-threshold ~ 1+threshold]
 
 class OperationOfThs:
     def __init__(self):
@@ -244,27 +243,41 @@ class Monitor:
         logging.info("Avgs 20: %s" % self.avg20)
 
         self.operation.getPosition() #开盘前获取持仓情况
+        isStarted = False
 
         while True:
             time.sleep(monitorInterval)
-            now = time.localtime(time.time())
-            if now.tm_hour >= 15:
-                logging.info("Closing deal") #闭市
-                break
-
-            nowStr = "%d%d" % (now.tm_hour, now.tm_min)
-            logging.info("Now str: %s" % nowStr)
-            if  nowStr > startTime:
-                print()
-                logging.info("looping monitor stocks")
-                for code in stock_codes:
-                    try:
-                        price = self.getRealTimeData(code)
-                        self.makeDecision(code, price)
-                    except Exception as e:
-                        logging.error("Failed to monitor %s" % code)
+            if (self.compare("09", "30") and not self.compare("11", "30")) or (self.compare("13", "00") and not self.compare("15", "00")):
+                # 交易时间：[09:30 ~ 11:30, 13:00 ~ 15:00]
+                isStarted = True
             else:
-                logging.info("Wait start time")
+                isStarted = False
+
+            if not isStarted:
+                logging.info("Not deal window, wait for deal window")
+                continue
+
+            print()
+            logging.info("looping monitor stocks")
+            for code in stock_codes:
+                try:
+                    price = self.getRealTimeData(code)
+                    self.makeDecision(code, price)
+                except Exception as e:
+                    logging.error("Failed to monitor %s" % code)
+
+    def format(self, num):
+        if num < 10:
+            return "0%d" % num
+        else:
+            return "%d" % num
+
+
+    def compare(self, hour, minute):
+        now = time.localtime(time.time())
+        targetStr = "%d-%s-%s %s:%s:00" % (now.tm_year, format(now.tm_mon), format(now.tm_mday), hour, minute)
+        targetTime = time.strptime(targetStr, "%Y-%m-%d %H:%M:%S")
+        return now > targetTime
 
     def makeDecision(self, code, price):
         direction = self.getDirection(code, price)
@@ -331,15 +344,15 @@ class Monitor:
             if position > maxMoneyPerStock:
                 return 'N'
 
-        if code in stock_positions and price < avg1 * 1.01 and price < avg10 and price > avg10 * (1-sellThreshold):
+        if code in stock_positions and price < avg1 and price < avg10 and price > avg10 * (1-sellThreshold):
             # 股价跌破10日均值，卖半仓
             return 'HS'
 
-        if code in stock_positions and price < avg1 * 1.01 and avg20 < avg10 and  price < avg20 and price > avg20 * (1-sellThreshold):
+        if code in stock_positions and price < avg1 and avg20 < avg10 and  price < avg20 and price > avg20 * (1-sellThreshold):
             # 股价跌破20日均值，卖全仓
             return 'FS'
 
-        if price > avg1 * 0.99 and price > avg10 and avg10 > avg20 and price < avg10 * (1+buyThreshold):
+        if price > avg1 and price > avg10 and avg10 > avg20 and price < avg10 * (1+buyThreshold):
             # 股价突破10日均值
             return 'B'
 
