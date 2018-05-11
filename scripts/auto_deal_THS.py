@@ -27,6 +27,13 @@ monitorInterval = 30
 sellThreshold = 0.02
 buyThreshold = 0.02  # [1-threshold ~ 1+threshold]
 
+def readCodes():
+    global stock_codes
+    stock_codes = []
+    for code in list(open("codes.txt")):
+        stock_codes.append(code.strip())
+    logger.info("Monitor codes: %s" % stock_codes)
+
 class OperationOfThs:
     def __init__(self):
         logger.info("Init THS operations ...")
@@ -357,6 +364,8 @@ class MainGui:
 if __name__ == '__main__':
     # operation = OperationOfThs()
     # operation.getPosition()
+
+    readCodes()
 
     t1 = threading.Thread(target=MainGui)
     t1.start()
