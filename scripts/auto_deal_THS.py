@@ -44,7 +44,7 @@ sleepTime = 0.5
 monitorInterval = 30
 sellThreshold = 0.02
 buyThreshold = 0.03  # [1-threshold ~ 1+threshold]
-startTime = '0930'
+startTime = '930'
 
 class OperationOfThs:
     def __init__(self):
@@ -225,6 +225,7 @@ class Monitor:
 
     def loopMonitor(self):
         logging.info("Start loop monitor ...")
+        time.sleep(5)
         self.testSellBeforeDeal()
         time.sleep(5)
         self.testBuyBeforeDeal()
@@ -251,7 +252,9 @@ class Monitor:
                 logging.info("Closing deal") #闭市
                 break
 
-            if "%d%d" % (now.tm_hour, now.tm_min) > startTime:
+            nowStr = "%d%d" % (now.tm_hour, now.tm_min)
+            logging.info("Now str: %s" % nowStr)
+            if  nowStr > startTime:
                 print()
                 logging.info("looping monitor stocks")
                 for code in stock_codes:
