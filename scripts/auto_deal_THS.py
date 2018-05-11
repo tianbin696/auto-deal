@@ -13,7 +13,7 @@ import tushare as ts
 from pywinauto import keyboard
 from timezone_logging.timezone_logging import get_timezone_logger
 
-logger = get_timezone_logger('')
+logger = get_timezone_logger('auto_deal', fmt="%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s")
 
 stock_codes = ['002024', '002647', '600570', '600585','600690','001979','600048','600201','000333','002120','600801','002372','600566']
 # stock_codes = ['002024', '002647', '600570']
