@@ -219,6 +219,7 @@ class Monitor:
         time.sleep(5)
         self.testBuyBeforeDeal()
 
+        self.operation.getPosition() #开盘前获取持仓情况
         for code in stock_codes:
             avg = self.getHistoryDayKAvgData(code, 1)
             self.avg1[code] = avg
@@ -232,12 +233,11 @@ class Monitor:
         logger.info("Avgs 10: %s" % self.avg10)
         logger.info("Avgs 20: %s" % self.avg20)
 
-        self.operation.getPosition() #开盘前获取持仓情况
         isStarted = False
 
         while True:
             time.sleep(monitorInterval)
-            if (self.compare("09", "30") and not self.compare("11", "30")) or (self.compare("13", "00") and not self.compare("15", "00")):
+            if (self.compare("09", "35") and not self.compare("11", "25")) or (self.compare("13", "05") and not self.compare("14", "55")):
                 # 交易时间：[09:30 ~ 11:30, 13:00 ~ 15:00]
                 isStarted = True
             else:
