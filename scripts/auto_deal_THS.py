@@ -13,10 +13,11 @@ import tushare as ts
 from pywinauto import keyboard
 from timezone_logging.timezone_logging import get_timezone_logger
 
-logger = get_timezone_logger('auto_deal', fmt="%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s")
+logger = get_timezone_logger('auto_deal', fmt="%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s", log_level=logging.INFO)
 
-stock_codes = ['002024', '002647', '600570', '600585','600690','001979','600048','600201','000333','002120','600801','002372','600566']
+
 # stock_codes = ['002024', '002647', '600570']
+stock_codes = []
 stock_positions = {}
 stock_ordered = []
 stock_exception = []
@@ -244,18 +245,18 @@ class Monitor:
                 isStarted = False
 
             if not isStarted:
-                logger.info("Not deal window, wait for deal time")
+                logger.debug("Not deal window, wait for deal time")
                 continue
 
             print()
-            logger.info("looping monitor stocks")
+            logger.debug("looping monitor stocks")
             for code in stock_codes:
                 try:
                     price = self.getRealTimeData(code)
                     self.makeDecision(code, price)
                 except Exception as e:
                     logger.error("Failed to monitor %s" % code)
-            logger.info("stock_orders = %s, stock_exceptions = %s" % (stock_ordered, stock_exception))
+            logger.debug("stock_orders = %s, stock_exceptions = %s" % (stock_ordered, stock_exception))
 
     def format(self, num):
         if num < 10:
@@ -272,7 +273,7 @@ class Monitor:
 
     def makeDecision(self, code, price):
         direction = self.getDirection(code, price)
-        logger.info("Direction for %s: %s" % (code, direction))
+        logger.debug("Direction for %s: %s" % (code, direction))
         global availableMoney
         if direction == 'B':
             buyPrice = self.getBuyPrice(price)
@@ -317,7 +318,7 @@ class Monitor:
             logger.error("Error: %s" % e)
             stock_exception.append(code)
         avg = total/days
-        logger.info("Historical %d avg data of %s: %f" % (days, code, avg))
+        logger.debug("Historical %d avg data of %s: %f" % (days, code, avg))
         return float(avg)
 
     def getDirection(self, code, price):
