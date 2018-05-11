@@ -1,37 +1,19 @@
 #/bin/env python
 
-import datetime
+import logging
+import math
 import threading
 import time
-import pickle
-import math
-import logging
-import traceback
-
 import tkinter.messagebox
 
 import pywinauto
-import pywinauto.clipboard
 import pywinauto.application
-from pywinauto import remote_memory_block
-from pywinauto import keyboard
-from pywinauto import timings
-
+import pywinauto.clipboard
 import tushare as ts
+from pywinauto import keyboard
+from timezone_logging.timezone_logging import get_timezone_logger
 
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
-                    datefmt='%a, %d %b %Y %H:%M:%S',
-                    filename='../auto_deal_ths.log',
-                    filemode='a')
-#################################################################################################
-#定义一个StreamHandler，将INFO级别或更高的日志信息打印到标准错误，并将其添加到当前的日志处理对象#
-console = logging.StreamHandler()
-console.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s - %(levelname)-8s %(message)s')
-console.setFormatter(formatter)
-logging.getLogger('').addHandler(console)
-#################################################################################################
+logger = get_timezone_logger('')
 
 stock_codes = ['002024', '002647', '600570', '600585','600690','001979','600048','600201','000333','002120','600801','002372','600566']
 # stock_codes = ['002024', '002647', '600570']
@@ -47,7 +29,7 @@ buyThreshold = 0.02  # [1-threshold ~ 1+threshold]
 
 class OperationOfThs:
     def __init__(self):
-        logging.info("Init THS operations ...")
+        logger.info("Init THS operations ...")
         self.__app = pywinauto.application.Application()
         try:
             self.__app.connect(title = '网上股票交易系统5.0')
@@ -62,7 +44,7 @@ class OperationOfThs:
             self.__main_window = self.__app.window_(handle=top_window)
             self.__dialog_window = self.__app.window_(handle=dialog_window)
         except Exception as e:
-            logging.info("Error during init THS: %s" % e)
+            logger.info("Error during init THS: %s" % e)
 
     def __buy(self, code, price, quantity):
         keyboard.SendKeys("{F1}")
@@ -115,12 +97,12 @@ class OperationOfThs:
         time.sleep(sleepTime)
 
     def __closePopupWindows(self):
-        # logging.info("Closing popup windows")
+        # logger.info("Closing popup windows")
         while self.__closePopupWindow():
             time.sleep(sleepTime)
 
     def __closePopupWindow(self):
-        # logging.info("Closing popup window")
+        # logger.info("Closing popup window")
         popup_window = self.__main_window.PopupWindow()
         if popup_window:
             popup_window = self.__app.window_(handle=popup_window)
@@ -144,9 +126,9 @@ class OperationOfThs:
             amount = position[index][4]
             stock_positions[code] = int(amount)
 
-        logging.info("Positions: %s" % stock_positions)
+        logger.info("Positions: %s" % stock_positions)
         if len(stock_positions) <= 0:
-            logging.error("Failed to get current position")
+            logger.error("Failed to get current position")
             exit(1)
 
     def __getCleanedData(self, cols = 16):
@@ -175,7 +157,7 @@ class OperationOfThs:
         return matrix
 
     def order(self, code, direction, price, quantity):
-        logging.info("Trying to order: [%s - %s - %d - %d]" % (code, direction, price, quantity))
+        logger.info("Trying to order: [%s - %s - %d - %d]" % (code, direction, price, quantity))
         try:
             # self.maxWindow()
 
@@ -188,18 +170,18 @@ class OperationOfThs:
             # self.minWindow()
             return True
         except Exception as e:
-            logging.error("Failed to order: %s" % e)
+            logger.error("Failed to order: %s" % e)
             return False
 
     def maxWindow(self):
-        # logging.info("Max current window")
+        # logger.info("Max current window")
         if self.__main_window.GetShowState() != 3:
             self.__main_window.Maximize()
         self.__main_window.SetFocus()
         time.sleep(sleepTime)
 
     def minWindow(self):
-        # logging.info("Min current window")
+        # logger.info("Min current window")
         if self.__main_window.GetShowState() != 2:
             self.__main_window.Minimize()
 
@@ -207,7 +189,7 @@ class OperationOfThs:
 class Monitor:
 
     def __init__(self):
-        logging.info("Trying to Init monitor ...")
+        logger.info("Trying to Init monitor ...")
         self.avg1 = {}
         self.avg10 = {}
         self.avg20 = {}
@@ -223,7 +205,7 @@ class Monitor:
         self.operation.order('600570', 'B', 0, 200)
 
     def loopMonitor(self):
-        logging.info("Start loop monitor ...")
+        logger.info("Start loop monitor ...")
         time.sleep(5)
         self.testSellBeforeDeal()
         time.sleep(5)
@@ -238,9 +220,9 @@ class Monitor:
 
             avg = self.getHistoryDayKAvgData(code, 20)
             self.avg20[code] = avg
-        logging.info("Avgs 1: %s" % self.avg1)
-        logging.info("Avgs 10: %s" % self.avg10)
-        logging.info("Avgs 20: %s" % self.avg20)
+        logger.info("Avgs 1: %s" % self.avg1)
+        logger.info("Avgs 10: %s" % self.avg10)
+        logger.info("Avgs 20: %s" % self.avg20)
 
         self.operation.getPosition() #开盘前获取持仓情况
         isStarted = False
@@ -254,17 +236,17 @@ class Monitor:
                 isStarted = False
 
             if not isStarted:
-                logging.info("Not deal window, wait for deal window")
+                logger.info("Not deal window, wait for deal time")
                 continue
 
             print()
-            logging.info("looping monitor stocks")
+            logger.info("looping monitor stocks")
             for code in stock_codes:
                 try:
                     price = self.getRealTimeData(code)
                     self.makeDecision(code, price)
                 except Exception as e:
-                    logging.error("Failed to monitor %s" % code)
+                    logger.error("Failed to monitor %s" % code)
 
     def format(self, num):
         if num < 10:
@@ -281,7 +263,7 @@ class Monitor:
 
     def makeDecision(self, code, price):
         direction = self.getDirection(code, price)
-        logging.info("Direction for %s: %s" % (code, direction))
+        logger.info("Direction for %s: %s" % (code, direction))
         global availableMoney
         if direction == 'B':
             buyPrice = self.getBuyPrice(price)
@@ -294,7 +276,7 @@ class Monitor:
                 stock_positions[code] += buyAmount
                 availableMoney -= buyPrice * buyAmount
                 stock_ordered.append(code)
-                logging.info("current availabeMoney = %d, stock_ordered = %s, stock_positions = %s"
+                logger.info("current availabeMoney = %d, stock_ordered = %s, stock_positions = %s"
                              % (availableMoney, stock_ordered, stock_positions))
         elif direction == 'HS' or direction == 'FS':
             sellPrice = self.getSellPrice(price)
@@ -305,15 +287,13 @@ class Monitor:
                 stock_positions[code] -= sellAmount
                 availableMoney += sellAmount * sellPrice
                 stock_ordered.append(code)
-                logging.info("current availabeMoney = %d, stock_ordered = %s, stock_positions = %s"
+                logger.info("current availabeMoney = %d, stock_ordered = %s, stock_positions = %s"
                              % (availableMoney, stock_ordered, stock_positions))
-        else:
-            logging.info("No action for %s" % code)
 
     def getRealTimeData(self, code):
         df = ts.get_realtime_quotes(code)
         price = df['price'][0]
-        logging.info("Realtime data of %s: %s" %(code, price))
+        # logger.info("Realtime data of %s: %s" %(code, price))
         return float(price)
 
     def getHistoryDayKAvgData(self, code, days):
@@ -324,7 +304,7 @@ class Monitor:
             total += df['close'][i]
             i += 1
         avg = total/days
-        logging.info("Historical %d avg data of %s: %f" % (days, code, avg))
+        logger.info("Historical %d avg data of %s: %f" % (days, code, avg))
         return float(avg)
 
     def getDirection(self, code, price):
@@ -332,7 +312,7 @@ class Monitor:
         avg10 = float(self.avg10[code])
         avg20 = float(self.avg20[code])
         price = float(price)
-        logging.info("%s status: %f, %f, %f, %f" % (code, price, avg1, avg10, avg20))
+        logger.info("%s status: %f, %f, %f, %f" % (code, price, avg1, avg10, avg20))
 
         if code in stock_ordered:
             # 控制当日单只股票操作次数
@@ -344,15 +324,15 @@ class Monitor:
             if position > maxMoneyPerStock:
                 return 'N'
 
-        if code in stock_positions and price < avg1 and price < avg10 and price > avg10 * (1-sellThreshold):
+        if code in stock_positions and avg10 * (1-sellThreshold) < price and price < avg10 and avg10 < avg1:
             # 股价跌破10日均值，卖半仓
             return 'HS'
 
-        if code in stock_positions and price < avg1 and avg20 < avg10 and  price < avg20 and price > avg20 * (1-sellThreshold):
+        if code in stock_positions and avg20 * (1-sellThreshold) < price and price < avg20 and avg20 < avg1 and  avg20 < avg10:
             # 股价跌破20日均值，卖全仓
             return 'FS'
 
-        if price > avg1 and price > avg10 and avg10 > avg20 and price < avg10 * (1+buyThreshold):
+        if avg1 < avg10 and avg10 < price and  price < avg10 * (1+buyThreshold):
             # 股价突破10日均值
             return 'B'
 
@@ -372,7 +352,7 @@ class Monitor:
 
 class MainGui:
     def __init__(self):
-        logging.info("Trying to init MainGui ...")
+        logger.info("Trying to init MainGui ...")
 
 if __name__ == '__main__':
     # operation = OperationOfThs()
