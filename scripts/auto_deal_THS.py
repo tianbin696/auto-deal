@@ -17,7 +17,7 @@ from timezone_logging.timezone_logging import get_timezone_logger
 logger = get_timezone_logger('auto_deal', fmt="%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s", log_level=logging.DEBUG)
 
 
-stock_codes = ['002024', '002647', '600570']
+stock_codes = ['603799']
 stock_positions = {}
 stock_ordered = []
 stock_exception = []
@@ -246,12 +246,16 @@ class Monitor:
 
         isStarted = False
         while True:
-            time.sleep(monitorInterval)
+            if isStarted:
+                time.sleep(monitorInterval)
+            else:
+                time.sleep(6 * monitorInterval)
+
             if (self.compare("09", "35") and not self.compare("11", "25")) or (self.compare("13", "05") and not self.compare("14", "55")):
                 # 交易时间：[09:30 ~ 11:30, 13:00 ~ 15:00]
                 isStarted = True
             else:
-                isStarted = True
+                isStarted = False
 
             if not isStarted:
                 logger.debug("Not deal window, wait for deal time")
@@ -289,7 +293,7 @@ class Monitor:
             logger.debug("reverse sorted codes: %s" % stock_codes_reversed)
             logger.debug("stock_orders = %s, stock_exceptions = %s" % (stock_ordered, stock_exception))
 
-    def format(self, num):
+    def formatDate(self, num):
         if num < 10:
             return "0%d" % num
         else:
@@ -298,7 +302,7 @@ class Monitor:
 
     def compare(self, hour, minute):
         now = time.localtime(time.time())
-        targetStr = "%d-%s-%s %s:%s:00" % (now.tm_year, format(now.tm_mon), format(now.tm_mday), hour, minute)
+        targetStr = "%d-%s-%s %s:%s:00" % (now.tm_year, self.formatDate(now.tm_mon), self.formatDate(now.tm_mday), hour, minute)
         targetTime = time.strptime(targetStr, "%Y-%m-%d %H:%M:%S")
         return now > targetTime
 
@@ -354,6 +358,7 @@ class Monitor:
                 i += 1
         except Exception as e:
             logger.error("Error while get code %s: %s" % (code, e))
+            p_changes.append(0)
             stock_exception.append(code)
         avg = total/days
         logger.debug("Historical %d avg data of %s: %f" % (days, code, avg))
@@ -418,7 +423,7 @@ class MainGui:
         logger.info("Trying to init MainGui ...")
 
 if __name__ == '__main__':
-    # readCodes()
+    readCodes()
 
     t1 = threading.Thread(target=MainGui)
     t1.start()
