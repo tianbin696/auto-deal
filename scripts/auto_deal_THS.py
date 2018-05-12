@@ -14,7 +14,7 @@ import tushare as ts
 from pywinauto import keyboard
 from timezone_logging.timezone_logging import get_timezone_logger
 
-logger = get_timezone_logger('auto_deal', fmt="%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s", log_level=logging.INFO)
+logger = get_timezone_logger('auto_deal', fmt="%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s", log_level=logging.DEBUG)
 
 
 stock_codes = ['002024', '002647', '600570']
@@ -239,8 +239,10 @@ class Monitor:
         logger.info("Avgs 10: %s" % self.avg10)
         logger.info("Avgs 20: %s" % self.avg20)
         stock_codes = self.sortStocks(stock2changes)
+        stock_codes_reversed = self.sortStocks(stock2changes, True)
         logger.info("stock scores: %s" % stock2changes)
         logger.info("sorted codes: %s" % stock_codes)
+        logger.info("reverse sorted codes: %s" % stock_codes_reversed)
 
         isStarted = False
         while True:
@@ -249,7 +251,7 @@ class Monitor:
                 # 交易时间：[09:30 ~ 11:30, 13:00 ~ 15:00]
                 isStarted = True
             else:
-                isStarted = False
+                isStarted = True
 
             if not isStarted:
                 logger.debug("Not deal window, wait for deal time")
@@ -257,12 +259,34 @@ class Monitor:
 
             print()
             logger.debug("looping monitor stocks")
+
+            stock2changes = {}
+            # firstly, loop codes in stock_positions, finding out codes that can be sold
             for code in stock_codes:
-                try:
-                    price = self.getRealTimeData(code)
-                    self.makeDecision(code, price)
-                except Exception as e:
-                    logger.error("Failed to monitor %s" % code)
+                if code in stock_positions:
+                    try:
+                        p_changes = []
+                        price = self.getRealTimeData(code, p_changes)
+                        stock2changes[code] = p_changes[0]
+                        self.makeDecision(code, price)
+                    except Exception as e:
+                        logger.error("Failed to monitor %s: %s" % (code, e))
+
+            # secondly, loop other codes, 优先选择当前涨幅大的股票进行买入操作
+            for code in stock_codes_reversed:
+                if code not in stock_positions:
+                    try:
+                        p_changes = []
+                        price = self.getRealTimeData(code, p_changes)
+                        stock2changes[code] = p_changes[0]
+                        self.makeDecision(code, price)
+                    except Exception as e:
+                        logger.error("Failed to monitor %s: %s" % (code, e))
+
+            stock_codes = self.sortStocks(stock2changes)
+            stock_codes_reversed = self.sortStocks(stock2changes, True)
+            logger.debug("sorted codes: %s" % stock_codes)
+            logger.debug("reverse sorted codes: %s" % stock_codes_reversed)
             logger.debug("stock_orders = %s, stock_exceptions = %s" % (stock_ordered, stock_exception))
 
     def format(self, num):
@@ -307,11 +331,17 @@ class Monitor:
                 logger.info("current availabeMoney = %d, stock_ordered = %s, stock_positions = %s"
                              % (availableMoney, stock_ordered, stock_positions))
 
-    def getRealTimeData(self, code):
+    def getRealTimeData(self, code, p_changes = []):
         df = ts.get_realtime_quotes(code)
         price = df['price'][0]
-        # logger.info("Realtime data of %s: %s" %(code, price))
+        changePercentage = (float(df['price'][0]) - float(df['pre_close'][0])) / float(df['pre_close'][0])  * 100
+        p_changes.append(self.formatFloat(changePercentage))
+        logger.debug("Realtime data of %s: %s" %(code, price))
         return float(price)
+
+    def formatFloat(self, number):
+        str = "%.2f" % number
+        return float(str)
 
     def getHistoryDayKAvgData(self, code, days, p_changes = []):
         df = ts.get_hist_data(code)
@@ -327,7 +357,7 @@ class Monitor:
             stock_exception.append(code)
         avg = total/days
         logger.debug("Historical %d avg data of %s: %f" % (days, code, avg))
-        return float(avg)
+        return self.formatFloat(avg)
 
     def getDirection(self, code, price):
         avg1 = float(self.avg1[code])
@@ -364,8 +394,8 @@ class Monitor:
 
         return 'N'
 
-    def sortStocks(self, stock2score):
-        sortedCodes = sorted(stock2score.items(), key=operator.itemgetter(1))
+    def sortStocks(self, stock2score, reverse = False):
+        sortedCodes = sorted(stock2score.items(), key=operator.itemgetter(1), reverse = reverse)
         codes = []
         for i in range(0, len(sortedCodes)):
             codes.append(sortedCodes[i][0])
