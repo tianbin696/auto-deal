@@ -16,6 +16,11 @@ import tushare as ts
 from pywinauto import keyboard
 from timezone_logging.timezone_logging import get_timezone_logger
 
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+                    datefmt='%a, %d %b %Y %H:%M:%S',
+                    filename='../../logs/auto_deal_ths.log',
+                    filemode='a')
 logger = get_timezone_logger('auto_deal', fmt="%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s", log_level=logging.DEBUG)
 
 
@@ -240,6 +245,10 @@ class Monitor:
 
         isStarted = False
         while True:
+            if self.compare("14", "55"):
+                logger.info("Closed deal. Exit.")
+                break
+
             if (self.compare("09", "35") and not self.compare("11", "25")) or (self.compare("13", "05") and not self.compare("14", "55")):
                 # 交易时间：[09:30 ~ 11:30, 13:00 ~ 15:00]
                 isStarted = True
