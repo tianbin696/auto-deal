@@ -365,9 +365,9 @@ class Monitor:
             logger.error("Error while get code %s: %s" % (code, e))
             p_changes.append(0)
             stock_exception.append(code)
-        avg = total/days
-        logger.debug("Historical %d avg data of %s: %f" % (days, code, avg))
-        return self.formatFloat(avg)
+        avg = self.formatFloat(total/days)
+        logger.debug("Historical %d avg data of %s: %.2f" % (days, code, avg))
+        return avg
 
     def getDirection(self, code, price):
         avg1 = float(self.avg1[code])
