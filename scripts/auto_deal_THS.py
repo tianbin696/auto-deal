@@ -214,14 +214,18 @@ class Monitor:
 
     def loopMonitor(self):
         logger.info("Start loop monitor ...")
-        time.sleep(5)
+        time.sleep(10)
         self.testSellBeforeDeal()
         time.sleep(5)
         self.testBuyBeforeDeal()
 
         self.operation.getPosition() #开盘前获取持仓情况
-
         global stock_codes
+        for code in stock_positions:
+            if code not in stock_codes:
+                # make sure all stocks within current position are monitored
+                stock_codes.append(code)
+
         stock2changes = {}
         for code in stock_codes:
             p_changes = []
