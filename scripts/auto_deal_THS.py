@@ -122,14 +122,6 @@ class OperationOfThs:
             return True
         return False
 
-    def refresh(self, t=0.5):
-        """
-        点击刷新按钮
-        :param t:刷新后的等待时间
-        """
-        self.__dialog_window.Button4.Click()
-        time.sleep(t)
-
     def getPosition(self):
         position = self.__getCleanedData()
         for index in range(1, len(position)):
@@ -148,9 +140,9 @@ class OperationOfThs:
 
         # keyboard.SendKeys("{F4}")
         # time.sleep(sleepTime)
+        # self.__init__()
 
         # self.__dialog_window.print_control_identifiers()
-        # self.refresh(sleepTime)
 
         # self.__dialog_window.CVirtualGridCtrl.RightClick(coords=(30, 30))
         # time.sleep(sleepTime)
