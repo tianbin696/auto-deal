@@ -2,11 +2,13 @@
 
 import logging
 import math
+import operator
 import threading
 import time
 import tkinter.messagebox
-import operator
+from datetime import datetime
 
+import pytz
 import pywinauto
 import pywinauto.application
 import pywinauto.clipboard
@@ -17,7 +19,7 @@ from timezone_logging.timezone_logging import get_timezone_logger
 logger = get_timezone_logger('auto_deal', fmt="%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s", log_level=logging.DEBUG)
 
 
-stock_codes = ['603799']
+stock_codes = ['002647']
 stock_positions = {}
 stock_ordered = []
 stock_exception = []
@@ -246,19 +248,16 @@ class Monitor:
 
         isStarted = False
         while True:
-            if isStarted:
-                time.sleep(monitorInterval)
-            else:
-                time.sleep(6 * monitorInterval)
-
             if (self.compare("09", "35") and not self.compare("11", "25")) or (self.compare("13", "05") and not self.compare("14", "55")):
                 # 交易时间：[09:30 ~ 11:30, 13:00 ~ 15:00]
                 isStarted = True
             else:
                 isStarted = False
 
-            if not isStarted:
-                logger.debug("Not deal window, wait for deal time")
+            if isStarted:
+                time.sleep(monitorInterval)
+            else:
+                time.sleep(6 * monitorInterval)
                 continue
 
             print()
@@ -301,9 +300,10 @@ class Monitor:
 
 
     def compare(self, hour, minute):
-        now = time.localtime(time.time())
-        targetStr = "%d-%s-%s %s:%s:00" % (now.tm_year, self.formatDate(now.tm_mon), self.formatDate(now.tm_mday), hour, minute)
-        targetTime = time.strptime(targetStr, "%Y-%m-%d %H:%M:%S")
+        tz = pytz.timezone('Hongkong')
+        now = datetime.now(tz)
+        targetStr = "%d-%s-%s %s:%s:00" % (now.year, self.formatDate(now.month), self.formatDate(now.day), hour, minute)
+        targetTime = tz.localize(datetime.strptime(targetStr, "%Y-%m-%d %H:%M:%S"))
         return now > targetTime
 
     def makeDecision(self, code, price):
