@@ -222,7 +222,7 @@ class Monitor:
         time.sleep(5)
         self.testBuyBeforeDeal()
 
-        # self.operation.getPosition() #开盘前获取持仓情况
+        self.operation.getPosition() #开盘前获取持仓情况
 
         global stock_codes
         stock2changes = {}
