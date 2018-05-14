@@ -5,6 +5,7 @@ import math
 import operator
 import threading
 import time
+import random
 import tkinter.messagebox
 from datetime import datetime
 
@@ -14,6 +15,7 @@ import pywinauto.application
 import pywinauto.clipboard
 import tushare as ts
 from pywinauto import keyboard
+from pywinauto import mouse
 from pywinauto import win32defines
 from pywinauto.win32functions import SetForegroundWindow, ShowWindow
 from timezone_logging.timezone_logging import get_timezone_logger
@@ -201,6 +203,9 @@ class OperationOfThs:
         else:
             SetForegroundWindow(self.__main_window.wrapper_object()) # bring to front
 
+    def moveMouse(self):
+        mouse.move(coords=(random.randint(0,99), random.randint(0, 99)))
+
 class Monitor:
 
     def __init__(self):
@@ -260,6 +265,8 @@ class Monitor:
 
         isStarted = False
         while True:
+            self.operation.moveMouse()
+
             if self.compare("14", "55"):
                 logger.info("Closed deal. Exit.")
                 break
