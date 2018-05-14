@@ -14,6 +14,8 @@ import pywinauto.application
 import pywinauto.clipboard
 import tushare as ts
 from pywinauto import keyboard
+from pywinauto import win32defines
+from pywinauto.win32functions import SetForegroundWindow, ShowWindow
 from timezone_logging.timezone_logging import get_timezone_logger
 
 logging.basicConfig(level=logging.DEBUG,
@@ -167,7 +169,7 @@ class OperationOfThs:
     def order(self, code, direction, price, quantity):
         logger.info("Trying to order: [%s - %s - %d - %d]" % (code, direction, price, quantity))
         try:
-            # self.maxWindow()
+            self.restoreWindow()
 
             price = "%.2f" % price
             if direction == 'B':
@@ -193,6 +195,11 @@ class OperationOfThs:
         if self.__main_window.GetShowState() != 2:
             self.__main_window.Minimize()
 
+    def restoreWindow(self):
+        if self.__main_window.HasStyle(win32defines.WS_MINIMIZE): # if minimized
+            ShowWindow(self.__main_window.wrapper_object(), 9) # restore window state
+        else:
+            SetForegroundWindow(self.__main_window.wrapper_object()) # bring to front
 
 class Monitor:
 
@@ -215,6 +222,10 @@ class Monitor:
     def loopMonitor(self):
         logger.info("Start loop monitor ...")
         time.sleep(10)
+        self.testSellBeforeDeal()
+        time.sleep(5)
+        self.testBuyBeforeDeal()
+        time.sleep(5)
         self.testSellBeforeDeal()
         time.sleep(5)
         self.testBuyBeforeDeal()
