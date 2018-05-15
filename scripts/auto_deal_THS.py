@@ -38,7 +38,7 @@ availableMoney = 20000
 sleepTime = 0.5
 monitorInterval = 10
 sellThreshold = 0.04
-buyThreshold = 0.04  # [1-threshold ~ 1+threshold]
+buyThreshold = 0.02  # [1-threshold ~ 1+threshold]
 
 def readCodes():
     global stock_codes
