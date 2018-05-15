@@ -169,7 +169,7 @@ class OperationOfThs:
         return matrix
 
     def order(self, code, direction, price, quantity):
-        logger.info("Trying to order: [%s - %s - %d - %d]" % (code, direction, price, quantity))
+        logger.info("Trying to order: [%s - %s - %.2f - %d]" % (code, direction, price, quantity))
         try:
             self.restoreWindow()
 
