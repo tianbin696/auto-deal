@@ -30,6 +30,7 @@ logger = get_timezone_logger('auto_deal', fmt="%(asctime)s %(filename)s[line:%(l
 
 stock_codes = ['002647']
 stock_positions = {}
+stock_chenbens = {}
 stock_ordered = []
 stock_exception = []
 maxMoney = 10000
@@ -131,6 +132,18 @@ class OperationOfThs:
             return True
         return False
 
+    def getChenben(self):
+        position = self.__getCleanedData()
+        for index in range(1, len(position)):
+            code = position[index][1]
+            chenben = position[index][7]
+            stock_chenbens[code] = float(chenben)
+
+        logger.info("Chenbens: %s" % stock_chenbens)
+        if len(stock_chenbens) <= 0:
+            logger.error("Failed to get current chenben")
+            exit(1)
+
     def getPosition(self):
         position = self.__getCleanedData()
         for index in range(1, len(position)):
@@ -144,20 +157,6 @@ class OperationOfThs:
             exit(1)
 
     def __getCleanedData(self, cols = 16):
-        # self.maxWindow()
-        # time.sleep(sleepTime)
-
-        # keyboard.SendKeys("{F4}")
-        # time.sleep(sleepTime)
-        # self.__init__()
-
-        # self.__dialog_window.print_control_identifiers()
-
-        # self.__dialog_window.CVirtualGridCtrl.RightClick(coords=(30, 30))
-        # time.sleep(sleepTime)
-        # self.__main_window.TypeKeys('C')
-        # time.sleep(sleepTime)
-
         data = pywinauto.clipboard.GetData() # Copy from clipboard directly after manual copy
         lst = data.strip().split("\r\n")
         matrix = []
@@ -235,7 +234,9 @@ class Monitor:
         time.sleep(5)
         self.testBuyBeforeDeal()
 
-        self.operation.getPosition() #开盘前获取持仓情况
+        self.operation.getPosition() # 开盘前获取持仓情况
+        self.operation.getChenben() # 开盘前获取成本情况
+
         global stock_codes
         for code in stock_positions:
             if code not in stock_codes:
@@ -407,6 +408,10 @@ class Monitor:
             position = stock_positions[code] * price
             if position > maxMoneyPerStock:
                 return 'N'
+
+        if code in stock_chenbens and price > stock_chenbens[code] * 1.12:
+            # 设置止盈点12%
+            return 'FS'
 
         if code in stock_positions and avg10 * (1-sellThreshold) < price and price < avg10 and avg10 < avg1:
             # 股价跌破10日均值，卖半仓
