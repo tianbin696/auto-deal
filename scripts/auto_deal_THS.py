@@ -209,15 +209,18 @@ class OperationOfThs:
         mouse.move(coords=(random.randint(0,99), random.randint(0, 99)))
 
     def saveScreenshot(self, status):
-        # self.restoreWindow()
-        # keyboard.SendKeys("{F4}")
-        # time.sleep(sleepTime)
-        # self.__main_window.CaptureAsImage().save('THS.png')
-        # time.sleep(sleepTime)
-        picName = "../../logs/auto_deal_%s.png" % datetime.now().strftime("%Y-%m-%d_%H-%M")
-        self.screenshotCount += 1
-        pywinauto.application.Application().connect(title = "auto_deal_THS.py").top_window().CaptureAsImage().save(picName)
-        sendEmail([picName], status)
+        try:
+            # self.restoreWindow()
+            # keyboard.SendKeys("{F4}")
+            # time.sleep(sleepTime)
+            # self.__main_window.CaptureAsImage().save('THS.png')
+            # time.sleep(sleepTime)
+            picName = "../../logs/auto_deal_%s.png" % datetime.now().strftime("%Y-%m-%d_%H-%M")
+            self.screenshotCount += 1
+            pywinauto.application.Application().connect(title = "auto_deal_THS.py").top_window().CaptureAsImage().save(picName)
+            sendEmail([picName], status)
+        except Exception as e:
+            logger.error("Failed to send email: %s" % e)
 
 class Monitor:
 
