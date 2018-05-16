@@ -340,8 +340,8 @@ class Monitor:
 
                 stock_codes = self.sortStocks(stock2changes)
                 stock_codes_reversed = self.sortStocks(stock2changes, True)
-                logger.debug("sorted codes: %s" % stock_codes)
-                logger.debug("reverse sorted codes: %s" % stock_codes_reversed)
+                # logger.debug("sorted codes: %s" % stock_codes)
+                # logger.debug("reverse sorted codes: %s" % stock_codes_reversed)
                 logger.debug("stock_orders = %s, stock_exceptions = %s" % (stock_ordered, stock_exception))
             except Exception as e:
                 logger.error("Exception happen within loop: %s" % e)
