@@ -412,7 +412,7 @@ class Monitor:
             if position > maxMoneyPerStock:
                 return 'N'
 
-        if code in stock_chenbens and price > stock_chenbens[code] * 1.12:
+        if code in stock_chenbens and price > stock_chenbens[code] * 1.10:
             # 设置止盈点12%
             return 'FS'
 
