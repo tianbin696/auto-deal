@@ -37,7 +37,7 @@ maxMoney = 10000
 maxMoneyPerStock = 20000
 availableMoney = 20000
 sleepTime = 0.5
-monitorInterval = 10
+monitorInterval = 20
 sellThreshold = 0.04
 buyThreshold = 0.02  # [1-threshold ~ 1+threshold]
 
@@ -413,7 +413,7 @@ class Monitor:
                 return 'N'
 
         if code in stock_chenbens and price > stock_chenbens[code] * 1.10:
-            # 设置止盈点12%
+            # 设置止盈点10%
             return 'FS'
 
         if code in stock_positions and avg10 * (1-sellThreshold) < price and price < avg10 and avg10 < avg1:
