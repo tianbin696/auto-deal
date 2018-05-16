@@ -208,7 +208,7 @@ class OperationOfThs:
     def moveMouse(self):
         mouse.move(coords=(random.randint(0,99), random.randint(0, 99)))
 
-    def saveScreenshot(self):
+    def saveScreenshot(self, status):
         # self.restoreWindow()
         # keyboard.SendKeys("{F4}")
         # time.sleep(sleepTime)
@@ -217,7 +217,7 @@ class OperationOfThs:
         picName = "../../logs/auto_deal_%d.png" % self.screenshotCount
         self.screenshotCount += 1
         pywinauto.application.Application().connect(title = "auto_deal_THS.py").top_window().CaptureAsImage().save(picName)
-        sendEmail([picName])
+        sendEmail([picName], status)
 
 class Monitor:
 
@@ -241,7 +241,7 @@ class Monitor:
         logger.info("Start loop monitor ...")
 
         time.sleep(10)
-        self.operation.saveScreenshot()
+        self.operation.saveScreenshot(stock_positions)
 
         time.sleep(5)
         self.testSellBeforeDeal()
@@ -289,7 +289,7 @@ class Monitor:
                 self.operation.moveMouse()
 
                 if totalSleep % 3600 == 0:
-                    self.operation.saveScreenshot()
+                    self.operation.saveScreenshot(stock_positions)
 
                 # if self.compare("14", "55"):
                 #     logger.info("Closed deal. Exit.")
