@@ -291,7 +291,7 @@ class Monitor:
             try:
                 self.operation.moveMouse()
 
-                if totalSleep % 3600 == 0:
+                if totalSleep % 1800 == 0:
                     self.operation.saveScreenshot(stock_positions)
 
                 # if self.compare("14", "55"):
