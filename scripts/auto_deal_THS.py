@@ -54,6 +54,7 @@ class OperationOfThs:
     def __init__(self):
         logger.info("Init THS operations ...")
         self.__app = pywinauto.application.Application()
+        self.screenshotCount = 1
         try:
             self.__app.connect(title = '网上股票交易系统5.0')
             top_window = pywinauto.findwindows.find_window(title='网上股票交易系统5.0')
@@ -208,12 +209,15 @@ class OperationOfThs:
         mouse.move(coords=(random.randint(0,99), random.randint(0, 99)))
 
     def saveScreenshot(self):
-        self.restoreWindow()
-        keyboard.SendKeys("{F4}")
-        time.sleep(sleepTime)
-        self.__main_window.CaptureAsImage().save('THS.png')
-        pywinauto.application.Application().connect(title = "auto_deal_THS.py").top_window().CaptureAsImage().save('auto_deal.png')
-        sendEmail(['auto_deal.png', 'THS.png'])
+        # self.restoreWindow()
+        # keyboard.SendKeys("{F4}")
+        # time.sleep(sleepTime)
+        # self.__main_window.CaptureAsImage().save('THS.png')
+        # time.sleep(sleepTime)
+        picName = "../../logs/auto_deal_%d.png" % self.screenshotCount
+        self.screenshotCount += 1
+        pywinauto.application.Application().connect(title = "auto_deal_THS.py").top_window().CaptureAsImage().save(picName)
+        sendEmail([picName])
 
 class Monitor:
 
@@ -235,9 +239,11 @@ class Monitor:
 
     def loopMonitor(self):
         logger.info("Start loop monitor ...")
-        self.operation.saveScreenshot()
 
         time.sleep(10)
+        self.operation.saveScreenshot()
+
+        time.sleep(5)
         self.testSellBeforeDeal()
         time.sleep(5)
         self.testBuyBeforeDeal()
