@@ -281,9 +281,9 @@ class Monitor:
         logger.info("Avgs 20: %s" % self.avg20)
         stock_codes = self.sortStocks(stock2changes)
         stock_codes_reversed = self.sortStocks(stock2changes, True)
-        logger.info("stock scores: %s" % stock2changes)
-        logger.info("sorted codes: %s" % stock_codes)
-        logger.info("reverse sorted codes: %s" % stock_codes_reversed)
+        # logger.info("stock scores: %s" % stock2changes)
+        # logger.info("sorted codes: %s" % stock_codes)
+        # logger.info("reverse sorted codes: %s" % stock_codes_reversed)
 
         isStarted = False
         totalSleep = 0
