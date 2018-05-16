@@ -214,7 +214,7 @@ class OperationOfThs:
         # time.sleep(sleepTime)
         # self.__main_window.CaptureAsImage().save('THS.png')
         # time.sleep(sleepTime)
-        picName = "../../logs/auto_deal_%d.png" % self.screenshotCount
+        picName = "../../logs/auto_deal_%s.png" % datetime.now().strftime("%Y-%m-%d_%H-%M")
         self.screenshotCount += 1
         pywinauto.application.Application().connect(title = "auto_deal_THS.py").top_window().CaptureAsImage().save(picName)
         sendEmail([picName], status)
