@@ -266,55 +266,58 @@ class Monitor:
 
         isStarted = False
         while True:
-            self.operation.moveMouse()
+            try:
+                self.operation.moveMouse()
 
-            if self.compare("14", "55"):
-                logger.info("Closed deal. Exit.")
-                break
+                if self.compare("14", "55"):
+                    logger.info("Closed deal. Exit.")
+                    break
 
-            if (self.compare("09", "32") and not self.compare("11", "28")) or (self.compare("13", "02") and not self.compare("14", "58")):
-                # 交易时间：[09:30 ~ 11:30, 13:00 ~ 15:00]
-                isStarted = True
-            else:
-                isStarted = False
+                if (self.compare("09", "32") and not self.compare("11", "28")) or (self.compare("13", "02") and not self.compare("14", "58")):
+                    # 交易时间：[09:30 ~ 11:30, 13:00 ~ 15:00]
+                    isStarted = True
+                else:
+                    isStarted = False
 
-            if isStarted:
-                time.sleep(monitorInterval)
-            else:
-                time.sleep(6 * monitorInterval)
-                continue
+                if isStarted:
+                    time.sleep(monitorInterval)
+                else:
+                    time.sleep(6 * monitorInterval)
+                    continue
 
-            print()
-            logger.debug("looping monitor stocks")
+                print()
+                logger.debug("looping monitor stocks")
 
-            stock2changes = {}
-            # firstly, loop codes in stock_positions, finding out codes that can be sold
-            for code in stock_codes:
-                if code in stock_positions:
-                    try:
-                        p_changes = []
-                        price = self.getRealTimeData(code, p_changes)
-                        stock2changes[code] = p_changes[0]
-                        self.makeDecision(code, price)
-                    except Exception as e:
-                        logger.error("Failed to monitor %s: %s" % (code, e))
+                stock2changes = {}
+                # firstly, loop codes in stock_positions, finding out codes that can be sold
+                for code in stock_codes:
+                    if code in stock_positions:
+                        try:
+                            p_changes = []
+                            price = self.getRealTimeData(code, p_changes)
+                            stock2changes[code] = p_changes[0]
+                            self.makeDecision(code, price)
+                        except Exception as e:
+                            logger.error("Failed to monitor %s: %s" % (code, e))
 
-            # secondly, loop other codes, 优先选择当前涨幅大的股票进行买入操作
-            for code in stock_codes_reversed:
-                if code not in stock_positions:
-                    try:
-                        p_changes = []
-                        price = self.getRealTimeData(code, p_changes)
-                        stock2changes[code] = p_changes[0]
-                        self.makeDecision(code, price)
-                    except Exception as e:
-                        logger.error("Failed to monitor %s: %s" % (code, e))
+                # secondly, loop other codes, 优先选择当前涨幅大的股票进行买入操作
+                for code in stock_codes_reversed:
+                    if code not in stock_positions:
+                        try:
+                            p_changes = []
+                            price = self.getRealTimeData(code, p_changes)
+                            stock2changes[code] = p_changes[0]
+                            self.makeDecision(code, price)
+                        except Exception as e:
+                            logger.error("Failed to monitor %s: %s" % (code, e))
 
-            stock_codes = self.sortStocks(stock2changes)
-            stock_codes_reversed = self.sortStocks(stock2changes, True)
-            logger.debug("sorted codes: %s" % stock_codes)
-            logger.debug("reverse sorted codes: %s" % stock_codes_reversed)
-            logger.debug("stock_orders = %s, stock_exceptions = %s" % (stock_ordered, stock_exception))
+                stock_codes = self.sortStocks(stock2changes)
+                stock_codes_reversed = self.sortStocks(stock2changes, True)
+                logger.debug("sorted codes: %s" % stock_codes)
+                logger.debug("reverse sorted codes: %s" % stock_codes_reversed)
+                logger.debug("stock_orders = %s, stock_exceptions = %s" % (stock_ordered, stock_exception))
+            except Exception as e:
+                logger.error("Exception happen within loop: %s" % e)
 
     def formatDate(self, num):
         if num < 10:
@@ -441,7 +444,10 @@ class Monitor:
         return price * 0.98
 
     def getBuyAmount(self, price):
-        return math.floor(min(maxMoney, availableMoney)/price/100) * 100
+        amount = math.floor(min(maxMoney, availableMoney)/price/100) * 100
+        if amount * price < 5000:
+            amount = 0
+        return amount
 
     def getSellAmount(self, code):
         return math.ceil(stock_positions[code]/2/100) * 100
