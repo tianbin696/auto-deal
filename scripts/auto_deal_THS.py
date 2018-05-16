@@ -20,6 +20,8 @@ from pywinauto import win32defines
 from pywinauto.win32functions import SetForegroundWindow, ShowWindow
 from timezone_logging.timezone_logging import get_timezone_logger
 
+from email_sender import sendEmail
+
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                     datefmt='%a, %d %b %Y %H:%M:%S',
@@ -205,6 +207,14 @@ class OperationOfThs:
     def moveMouse(self):
         mouse.move(coords=(random.randint(0,99), random.randint(0, 99)))
 
+    def saveScreenshot(self):
+        self.restoreWindow()
+        keyboard.SendKeys("{F4}")
+        time.sleep(sleepTime)
+        self.__main_window.CaptureAsImage().save('THS.png')
+        pywinauto.application.Application().connect(title = "auto_deal_THS.py").top_window().CaptureAsImage().save('auto_deal.png')
+        sendEmail(['auto_deal.png', 'THS.png'])
+
 class Monitor:
 
     def __init__(self):
@@ -225,6 +235,8 @@ class Monitor:
 
     def loopMonitor(self):
         logger.info("Start loop monitor ...")
+        self.operation.saveScreenshot()
+
         time.sleep(10)
         self.testSellBeforeDeal()
         time.sleep(5)
@@ -265,9 +277,13 @@ class Monitor:
         logger.info("reverse sorted codes: %s" % stock_codes_reversed)
 
         isStarted = False
+        totalSleep = 0
         while True:
             try:
                 self.operation.moveMouse()
+
+                if totalSleep % 3600 == 0:
+                    self.operation.saveScreenshot()
 
                 # if self.compare("14", "55"):
                 #     logger.info("Closed deal. Exit.")
@@ -281,8 +297,10 @@ class Monitor:
 
                 if isStarted:
                     time.sleep(monitorInterval)
+                    totalSleep += monitorInterval
                 else:
                     time.sleep(6 * monitorInterval)
+                    totalSleep += 6 * monitorInterval
                     continue
 
                 print()
