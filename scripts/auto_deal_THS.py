@@ -444,7 +444,7 @@ class Monitor:
             if position > maxMoneyPerStock:
                 return 'N'
 
-        if avg1 < avg10 and avg10 < price and  price < avg10 * (1+buyThreshold) and avg20 < avg10:
+        if avg1 < avg10 and avg10 < price and  price < avg10 * (1+buyThreshold):
             # 股价突破10日均值
             return 'B'
 
