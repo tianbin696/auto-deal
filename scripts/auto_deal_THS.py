@@ -424,12 +424,6 @@ class Monitor:
             # 如果股价波动过小，则不操作
             return 'N'
 
-        if code in stock_positions:
-            # 控制单只股票市值
-            position = stock_positions[code] * price
-            if position > maxMoneyPerStock:
-                return 'N'
-
         if code in stock_chenbens and price > stock_chenbens[code] * 1.10:
             # 设置止盈点10%
             return 'FS'
@@ -441,6 +435,12 @@ class Monitor:
         if code in stock_positions and avg20 * (1-sellThreshold) < price and price < avg20 and avg20 < avg1 and  avg20 < avg10:
             # 股价跌破20日均值，卖全仓
             return 'FS'
+
+        if code in stock_positions:
+            # 控制单只股票市值
+            position = stock_positions[code] * price
+            if position > maxMoneyPerStock:
+                return 'N'
 
         if avg1 < avg10 and avg10 < price and  price < avg10 * (1+buyThreshold):
             # 股价突破10日均值
