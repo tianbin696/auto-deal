@@ -215,6 +215,8 @@ class OperationOfThs:
             self.restoreWindow()
             keyboard.SendKeys("{F4}")
             time.sleep(sleepTime)
+            keyboard.SendKeys("{F5}")
+            time.sleep(sleepTime)
             self.__main_window.CaptureAsImage().save(picName)
             time.sleep(sleepTime)
             self.screenshotCount += 1
@@ -265,10 +267,10 @@ class Monitor:
             self.avg1[code] = avg
             stock2changes[code] = p_changes[0]
 
-            avg = self.getHistoryDayKAvgData(code, 10)
+            avg = self.getHistoryDayKAvgData(code, 12)
             self.avg10[code] = avg
 
-            avg = self.getHistoryDayKAvgData(code, 20)
+            avg = self.getHistoryDayKAvgData(code, 24)
             self.avg20[code] = avg
         logger.info("Avgs 1: %s" % self.avg1)
         logger.info("Avgs 10: %s" % self.avg10)
