@@ -182,6 +182,7 @@ class OperationOfThs:
                 self.__sell(code, price, quantity)
             self.__closePopupWindows()
             # self.minWindow()
+            self.saveScreenshot("Ordered: [%s - %s - %.2f - %d]" % (code, direction, float(price), quantity))
             return True
         except Exception as e:
             logger.error("Failed to order: %s" % e)
@@ -210,14 +211,14 @@ class OperationOfThs:
 
     def saveScreenshot(self, status):
         try:
-            # self.restoreWindow()
-            # keyboard.SendKeys("{F4}")
-            # time.sleep(sleepTime)
-            # self.__main_window.CaptureAsImage().save('THS.png')
-            # time.sleep(sleepTime)
             picName = "../../logs/auto_deal_%s.png" % datetime.now().strftime("%Y-%m-%d_%H-%M")
+            self.restoreWindow()
+            keyboard.SendKeys("{F4}")
+            time.sleep(sleepTime)
+            self.__main_window.CaptureAsImage().save(picName)
+            time.sleep(sleepTime)
             self.screenshotCount += 1
-            pywinauto.application.Application().connect(title = "auto_deal_THS.py").top_window().CaptureAsImage().save(picName)
+            # pywinauto.application.Application().connect(title = "auto_deal_THS.py").top_window().CaptureAsImage().save(picName)
             sendEmail([picName], status)
         except Exception as e:
             logger.error("Failed to send email: %s" % e)
@@ -244,13 +245,6 @@ class Monitor:
         logger.info("Start loop monitor ...")
 
         time.sleep(10)
-        self.operation.saveScreenshot(stock_positions)
-
-        time.sleep(5)
-        self.testSellBeforeDeal()
-        time.sleep(5)
-        self.testBuyBeforeDeal()
-        time.sleep(5)
         self.testSellBeforeDeal()
         time.sleep(5)
         self.testBuyBeforeDeal()
@@ -290,9 +284,6 @@ class Monitor:
         while True:
             try:
                 self.operation.moveMouse()
-
-                if totalSleep % 1800 == 0:
-                    self.operation.saveScreenshot(stock_positions)
 
                 # if self.compare("14", "55"):
                 #     logger.info("Closed deal. Exit.")
