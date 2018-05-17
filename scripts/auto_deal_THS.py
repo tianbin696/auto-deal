@@ -42,6 +42,8 @@ sleepTime = 0.5
 monitorInterval = 20
 sellThreshold = 0.04
 buyThreshold = 0.02  # [1-threshold ~ 1+threshold]
+zhiYingDian = 1.08 # 止盈点%8
+avg10Days = 12 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
 
 def readCodes():
     global stock_codes
@@ -267,10 +269,10 @@ class Monitor:
             self.avg1[code] = avg
             stock2changes[code] = p_changes[0]
 
-            avg = self.getHistoryDayKAvgData(code, 12)
+            avg = self.getHistoryDayKAvgData(code, avg10Days)
             self.avg10[code] = avg
 
-            avg = self.getHistoryDayKAvgData(code, 24)
+            avg = self.getHistoryDayKAvgData(code, 2 * avg10Days)
             self.avg20[code] = avg
         logger.info("Avgs 1: %s" % self.avg1)
         logger.info("Avgs 10: %s" % self.avg10)
@@ -426,7 +428,7 @@ class Monitor:
             # 如果股价波动过小，则不操作
             return 'N'
 
-        if code in stock_chenbens and price > stock_chenbens[code] * 1.10:
+        if code in stock_chenbens and price > stock_chenbens[code] * zhiYingDian:
             # 设置止盈点10%
             return 'FS'
 
