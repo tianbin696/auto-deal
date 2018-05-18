@@ -52,6 +52,14 @@ def readCodes():
         stock_codes.append(code.strip())
     logger.info("Monitor codes: %s" % stock_codes)
 
+def getCodesFromNet():
+    global stock_codes
+    stock_codes = []
+    fs = ts.get_stock_basics()
+    for code in fs.index:
+        if code < '300000' or code >= '600000':
+            stock_codes.append(code)
+
 class OperationOfThs:
     def __init__(self):
         logger.info("Init THS operations ...")
@@ -274,14 +282,15 @@ class Monitor:
 
             avg = self.getHistoryDayKAvgData(code, 2 * avg10Days)
             self.avg20[code] = avg
-        logger.info("Avgs 1: %s" % self.avg1)
-        logger.info("Avgs 10: %s" % self.avg10)
-        logger.info("Avgs 20: %s" % self.avg20)
+        # logger.info("Avgs 1: %s" % self.avg1)
+        # logger.info("Avgs 10: %s" % self.avg10)
+        # logger.info("Avgs 20: %s" % self.avg20)
         stock_codes = self.sortStocks(stock2changes)
         stock_codes_reversed = self.sortStocks(stock2changes, True)
         # logger.info("stock scores: %s" % stock2changes)
         # logger.info("sorted codes: %s" % stock_codes)
         # logger.info("reverse sorted codes: %s" % stock_codes_reversed)
+        logger.info("Total monitor code size: %d, exception code size: %d" % (len(stock_codes), len(stock_exception)))
 
         isStarted = False
         totalSleep = 0
@@ -479,7 +488,8 @@ class MainGui:
         logger.info("Trying to init MainGui ...")
 
 if __name__ == '__main__':
-    readCodes()
+    # readCodes()
+    getCodesFromNet()
 
     t1 = threading.Thread(target=MainGui)
     t1.start()
