@@ -132,8 +132,9 @@ class OperationOfThs:
 
     def __closePopupWindows(self):
         # logger.info("Closing popup windows")
+        time.sleep(4 * sleepTime)  # wait for popup window to appear
         while self.__closePopupWindow():
-            time.sleep(sleepTime)
+            time.sleep(4 * sleepTime)
 
     def __closePopupWindow(self):
         # logger.info("Closing popup window")
@@ -346,7 +347,7 @@ class Monitor:
                 stock_codes_reversed = self.sortStocks(stock2changes, True)
                 # logger.debug("sorted codes: %s" % stock_codes)
                 # logger.debug("reverse sorted codes: %s" % stock_codes_reversed)
-                logger.debug("stock_orders = %s, stock_exceptions = %s" % (stock_ordered, stock_exception))
+                logger.debug("stock_orders = %s, stock_positions = %s" % (stock_ordered, stock_positions))
             except Exception as e:
                 logger.error("Exception happen within loop: %s" % e)
 
