@@ -39,7 +39,7 @@ maxMoney = 10000
 maxMoneyPerStock = 20000
 availableMoney = 0
 sleepTime = 0.5
-monitorInterval = 20
+monitorInterval = 10
 sellThreshold = 0.04
 buyThreshold = 0.02  # [1-threshold ~ 1+threshold]
 zhiYingDian = 1.08 # 止盈点%8
@@ -299,12 +299,12 @@ class Monitor:
                 else:
                     isStarted = False
 
-                if isStarted:
-                    time.sleep(monitorInterval)
-                    totalSleep += monitorInterval
-                else:
-                    time.sleep(6 * monitorInterval)
-                    totalSleep += 6 * monitorInterval
+
+                time.sleep(monitorInterval)
+                totalSleep += monitorInterval
+                if not isStarted:
+                    if totalSleep % 1800 == 0:
+                        self.operation.saveScreenshot("Heart beat")
                     continue
 
                 print()
