@@ -37,7 +37,7 @@ stock_ordered = []
 stock_exception = []
 maxMoney = 10000
 maxMoneyPerStock = 20000
-availableMoney = 0
+availableMoney = 10000
 sleepTime = 0.5
 monitorInterval = 10
 sellThreshold = 0.04
@@ -273,6 +273,8 @@ class Monitor:
 
         stock2changes = {}
         for code in stock_codes:
+            # 需要45分钟更新所有均值 - 近2800支股票
+            # 因此需要7点半前开机启动
             p_changes = []
             avg = self.getHistoryDayKAvgData(code, 1, p_changes)
             self.avg1[code] = avg
@@ -333,6 +335,7 @@ class Monitor:
                             logger.error("Failed to monitor %s: %s" % (code, e))
 
                 # secondly, loop other codes, 优先选择当前涨幅大的股票进行买入操作
+                # 全部扫描完一遍需要2分钟左右，共1500支左右股票
                 for code in stock_codes_reversed:
                     if code not in stock_positions:
                         try:
