@@ -271,6 +271,7 @@ class Monitor:
                 # make sure all stocks within current position are monitored
                 stock_codes.append(code)
 
+        start_time = time.time()
         stock2changes = {}
         for code in stock_codes:
             # 需要45分钟更新所有均值 - 近2800支股票
@@ -285,6 +286,8 @@ class Monitor:
 
             avg = self.getHistoryDayKAvgData(code, 2 * avg10Days)
             self.avg20[code] = avg
+        end_time = time.time()
+        self.operation.saveScreenshot("均值更新完成，共耗时%d秒，排除异常，可监控%d支股票" % ((end_time - start_time), (len(stock_codes) - len(stock_exception))))
         # logger.info("Avgs 1: %s" % self.avg1)
         # logger.info("Avgs 10: %s" % self.avg10)
         # logger.info("Avgs 20: %s" % self.avg20)
