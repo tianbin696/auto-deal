@@ -299,7 +299,6 @@ class Monitor:
         logger.info("Total monitor code size: %d, exception code size: %d" % (len(stock_codes), len(stock_exception)))
 
         isStarted = False
-        totalSleep = 0
         while True:
             try:
                 self.operation.moveMouse()
@@ -310,16 +309,17 @@ class Monitor:
 
                 if (self.compare("09", "32") and not self.compare("11", "28")) or (self.compare("13", "02") and not self.compare("14", "58")):
                     # 交易时间：[09:30 ~ 11:30, 13:00 ~ 15:00]
+                    if not isStarted:
+                        self.operation.saveScreenshot("开始交易")
                     isStarted = True
                 else:
+                    if isStarted:
+                        self.operation.saveScreenshot("停止交易")
                     isStarted = False
 
 
                 time.sleep(monitorInterval)
-                totalSleep += monitorInterval
                 if not isStarted:
-                    if totalSleep % 1800 == 0:
-                        self.operation.saveScreenshot("Heart beat")
                     continue
 
                 print()
