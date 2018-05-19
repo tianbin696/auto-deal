@@ -340,7 +340,7 @@ class Monitor:
                 # secondly, loop other codes, 优先选择当前涨幅大的股票进行买入操作
                 # 全部扫描完一遍需要2分钟左右，共1500支左右股票
                 for code in stock_codes_reversed:
-                    if code not in stock_positions:
+                    if code not in stock_positions and code not in stock_exception:
                         try:
                             p_changes = []
                             price = self.getRealTimeData(code, p_changes)
