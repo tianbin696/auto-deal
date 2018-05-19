@@ -303,10 +303,6 @@ class Monitor:
             try:
                 self.operation.moveMouse()
 
-                # if self.compare("14", "55"):
-                #     logger.info("Closed deal. Exit.")
-                #     break
-
                 if (self.compare("09", "32") and not self.compare("11", "28")) or (self.compare("13", "02") and not self.compare("14", "58")):
                     # 交易时间：[09:30 ~ 11:30, 13:00 ~ 15:00]
                     if not isStarted:
@@ -317,6 +313,9 @@ class Monitor:
                         self.operation.saveScreenshot("停止交易")
                     isStarted = False
 
+                if self.compare("15", "00"):
+                    logger.info("Closed deal. Exit.")
+                    break
 
                 time.sleep(monitorInterval)
                 if not isStarted:
