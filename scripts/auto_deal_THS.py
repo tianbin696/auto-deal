@@ -52,13 +52,6 @@ def readCodes():
         stock_codes.append(code.strip())
     logger.info("Monitor codes: %s" % stock_codes)
 
-def getCodesFromNet():
-    global stock_codes
-    stock_codes = []
-    fs = ts.get_stock_basics()
-    for code in fs.index:
-        if code < '300000' or code >= '600000':
-            stock_codes.append(code)
 
 class OperationOfThs:
     def __init__(self):
@@ -494,8 +487,7 @@ class MainGui:
         logger.info("Trying to init MainGui ...")
 
 if __name__ == '__main__':
-    # readCodes()
-    getCodesFromNet()
+    readCodes()
 
     t1 = threading.Thread(target=MainGui)
     t1.start()
