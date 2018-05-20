@@ -55,6 +55,9 @@ def get_code_filter_list(avg_days = 10, file = None):
         if len(prices) <= 0:
             continue
         avgs = avg(prices, avg_days)
+        if prices[0] > avgs[0]:  # 不考虑买入已经突破10日线的股票
+            continue
+
         vars = var(avgs[0:days], avg_days)
         code_score[code] = vars[0]
         logger.debug("avgs of %s: %s" % (code, avgs))
