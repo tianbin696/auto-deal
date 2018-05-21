@@ -42,7 +42,8 @@ sleepTime = 0.5
 monitorInterval = 10
 sellThreshold = 0.04
 buyThreshold = 0.02  # [1-threshold ~ 1+threshold]
-zhiYingDian = 1.08 # 止盈点%8
+danRiDieFuZhiSunDian = 0.96  # 单日跌幅超过4%时止损清仓
+zhiYingDian = 1.08  # 止盈点%8
 avg10Days = 12 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
 
 def readCodes():
@@ -439,6 +440,10 @@ class Monitor:
         if code in stock_chenbens and price > stock_chenbens[code] * zhiYingDian:
             # 设置止盈点10%
             return 'FS'
+
+        if code in stock_chenbens and price < avg1 * danRiDieFuZhiSunDian:
+            # 设置单日跌幅止损点4%
+            return "FS"
 
         if code in stock_positions and avg10 * (1-sellThreshold) < price and price < avg10 and avg10 < avg1:
             # 股价跌破10日均值，卖半仓
