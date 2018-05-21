@@ -51,7 +51,7 @@ def get_code_filter_list(avg_days = 10, file = None):
     code_score = {}
     var_list = []
     for code in list:
-        prices = ts.get_historic_price(code)[0:days]
+        prices = ts.get_historic_price(code)[0:2 * days]
         if len(prices) <= 0:
             continue
         avgs = avg(prices, avg_days)
@@ -87,15 +87,15 @@ def get_code_filter_list(avg_days = 10, file = None):
 if __name__ == "__main__":
     ts = TushareAPI()
     days = 12
-    prices = ts.get_historic_price('002024')[0:days]
+    prices = ts.get_historic_price('002024')[0:2 * days]
     print("avgs: %s" % avg(prices, days))
     print("vars: %s" % var(avg(prices, days)[0:days], days))
 
-    prices = ts.get_historic_price('600570')[0:days]
+    prices = ts.get_historic_price('600570')[0:2 * days]
     print("avgs: %s" % avg(prices, days))
     print("vars: %s" % var(avg(prices, days)[0:days], days))
 
-    prices = ts.get_historic_price('002815')[0:days]
+    prices = ts.get_historic_price('002815')[0:2 * days]
     print("avgs: %s" % avg(prices, days))
     print("vars: %s" % var(avg(prices, days)[0:days], days))
 
