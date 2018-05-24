@@ -370,7 +370,7 @@ class Monitor:
         global availableMoney
         if direction == 'B':
             buyPrice = self.getBuyPrice(price)
-            buyAmount = self.getBuyAmount(price)
+            buyAmount = self.getBuyAmount(price, code)
             if buyPrice <= 0 or buyAmount <= 0:
                 return
             if self.operation.order(code, direction, buyPrice, buyAmount):
@@ -478,8 +478,11 @@ class Monitor:
     def getSellPrice(self, price):
         return price * 0.98
 
-    def getBuyAmount(self, price):
-        amount = math.floor(min(maxMoney, availableMoney)/price/100) * 100
+    def getBuyAmount(self, price, code=None):
+        if code and code in stock_positions:
+            amount = math.floor(min(maxMoney - price * stock_positions[code], availableMoney)/price/100) * 100
+        else:
+            amount = math.floor(min(maxMoney, availableMoney)/price/100) * 100
         if amount * price < 5000:
             amount = 0
         return amount
