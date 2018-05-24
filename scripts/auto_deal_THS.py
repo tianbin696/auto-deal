@@ -176,7 +176,10 @@ class OperationOfThs:
         return matrix
 
     def order(self, code, direction, price, quantity):
-        logger.info("Trying to order: [%s - %s - %.2f - %d]" % (code, direction, price, quantity))
+        chenben = 0.0
+        if code in stock_chenbens:
+            chenben = stock_chenbens[code]
+        logger.info("Trying to order: [%s - %s - %.2f - %d - 成本:%.2f]" % (code, direction, price, quantity, chenben))
         try:
             self.restoreWindow()
 
@@ -187,7 +190,7 @@ class OperationOfThs:
                 self.__sell(code, price, quantity)
             self.__closePopupWindows()
             # self.minWindow()
-            self.saveScreenshot("Ordered: [%s - %s - %.2f - %d]" % (code, direction, float(price), quantity))
+            self.saveScreenshot("Ordered: [%s - %s - %.2f - %d - 成本:%.2f]" % (code, direction, float(price), quantity, chenben))
             return True
         except Exception as e:
             logger.error("Failed to order: %s" % e)
