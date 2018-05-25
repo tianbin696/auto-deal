@@ -9,6 +9,7 @@ FORMAT = '%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s'
 logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 logger = logging.getLogger('stats')
 
+
 def avg(array, days, return_size = 0):
     """
     :param array: containing close prices
@@ -67,7 +68,7 @@ def get_code_filter_list(avg_days = 10, file = None):
     median_value = numpy.median(var_list)
     result = []
     for code in code_score.keys():
-        if code_score[code] > median_value and code_score[code] < 10:
+        if code_score[code] > 2 and code_score[code] < 10:
             result.append(code)
 
     if file:
@@ -84,18 +85,21 @@ def get_code_filter_list(avg_days = 10, file = None):
     return result
 
 
+def save_all_codes():
+    list = ts.get_code_list()
+    writer = open("code_all.csv", "w")
+    for code in sorted(list):
+        writer.write(code + "\n")
+    writer.close()
+
+
 if __name__ == "__main__":
     ts = TushareAPI()
+
+    # save_all_codes()
+
     days = 12
-    prices = ts.get_historic_price('002024')[0:2 * days]
-    print("avgs: %s" % avg(prices, days))
-    print("vars: %s" % var(avg(prices, days)[0:days], days))
-
-    prices = ts.get_historic_price('600570')[0:2 * days]
-    print("avgs: %s" % avg(prices, days))
-    print("vars: %s" % var(avg(prices, days)[0:days], days))
-
-    prices = ts.get_historic_price('002815')[0:2 * days]
+    prices = ts.get_historic_price('000615')[0:2 * days]
     print("avgs: %s" % avg(prices, days))
     print("vars: %s" % var(avg(prices, days)[0:days], days))
 
