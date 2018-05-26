@@ -37,6 +37,7 @@ stock_ordered = []
 stock_exception = []
 maxMoney = 10000
 maxMoneyPerStock = 10000  # 控制单只股票本金为[5000-10000]
+minMoneyPerStock = 5000
 availableMoney = 10000
 sleepTime = 0.5
 monitorInterval = 10
@@ -450,6 +451,9 @@ class Monitor:
 
         if code in stock_positions and avg10 * (1-sellThreshold) < price and price < avg10 and avg10 < avg1:
             # 股价跌破10日均值，卖半仓
+            if code in stock_chenbens and price * stock_chenbens[code] < minMoneyPerStock:
+                # 持股市值小于5000且跌破10日均值，则清仓
+                return 'FS'
             return 'HS'
 
         if code in stock_positions and avg20 * (1-sellThreshold) < price and price < avg20 and avg20 < avg1 and  avg20 < avg10:
@@ -486,7 +490,7 @@ class Monitor:
             amount = math.floor(min(maxMoney - price * stock_positions[code], availableMoney)/price/100) * 100
         else:
             amount = math.floor(min(maxMoney, availableMoney)/price/100) * 100
-        if amount * price < 5000:
+        if amount * price < minMoneyPerStock:
             amount = 0
         return amount
 
