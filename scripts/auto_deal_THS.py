@@ -1,4 +1,5 @@
 #/bin/env python
+# -*- coding: utf-8 -*-
 
 import logging
 import math
@@ -6,7 +7,6 @@ import operator
 import threading
 import time
 import random
-import tkinter.messagebox
 from datetime import datetime
 
 import pytz
@@ -61,8 +61,8 @@ class OperationOfThs:
         self.__app = pywinauto.application.Application()
         self.screenshotCount = 1
         try:
-            self.__app.connect(title = '网上股票交易系统5.0')
-            top_window = pywinauto.findwindows.find_window(title='网上股票交易系统5.0')
+            self.__app.connect(title = u'网上股票交易系统5.0')
+            top_window = pywinauto.findwindows.find_window(title=u'网上股票交易系统5.0')
             dialog_window = pywinauto.findwindows.find_windows(top_level_only=False, class_name='#32770', parent=top_window)[0]
             wanted_window = pywinauto.findwindows.find_windows(top_level_only=False, parent=dialog_window)
 
@@ -97,7 +97,7 @@ class OperationOfThs:
         self.__dialog_window.Edit3.SetEditText(quantity)
         time.sleep(sleepTime)
 
-        self.__dialog_window['买入Button'].Click()
+        self.__dialog_window[u'买入Button'].Click()
         time.sleep(sleepTime)
 
     def __sell(self, code, price, quantity):
@@ -122,7 +122,7 @@ class OperationOfThs:
         self.__dialog_window.Edit3.SetEditText(quantity)
         time.sleep(sleepTime)
 
-        self.__dialog_window.child_window(title="卖出", class_name="Button").Click()
+        self.__dialog_window.child_window(title=u"卖出", class_name="Button").Click()
         time.sleep(sleepTime)
 
     def __closePopupWindows(self):
