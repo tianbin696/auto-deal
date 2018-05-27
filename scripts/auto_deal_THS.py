@@ -286,6 +286,8 @@ class Monitor:
             if code not in stock_codes:
                 # make sure all stocks within current position are monitored
                 stock_codes.append(code)
+            if stock_positions[code] <= 0:
+                stock_ordered.append(code)
 
         start_time = time.time()
         stock2changes = {}
