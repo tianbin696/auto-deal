@@ -21,6 +21,7 @@ from pywinauto.win32functions import SetForegroundWindow, ShowWindow
 from timezone_logging.timezone_logging import get_timezone_logger
 
 from email_sender import sendEmail
+from yan_zhen_ma import get_vcode
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
@@ -166,6 +167,23 @@ class OperationOfThs:
             exit(1)
 
     def __getCleanedData(self, cols = 16):
+        self.restoreWindow()
+        self.__init__()
+        self.__dialog_window.CVirtualGridCtrl.RightClick(coords=(30, 30))
+        self.__main_window.TypeKeys('C')
+        time.sleep(sleepTime)
+        popup_window = self.__main_window.PopupWindow()
+        if popup_window:
+            popup_window = self.__app.window_(handle=popup_window)
+            popup_window.CaptureAsImage().save("v_code.png")
+            vcode = get_vcode('v_code.png')
+            popup_window.SetFocus()
+            popup_window.Edit.SetFocus()
+            time.sleep(sleepTime)
+            popup_window.Edit.SetEditText(vcode)
+            time.sleep(sleepTime)
+            popup_window.child_window(title=u"确定", class_name="Button").Click()
+
         data = pywinauto.clipboard.GetData() # Copy from clipboard directly after manual copy
         lst = data.strip().split("\r\n")
         matrix = []
