@@ -452,6 +452,8 @@ class Monitor:
         avg20 = float(self.avg20[code])
         price = float(price)
         logger.info("%s status: %f, %f, %f, %f" % (code, price, avg1, avg10, avg20))
+        if price <= 0:
+            return 'N'
 
         if code in stock_ordered or code in stock_exception:
             # 控制当日单只股票操作次数, 监控异常
