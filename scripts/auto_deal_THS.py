@@ -399,7 +399,7 @@ class Monitor:
             buyAmount = self.getBuyAmount(price, code)
             if buyPrice <= 0 or buyAmount <= 0:
                 return
-            if open_price > price:
+            if float(open_price) > price:
                 # 避免买入高开低走的股票
                 return
             if self.operation.order(code, direction, buyPrice, buyAmount):
@@ -413,7 +413,7 @@ class Monitor:
         elif direction == 'HS' or direction == 'FS':
             sellPrice = self.getSellPrice(price)
             sellAmount = self.getSellAmount(code)
-            if change_p < -9:
+            if float(change_p) < -9:
                 # 无法计算跌停价时以现价卖出
                 sellPrice = price
 
