@@ -426,7 +426,7 @@ class Monitor:
                 logger.info("current availabeMoney = %d, stock_ordered = %s, stock_positions = %s"
                              % (availableMoney, stock_ordered, stock_positions))
 
-    def getRealTimeData(self, code, p_changes=[]， open_prices=[]):
+    def getRealTimeData(self, code, p_changes=[], open_prices=[]):
         df = ts.get_realtime_quotes(code)
         price = df['price'][0]
         changePercentage = (float(df['price'][0]) - float(df['pre_close'][0])) / float(df['pre_close'][0])  * 100
