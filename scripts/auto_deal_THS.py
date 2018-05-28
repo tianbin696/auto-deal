@@ -351,7 +351,7 @@ class Monitor:
                             open_prices = []
                             price = self.getRealTimeData(code, p_changes, open_prices)
                             stock2changes[code] = p_changes[0]
-                            self.makeDecision(code, price, open_prices[0])
+                            self.makeDecision(code, price, open_prices[0], p_changes[0])
                         except Exception as e:
                             logger.error("Failed to monitor %s: %s" % (code, e))
 
@@ -364,7 +364,7 @@ class Monitor:
                             open_prices = []
                             price = self.getRealTimeData(code, p_changes, open_prices)
                             stock2changes[code] = p_changes[0]
-                            self.makeDecision(code, price, open_prices[0])
+                            self.makeDecision(code, price, open_prices[0], p_changes[0])
                         except Exception as e:
                             logger.error("Failed to monitor %s: %s" % (code, e))
 
@@ -390,7 +390,7 @@ class Monitor:
         targetTime = tz.localize(datetime.strptime(targetStr, "%Y-%m-%d %H:%M:%S"))
         return now > targetTime
 
-    def makeDecision(self, code, price, open_price):
+    def makeDecision(self, code, price, open_price, change_p):
         direction = self.getDirection(code, price)
         logger.debug("Direction for %s: %s" % (code, direction))
         global availableMoney
@@ -413,6 +413,10 @@ class Monitor:
         elif direction == 'HS' or direction == 'FS':
             sellPrice = self.getSellPrice(price)
             sellAmount = self.getSellAmount(code)
+            if change_p < -9:
+                # 无法计算跌停价时以现价卖出
+                sellPrice = price
+
             if direction == 'FS':
                 sellAmount = stock_positions[code]
             if self.operation.order(code, 'S', sellPrice, sellAmount):
