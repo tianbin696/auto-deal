@@ -348,9 +348,10 @@ class Monitor:
                     if code in stock_positions:
                         try:
                             p_changes = []
-                            price = self.getRealTimeData(code, p_changes)
+                            open_prices = []
+                            price = self.getRealTimeData(code, p_changes, open_prices)
                             stock2changes[code] = p_changes[0]
-                            self.makeDecision(code, price)
+                            self.makeDecision(code, price, open_prices[0])
                         except Exception as e:
                             logger.error("Failed to monitor %s: %s" % (code, e))
 
@@ -360,9 +361,10 @@ class Monitor:
                     if code not in stock_positions and code not in stock_exception:
                         try:
                             p_changes = []
-                            price = self.getRealTimeData(code, p_changes)
+                            open_prices = []
+                            price = self.getRealTimeData(code, p_changes, open_prices)
                             stock2changes[code] = p_changes[0]
-                            self.makeDecision(code, price)
+                            self.makeDecision(code, price, open_prices[0])
                         except Exception as e:
                             logger.error("Failed to monitor %s: %s" % (code, e))
 
@@ -388,7 +390,7 @@ class Monitor:
         targetTime = tz.localize(datetime.strptime(targetStr, "%Y-%m-%d %H:%M:%S"))
         return now > targetTime
 
-    def makeDecision(self, code, price):
+    def makeDecision(self, code, price, open_price):
         direction = self.getDirection(code, price)
         logger.debug("Direction for %s: %s" % (code, direction))
         global availableMoney
@@ -396,6 +398,9 @@ class Monitor:
             buyPrice = self.getBuyPrice(price)
             buyAmount = self.getBuyAmount(price, code)
             if buyPrice <= 0 or buyAmount <= 0:
+                return
+            if open_price > price:
+                # 避免买入高开低走的股票
                 return
             if self.operation.order(code, direction, buyPrice, buyAmount):
                 if code not in stock_positions:
@@ -417,10 +422,11 @@ class Monitor:
                 logger.info("current availabeMoney = %d, stock_ordered = %s, stock_positions = %s"
                              % (availableMoney, stock_ordered, stock_positions))
 
-    def getRealTimeData(self, code, p_changes = []):
+    def getRealTimeData(self, code, p_changes=[]， open_prices=[]):
         df = ts.get_realtime_quotes(code)
         price = df['price'][0]
         changePercentage = (float(df['price'][0]) - float(df['pre_close'][0])) / float(df['pre_close'][0])  * 100
+        open_prices.append(df['open'][0])
         p_changes.append(self.formatFloat(changePercentage))
         logger.debug("Realtime data of %s: %s" %(code, price))
         return float(price)
