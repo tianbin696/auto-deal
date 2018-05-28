@@ -459,7 +459,7 @@ class Monitor:
             # 控制当日单只股票操作次数, 监控异常
             return 'N'
 
-        if avg1 * 0.99 < price and price < avg1 * 1.01:
+        if avg1 * 0.98 < price and price < avg1 * 1.02:
             # 如果股价波动过小，则不操作
             return 'N'
 
