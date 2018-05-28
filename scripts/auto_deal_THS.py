@@ -478,7 +478,7 @@ class Monitor:
             # 设置止盈点10%
             return 'FS'
 
-        if code in stock_chenbens and price < stock_chenbens[code] * zhiSunDian:
+        if code in stock_chenbens and price < stock_chenbens[code] * zhiSunDian and price < avg1:
             # 设置止损点
             return 'FS'
 
