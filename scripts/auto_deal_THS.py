@@ -430,7 +430,7 @@ class Monitor:
         df = ts.get_realtime_quotes(code)
         price = df['price'][0]
         changePercentage = (float(df['price'][0]) - float(df['pre_close'][0])) / float(df['pre_close'][0])  * 100
-        open_prices.append(df['open'][0])
+        open_prices.append(float(df['open'][0]))
         p_changes.append(self.formatFloat(changePercentage))
         logger.debug("Realtime data of %s: %s" %(code, price))
         return float(price)
