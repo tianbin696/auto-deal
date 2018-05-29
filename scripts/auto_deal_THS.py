@@ -22,7 +22,8 @@ from timezone_logging.timezone_logging import get_timezone_logger
 
 from email_sender import sendEmail
 from yan_zhen_ma import get_vcode
-import tong_hua_shun as ths
+from tong_hua_shun import ths_start
+from tong_hua_shun import ths_close
 from stats import get_code_filter_list
 
 logging.basicConfig(level=logging.DEBUG,
@@ -535,7 +536,7 @@ if __name__ == '__main__':
                 time.sleep(30)
                 continue
 
-            ths.start()
+            ths_start()
             logger.info("Start to collect codes")
             get_code_filter_list(avg10Days, "codes.txt")
             readCodes()
@@ -545,7 +546,7 @@ if __name__ == '__main__':
 
             logger.info("Close THS after deal")
             time.sleep(10)
-            ths.close()
+            ths_close()
         except Exception as e:
             logger.error("Error happen: %s" % e)
             ths.close()
