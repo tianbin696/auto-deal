@@ -6,8 +6,11 @@ import numpy
 from tushare_api import TushareAPI
 import logging
 
-FORMAT = '%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s'
-logging.basicConfig(format=FORMAT, level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+                    datefmt='%a, %d %b %Y %H:%M:%S',
+                    filename='../../logs/auto_deal_ths.log',
+                    filemode='a')
 logger = logging.getLogger('stats')
 ts = TushareAPI()
 
