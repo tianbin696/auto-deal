@@ -18,7 +18,7 @@ from pywinauto import keyboard
 from pywinauto import mouse
 from pywinauto import win32defines
 from pywinauto.win32functions import SetForegroundWindow, ShowWindow
-from timezone_logging.timezone_logging import get_timezone_logger
+# from timezone_logging.timezone_logging import get_timezone_logger
 
 from email_sender import sendEmail
 from yan_zhen_ma import get_vcode
@@ -31,8 +31,8 @@ logging.basicConfig(level=logging.DEBUG,
                     datefmt='%a, %d %b %Y %H:%M:%S',
                     filename='../../logs/auto_deal_ths.log',
                     filemode='a')
-logger = get_timezone_logger('auto_deal', fmt="%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s", log_level=logging.DEBUG)
-
+# logger = get_timezone_logger('auto_deal', fmt="%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s", log_level=logging.DEBUG)
+logger = logging.getLogger('auto_deal')
 
 stock_codes = ['002647']
 stock_positions = {}
@@ -532,7 +532,7 @@ if __name__ == '__main__':
         try:
             hour = time.localtime().tm_hour
             if hour < 7 or hour > 15:
-                logger.info("Sleep before monitor")
+                logger.info("Sleep before monitor, current_hour=%d" % hour)
                 time.sleep(30)
                 continue
 
