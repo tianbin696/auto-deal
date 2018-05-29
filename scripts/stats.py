@@ -9,6 +9,7 @@ import logging
 FORMAT = '%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s'
 logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 logger = logging.getLogger('stats')
+ts = TushareAPI()
 
 
 def avg(array, days, return_size = 0):
@@ -53,7 +54,7 @@ def get_code_filter_list(avg_days = 10, file = None):
     code_score = {}
     var_list = []
     for code in list:
-        prices = ts.get_historic_price(code)[0:2 * days]
+        prices = ts.get_historic_price(code)[0:2 * avg_days]
         if len(prices) <= 0:
             continue
         avgs = avg(prices, avg_days)
@@ -67,7 +68,7 @@ def get_code_filter_list(avg_days = 10, file = None):
         if prices[0] < avgs[0] * 0.96:  # 不考虑小于10日线*0.96的股票
             continue
 
-        vars = var(avgs[0:days], avg_days)
+        vars = var(avgs[0:avg_days], avg_days)
         code_score[code] = vars[0]
         logger.debug("avgs of %s: %s" % (code, avgs))
         logger.debug("vars of %s: %s" % (code, vars))
@@ -102,7 +103,6 @@ def save_all_codes():
 
 
 if __name__ == "__main__":
-    ts = TushareAPI()
 
     # save_all_codes()
 

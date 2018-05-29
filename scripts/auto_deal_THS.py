@@ -22,6 +22,8 @@ from timezone_logging.timezone_logging import get_timezone_logger
 
 from email_sender import sendEmail
 from yan_zhen_ma import get_vcode
+import tong_hua_shun as ths
+import stats as stats
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
@@ -263,7 +265,7 @@ class Monitor:
         self.operation = OperationOfThs()
         # self.operation.maxWindow()
 
-        self.loopMonitor()
+        # self.loopMonitor()
 
     def testSellBeforeDeal(self):
         self.operation.order('600570', 'S', 0, 200)
@@ -523,14 +525,27 @@ class Monitor:
     def getSellAmount(self, code):
         return math.ceil(stock_positions[code]/2/100) * 100
 
-class MainGui:
-    def __init__(self):
-        logger.info("Trying to init MainGui ...")
 
 if __name__ == '__main__':
-    readCodes()
+    while True:
+        try:
+            hour = time.localtime().tm_hour
+            if hour < 5 or hour > 15:
+                logger.info("Sleep before monitor")
+                time.sleep(30)
+                continue
 
-    t1 = threading.Thread(target=MainGui)
-    t1.start()
-    t2 = threading.Thread(target=Monitor)
-    t2.start()
+            ths.start()
+            logger.info("Start to collect codes")
+            stats.get_code_filter_list(avg10Days, "codes.txt")
+            readCodes()
+
+            monitor = Monitor()
+            monitor.loopMonitor()
+
+            logger.info("Close THS after deal")
+            time.sleep(10)
+            ths.close()
+        except Exception as e:
+            logger.error("Error happen: %s" % e)
+            ths.close()
