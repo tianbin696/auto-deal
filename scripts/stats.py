@@ -57,6 +57,10 @@ def get_code_filter_list(avg_days = 10, file = None):
         if len(prices) <= 0:
             continue
         avgs = avg(prices, avg_days)
+
+        if avgs[0] > numpy.mean(prices[0:math.ceil(days/2)]):  # 不考虑买入10日均线在5日线上的股票，这种为向下趋势
+            continue
+
         if prices[0] > avgs[0]:  # 不考虑买入已经突破10日线的股票
             continue
 
