@@ -23,7 +23,7 @@ from timezone_logging.timezone_logging import get_timezone_logger
 from email_sender import sendEmail
 from yan_zhen_ma import get_vcode
 import tong_hua_shun as ths
-import stats as stats
+from stats import get_code_filter_list
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
@@ -537,7 +537,7 @@ if __name__ == '__main__':
 
             ths.start()
             logger.info("Start to collect codes")
-            stats.get_code_filter_list(avg10Days, "codes.txt")
+            get_code_filter_list(avg10Days, "codes.txt")
             readCodes()
 
             monitor = Monitor()
