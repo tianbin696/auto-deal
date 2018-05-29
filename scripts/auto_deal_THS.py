@@ -414,7 +414,7 @@ class Monitor:
         elif direction == 'HS' or direction == 'FS':
             sellPrice = self.getSellPrice(price)
             sellAmount = self.getSellAmount(code)
-            if float(change_p) < -9:
+            if float(change_p) < -9.8:
                 # 无法计算跌停价时以现价卖出
                 sellPrice = price
 
@@ -472,6 +472,10 @@ class Monitor:
 
         if avg1 * 0.98 < price and price < avg1 * 1.02:
             # 如果股价波动过小，则不操作
+            return 'N'
+
+        if price < avg1 * 0.901:
+            # 跌停股票不用尝试卖出
             return 'N'
 
         if code in stock_chenbens and price > stock_chenbens[code] * zhiYingDian:
