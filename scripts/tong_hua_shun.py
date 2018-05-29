@@ -13,7 +13,7 @@ import time
 
 def ths_start():
     mouse.double_click(coords=(40, 40))
-    time.sleep(10)
+    time.sleep(20)
     # main_window = pywinauto.application.Application().connect(title = u"委托下单").top_window()
     # main_window.print_control_identifiers()
 

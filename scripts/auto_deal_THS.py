@@ -83,6 +83,7 @@ class OperationOfThs:
     def __buy(self, code, price, quantity):
         keyboard.SendKeys("{F1}")
         time.sleep(sleepTime)
+        self.__init__()
 
         # self.__dialog_window.print_control_identifiers()
 
@@ -107,6 +108,7 @@ class OperationOfThs:
     def __sell(self, code, price, quantity):
         keyboard.SendKeys("{F2}")
         time.sleep(sleepTime)
+        self.__init__()
 
         # self.__dialog_window.print_control_identifiers()
 
@@ -202,7 +204,6 @@ class OperationOfThs:
             chenben = stock_chenbens[code]
         logger.info("Trying to order: [%s - %s - %.2f - %d - 成本:%.2f]" % (code, direction, price, quantity, chenben))
         try:
-            self.__init__()
             self.restoreWindow()
 
             price = "%.2f" % price
@@ -535,7 +536,7 @@ if __name__ == '__main__':
                 time.sleep(30)
                 continue
 
-            ths_start()
+            # ths_start()
 
             monitor = Monitor()
             logger.info("Testing ...")
@@ -555,4 +556,4 @@ if __name__ == '__main__':
             ths_close()
         except Exception as e:
             logger.error("Error happen: %s" % e)
-            ths.close()
+            ths_close()
