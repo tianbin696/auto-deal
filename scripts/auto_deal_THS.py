@@ -475,26 +475,11 @@ class Monitor:
             return 'N'
 
         if code in stock_chenbens and price > stock_chenbens[code] * zhiYingDian:
-            # 设置止盈点10%
+            # 设置止盈点8%
             return 'FS'
 
         if code in stock_chenbens and price < stock_chenbens[code] * zhiSunDian and price < avg1:
-            # 设置止损点
-            return 'FS'
-
-        if code in stock_chenbens and price < avg1 * danRiDieFuZhiSunDian:
-            # 设置单日跌幅止损点4%
-            return "FS"
-
-        if code in stock_positions and avg10 * (1-sellThreshold) < price and price < avg10 and avg10 < avg1:
-            # 股价跌破10日均值，卖半仓
-            if code in stock_chenbens and price * stock_chenbens[code] < minMoneyPerStock:
-                # 持股市值小于5000且跌破10日均值，则清仓
-                return 'FS'
-            return 'HS'
-
-        if code in stock_positions and avg20 * (1-sellThreshold) < price and price < avg20 and avg20 < avg1 and  avg20 < avg10:
-            # 股价跌破20日均值，卖全仓
+            # 设置止损点8%
             return 'FS'
 
         if code in stock_positions:
