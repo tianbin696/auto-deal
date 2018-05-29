@@ -43,7 +43,7 @@ availableMoney = 2000  # 锁定资金余额为2000
 sleepTime = 0.5
 monitorInterval = 10
 sellThreshold = 0.04
-buyThreshold = 0.02  # [1-threshold ~ 1+threshold]
+buyThreshold = 0.06  # [1-threshold ~ 1+threshold]
 danRiDieFuZhiSunDian = 0.96  # 单日跌幅超过4%时止损清仓
 zhiYingDian = 1.08  # 止盈点%8
 zhiSunDian = 0.92  # 止损点%8
@@ -392,7 +392,7 @@ class Monitor:
         return now > targetTime
 
     def makeDecision(self, code, price, open_price, change_p):
-        direction = self.getDirection(code, price)
+        direction = self.getDirection(code, price, open_price)
         logger.debug("Direction for %s: %s" % (code, direction))
         global availableMoney
         if direction == 'B':
@@ -457,7 +457,7 @@ class Monitor:
         logger.debug("Historical %d avg data of %s: %.2f" % (days, code, avg))
         return avg
 
-    def getDirection(self, code, price):
+    def getDirection(self, code, price, open_price):
         avg1 = float(self.avg1[code])
         avg10 = float(self.avg10[code])
         avg20 = float(self.avg20[code])
@@ -488,7 +488,7 @@ class Monitor:
             if position > maxMoneyPerStock:
                 return 'N'
 
-        if avg1 < avg10 and avg10 < price and  price < avg10 * (1+buyThreshold):
+        if avg1 < price and open_price < price and avg10 < price and  price < avg10 * (1+buyThreshold):
             # 股价突破10日均值
             return 'B'
 
