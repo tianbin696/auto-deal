@@ -83,7 +83,6 @@ class OperationOfThs:
     def __buy(self, code, price, quantity):
         keyboard.SendKeys("{F1}")
         time.sleep(sleepTime)
-        self.__init__()
 
         # self.__dialog_window.print_control_identifiers()
 
@@ -108,7 +107,6 @@ class OperationOfThs:
     def __sell(self, code, price, quantity):
         keyboard.SendKeys("{F2}")
         time.sleep(sleepTime)
-        self.__init__()
 
         # self.__dialog_window.print_control_identifiers()
 
@@ -204,6 +202,7 @@ class OperationOfThs:
             chenben = stock_chenbens[code]
         logger.info("Trying to order: [%s - %s - %.2f - %d - 成本:%.2f]" % (code, direction, price, quantity, chenben))
         try:
+            self.__init__()
             self.restoreWindow()
 
             price = "%.2f" % price
@@ -537,11 +536,18 @@ if __name__ == '__main__':
                 continue
 
             ths_start()
+
+            monitor = Monitor()
+            logger.info("Testing ...")
+            time.sleep(10)
+            monitor.testSellBeforeDeal()
+            time.sleep(5)
+            monitor.testBuyBeforeDeal()
+
             logger.info("Start to collect codes")
             get_code_filter_list(avg10Days, "codes.txt")
             readCodes()
 
-            monitor = Monitor()
             monitor.loopMonitor()
 
             logger.info("Close THS after deal")
