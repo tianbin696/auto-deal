@@ -14,8 +14,8 @@ import time
 def ths_start():
     mouse.double_click(coords=(40, 40))
     time.sleep(20)
-    # main_window = pywinauto.application.Application().connect(title = u"委托下单").top_window()
-    # main_window.print_control_identifiers()
+    mouse.click(coords=(40, 40))
+
 
 def ths_restore():
     main_window = pywinauto.application.Application().connect(title =  u'网上股票交易系统5.0').top_window()
@@ -24,13 +24,15 @@ def ths_restore():
     else:
         SetForegroundWindow(main_window.wrapper_object()) # bring to front
 
+
 def ths_close():
     ths_restore()
     time.sleep(2)
     keyboard.SendKeys('%{F4}')
 
+
 if __name__ == "__main__":
     ths_start()
     time.sleep(5)
     ths_close()
-	
+
