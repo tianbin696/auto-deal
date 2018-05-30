@@ -531,9 +531,9 @@ if __name__ == '__main__':
     while True:
         try:
             hour = time.localtime().tm_hour
-            if hour < 7 or hour > 20:
+            if hour < 7 or hour >= 15:
                 logger.info("Sleep before monitor, current_hour=%d" % hour)
-                time.sleep(30)
+                time.sleep(600)
                 continue
 
             ths_start()
