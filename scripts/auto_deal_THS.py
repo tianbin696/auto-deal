@@ -529,7 +529,7 @@ if __name__ == '__main__':
     while True:
         try:
             hour = time.localtime().tm_hour
-            if hour < 7 or hour >= 15:
+            if hour < 8 or hour >= 15:
                 logger.info("Sleep before monitor, current_hour=%d" % hour)
                 time.sleep(600)
                 continue
@@ -548,7 +548,7 @@ if __name__ == '__main__':
             monitor.loopMonitor()
 
             logger.info("Close THS after deal")
-            time.sleep(10)
+            time.sleep(120)
             ths_close()
         except Exception as e:
             logger.error("Error happen: %s" % e)
