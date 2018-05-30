@@ -277,8 +277,6 @@ class Monitor:
     def loopMonitor(self):
         logger.info("Start loop monitor ...")
 
-        time.sleep(10)
-        self.testSellBeforeDeal()
         time.sleep(5)
         self.testBuyBeforeDeal()
 
@@ -540,10 +538,8 @@ if __name__ == '__main__':
 
             monitor = Monitor()
             logger.info("Testing ...")
-            time.sleep(10)
-            monitor.testSellBeforeDeal()
             time.sleep(5)
-            monitor.testBuyBeforeDeal()
+            monitor.testSellBeforeDeal()
 
             logger.info("Start to collect codes")
             get_code_filter_list(avg10Days, "codes.txt")
