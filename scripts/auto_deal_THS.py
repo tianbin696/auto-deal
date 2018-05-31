@@ -351,9 +351,10 @@ class Monitor:
                         try:
                             p_changes = []
                             open_prices = []
-                            price = self.getRealTimeData(code, p_changes, open_prices)
+                            highest_prices = []
+                            price = self.getRealTimeData(code, p_changes, open_prices, highest_prices)
                             stock2changes[code] = p_changes[0]
-                            self.makeDecision(code, price, open_prices[0], p_changes[0])
+                            self.makeDecision(code, price, open_prices[0], p_changes[0], highest_prices[0])
                         except Exception as e:
                             logger.error("Failed to monitor %s: %s" % (code, e))
 
@@ -364,9 +365,10 @@ class Monitor:
                         try:
                             p_changes = []
                             open_prices = []
-                            price = self.getRealTimeData(code, p_changes, open_prices)
+                            highest_prices = []
+                            price = self.getRealTimeData(code, p_changes, open_prices, highest_prices)
                             stock2changes[code] = p_changes[0]
-                            self.makeDecision(code, price, open_prices[0], p_changes[0])
+                            self.makeDecision(code, price, open_prices[0], p_changes[0], highest_prices[0])
                         except Exception as e:
                             logger.error("Failed to monitor %s: %s" % (code, e))
 
@@ -392,8 +394,8 @@ class Monitor:
         targetTime = tz.localize(datetime.strptime(targetStr, "%Y-%m-%d %H:%M:%S"))
         return now > targetTime
 
-    def makeDecision(self, code, price, open_price, change_p):
-        direction = self.getDirection(code, price, open_price)
+    def makeDecision(self, code, price, open_price, change_p, highest_price):
+        direction = self.getDirection(code, price, open_price, highest_price)
         logger.debug("Direction for %s: %s" % (code, direction))
         global availableMoney
         if direction == 'B':
@@ -428,11 +430,12 @@ class Monitor:
                 logger.info("current availabeMoney = %d, stock_ordered = %s, stock_positions = %s"
                              % (availableMoney, stock_ordered, stock_positions))
 
-    def getRealTimeData(self, code, p_changes=[], open_prices=[]):
+    def getRealTimeData(self, code, p_changes=[], open_prices=[], highest_prices=[]):
         df = ts.get_realtime_quotes(code)
         price = df['price'][0]
         changePercentage = (float(df['price'][0]) - float(df['pre_close'][0])) / float(df['pre_close'][0])  * 100
         open_prices.append(float(df['open'][0]))
+        highest_prices.append(float(df['high'][0]))
         p_changes.append(self.formatFloat(changePercentage))
         logger.debug("Realtime data of %s: %s" %(code, price))
         return float(price)
@@ -458,7 +461,7 @@ class Monitor:
         logger.debug("Historical %d avg data of %s: %.2f" % (days, code, avg))
         return avg
 
-    def getDirection(self, code, price, open_price):
+    def getDirection(self, code, price, open_price, highest_price):
         avg1 = float(self.avg1[code])
         avg10 = float(self.avg10[code])
         avg20 = float(self.avg20[code])
@@ -495,6 +498,13 @@ class Monitor:
 
         if avg1 < price and open_price < price and avg10 < price and  price < avg10 * (1+buyThreshold):
             # 股价突破10日均值
+            if (price - avg1) < (highest_price - avg1) * 0.5:
+                # 当前涨幅小于最高涨幅的一半时，不考虑买入，此时为高位回落
+                return 'N'
+
+            if price > avg1 * 1.06:
+                # 当日股票涨幅过大，不考虑买入，避免追高
+                return 'N'
             return 'B'
 
         return 'N'
