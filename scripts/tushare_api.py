@@ -35,3 +35,7 @@ class TushareAPI:
             if code < '300000' or code >= '600000':
                 stock_codes.append(code)
         return stock_codes
+
+if __name__ == "__main__":
+    df = ts.get_index()
+    print("df: %s" % df)

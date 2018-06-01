@@ -482,6 +482,10 @@ class Monitor:
             # 跌停股票不用尝试卖出
             return 'N'
 
+        if price > avg1 * 1.099:
+            # 涨停股不卖出
+            return 'N'
+
         if code in stock_chenbens and price > stock_chenbens[code] * zhiYingDian:
             # 设置止盈点8%
             return 'FS'
@@ -495,6 +499,11 @@ class Monitor:
             position = stock_positions[code] * price
             if position > maxMoneyPerStock:
                 return 'N'
+
+        indexes = ts.get_index()
+        if float(indexes['change'][0]) < -1:
+            # 大盘大幅下跌时，不考虑买进
+            return 'N'
 
         if avg1 < price and open_price < price and avg10 < price and  price < avg10 * (1+buyThreshold):
             # 股价突破10日均值
