@@ -308,14 +308,8 @@ class Monitor:
             self.avg20[code] = avg
         end_time = time.time()
         self.operation.saveScreenshot("均值更新完成，共耗时%d秒，排除异常，可监控%d支股票" % ((end_time - start_time), (len(stock_codes) - len(stock_exception))))
-        # logger.info("Avgs 1: %s" % self.avg1)
-        # logger.info("Avgs 10: %s" % self.avg10)
-        # logger.info("Avgs 20: %s" % self.avg20)
         stock_codes = self.sortStocks(stock2changes)
         stock_codes_reversed = self.sortStocks(stock2changes, True)
-        # logger.info("stock scores: %s" % stock2changes)
-        # logger.info("sorted codes: %s" % stock_codes)
-        # logger.info("reverse sorted codes: %s" % stock_codes_reversed)
         logger.info("Total monitor code size: %d, exception code size: %d" % (len(stock_codes), len(stock_exception)))
 
         isStarted = False
@@ -345,23 +339,8 @@ class Monitor:
                 logger.debug("looping monitor stocks")
 
                 stock2changes = {}
-                # firstly, loop codes in stock_positions, finding out codes that can be sold
-                for code in stock_codes:
-                    if code in stock_positions:
-                        try:
-                            p_changes = []
-                            open_prices = []
-                            highest_prices = []
-                            price = self.getRealTimeData(code, p_changes, open_prices, highest_prices)
-                            stock2changes[code] = p_changes[0]
-                            self.makeDecision(code, price, open_prices[0], p_changes[0], highest_prices[0])
-                        except Exception as e:
-                            logger.error("Failed to monitor %s: %s" % (code, e))
-
-                # secondly, loop other codes, 优先选择当前涨幅大的股票进行买入操作
-                # 全部扫描完一遍需要2分钟左右，共1500支左右股票
                 for code in stock_codes_reversed:
-                    if code not in stock_positions and code not in stock_exception:
+                    if code not in stock_exception:
                         try:
                             p_changes = []
                             open_prices = []
@@ -374,8 +353,6 @@ class Monitor:
 
                 stock_codes = self.sortStocks(stock2changes)
                 stock_codes_reversed = self.sortStocks(stock2changes, True)
-                # logger.debug("sorted codes: %s" % stock_codes)
-                # logger.debug("reverse sorted codes: %s" % stock_codes_reversed)
                 logger.debug("stock_orders = %s, stock_positions = %s" % (stock_ordered, stock_positions))
             except Exception as e:
                 logger.error("Exception happen within loop: %s" % e)
