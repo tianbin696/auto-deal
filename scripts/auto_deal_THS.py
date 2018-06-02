@@ -245,9 +245,9 @@ class OperationOfThs:
             picName = "../../logs/auto_deal_%s.png" % datetime.now().strftime("%Y-%m-%d_%H-%M")
             self.restoreWindow()
             keyboard.SendKeys("{F4}")
-            time.sleep(sleepTime)
+            time.sleep(2*sleepTime)
             keyboard.SendKeys("{F5}")
-            time.sleep(sleepTime)
+            time.sleep(2*sleepTime)
             self.__main_window.CaptureAsImage().save(picName)
             time.sleep(sleepTime)
             self.screenshotCount += 1
