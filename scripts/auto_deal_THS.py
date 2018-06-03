@@ -530,6 +530,7 @@ if __name__ == '__main__':
                 time.sleep(600)
                 continue
 
+            time.sleep(20)
             ths_start()
 
             monitor = Monitor()
