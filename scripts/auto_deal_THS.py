@@ -18,21 +18,20 @@ from pywinauto import keyboard
 from pywinauto import mouse
 from pywinauto import win32defines
 from pywinauto.win32functions import SetForegroundWindow, ShowWindow
-# from timezone_logging.timezone_logging import get_timezone_logger
+from timezone_logging.timezone_logging import get_timezone_logger
 
 from email_sender import sendEmail
 from yan_zhen_ma import get_vcode
 from tong_hua_shun import ths_start
 from tong_hua_shun import ths_close
-from stats import get_code_filter_list
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                     datefmt='%a, %d %b %Y %H:%M:%S',
                     filename='../../logs/auto_deal_ths.log',
                     filemode='a')
-# logger = get_timezone_logger('auto_deal', fmt="%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s", log_level=logging.DEBUG)
-logger = logging.getLogger('auto_deal')
+logger = get_timezone_logger('auto_deal', fmt="%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s", log_level=logging.DEBUG)
+# logger = logging.getLogger('auto_deal')
 
 stock_codes = ['002647']
 stock_positions = {}
@@ -539,7 +538,6 @@ if __name__ == '__main__':
             monitor.testSellBeforeDeal()
 
             logger.info("Start to collect codes")
-            get_code_filter_list(avg10Days, "codes.txt")
             readCodes()
 
             monitor.loopMonitor()
@@ -547,6 +545,8 @@ if __name__ == '__main__':
             logger.info("Close THS after deal")
             time.sleep(120)
             ths_close()
+            break
         except Exception as e:
             logger.error("Error happen: %s" % e)
             ths_close()
+            break
