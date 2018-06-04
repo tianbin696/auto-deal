@@ -3,8 +3,6 @@
 import tushare as ts
 import logging
 
-FORMAT = '%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s'
-logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 logger = logging.getLogger('TushareAPI')
 
 class TushareAPI:
