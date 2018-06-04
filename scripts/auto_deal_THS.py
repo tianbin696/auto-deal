@@ -552,8 +552,6 @@ if __name__ == '__main__':
             logger.info("Close THS after deal")
             time.sleep(120)
             ths_close()
-            break
         except Exception as e:
             logger.error("Error happen: %s" % e)
             ths_close()
-            break
