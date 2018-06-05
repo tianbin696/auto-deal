@@ -8,9 +8,7 @@ logger = logging.getLogger('TushareAPI')
 class TushareAPI:
     def get_historic_price(self, code):
         try:
-            df = ts.get_hist_data(code)
-            if 'close' in df:
-                return df['close']
+            return ts.get_hist_data(code)
         except Exception as e:
             logger.error("Failed to get historical price for %s: %s" % (code, e))
         return []
