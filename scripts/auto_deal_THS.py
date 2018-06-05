@@ -544,7 +544,7 @@ if __name__ == '__main__':
             monitor.testSellBeforeDeal()
 
             logger.info("Start to collect codes")
-            get_code_filter_list()
+            get_code_filter_list(avg10Days, "codes.txt")
             readCodes()
 
             monitor.loopMonitor()
