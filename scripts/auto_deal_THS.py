@@ -47,7 +47,7 @@ stock_exception = []
 maxMoney = 10000
 maxMoneyPerStock = 10000  # 控制单只股票本金为[5000-10000]
 minMoneyPerStock = 5000
-availableMoney = 2000  # 锁定资金余额为2000
+availableMoney = 8000  # 锁定资金余额为2000
 sleepTime = 0.5
 monitorInterval = 20
 sellThreshold = 0.04
@@ -493,7 +493,7 @@ class Monitor:
                 # 当前涨幅小于最高涨幅的一半时，不考虑买入，此时为高位回落
                 return 'N'
 
-            if price > avg1 * 1.06:
+            if price > avg1 * 1.04:
                 # 当日股票涨幅过大，不考虑买入，避免追高
                 return 'N'
             return 'B'
