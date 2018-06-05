@@ -49,7 +49,7 @@ maxMoneyPerStock = 10000  # 控制单只股票本金为[5000-10000]
 minMoneyPerStock = 5000
 availableMoney = 8000  # 锁定资金余额为2000
 sleepTime = 0.5
-monitorInterval = 20
+monitorInterval = 10
 sellThreshold = 0.04
 buyThreshold = 0.06  # [1-threshold ~ 1+threshold]
 danRiDieFuZhiSunDian = 0.96  # 单日跌幅超过4%时止损清仓
@@ -318,6 +318,7 @@ class Monitor:
         logger.info("Total monitor code size: %d, exception code size: %d" % (len(stock_codes), len(stock_exception)))
 
         isStarted = False
+        totalSleep = 0
         while True:
             try:
                 self.operation.moveMouse()
@@ -337,6 +338,10 @@ class Monitor:
                     break
 
                 time.sleep(monitorInterval)
+                totalSleep += monitorInterval
+                if totalSleep % 3600 == 0:
+                    self.operation.saveScreenshot("状态更新")
+
                 if not isStarted:
                     continue
 
