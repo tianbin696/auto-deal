@@ -76,6 +76,16 @@ def get_code_filter_list(avg_days = 10, file = None):
     result = []
     for code in code_score.keys():
         if code_score[code] > 2 and code_score[code] < 10:
+            df = ts.get_realtime_quotes(code)
+            changePercentage = (float(df['price'][0]) - float(df['pre_close'][0])) / float(df['pre_close'][0])  * 100
+            if changePercentage > 6:
+                # 前一日涨幅超过6%时不考虑，防止追高被套
+                print("Ignore code > 6: %s" % code)
+                continue
+            if changePercentage < 1:
+                # 前一日涨幅小于1%时不考虑
+                print("Ignore code < 1: %s" % code)
+                continue
             result.append(code)
 
     if file:
@@ -88,7 +98,7 @@ def get_code_filter_list(avg_days = 10, file = None):
         writer.close()
         score_writer.close()
 
-    logger.info("Get %d filter code from total %d codes" % (len(result), len(list)))
+    print("Get %d filter code from total %d codes" % (len(result), len(list)))
     return result
 
 

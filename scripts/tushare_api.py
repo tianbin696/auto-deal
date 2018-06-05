@@ -34,6 +34,9 @@ class TushareAPI:
                 stock_codes.append(code)
         return stock_codes
 
+    def get_realtime_quotes(self, code):
+        return ts.get_realtime_quotes(code)
+
 if __name__ == "__main__":
     df = ts.get_index()
     print("df: %s" % df)
