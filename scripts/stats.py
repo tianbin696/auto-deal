@@ -95,6 +95,16 @@ def get_code_filter_list(avg_days = 10, file = None):
                 # 前一日涨幅小于1%时不考虑
                 print("Ignore code < 1: %s" % code)
                 continue
+
+            if float(df['open'][0]) > float(df['price'][0]):
+                # 不考虑高开低走的股票
+                print("Open price > close price: %s" % code)
+                continue
+
+            if float(df['high'][0]) > float(df['price'][0]) * 1.04:
+                # 不考虑长上影线的股票
+                print("High price > close price * 1.04: %s" % code)
+                continue
             result.append(code)
 
     if file:
