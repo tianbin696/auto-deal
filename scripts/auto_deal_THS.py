@@ -469,7 +469,7 @@ class Monitor:
             # 跌停股票不用尝试卖出
             return 'N'
 
-        if price > avg1 * 1.099:
+        if price > avg1 * 1.090:
             # 涨停股不卖出
             return 'N'
 
