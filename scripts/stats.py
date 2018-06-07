@@ -87,9 +87,9 @@ def get_code_filter_list(avg_days = 10, file = None):
         if code_score[code] > 2 and code_score[code] < 10:
             df = ts.get_realtime_quotes(code)
             changePercentage = (float(df['price'][0]) - float(df['pre_close'][0])) / float(df['pre_close'][0])  * 100
-            if changePercentage > 6:
-                # 前一日涨幅超过6%时不考虑，防止追高被套
-                print("Ignore code > 6: %s" % code)
+            if changePercentage > 4:
+                # 前一日涨幅超过4%时不考虑，防止追高被套
+                print("Ignore code > 4: %s" % code)
                 continue
             if changePercentage < 1:
                 # 前一日涨幅小于1%时不考虑
