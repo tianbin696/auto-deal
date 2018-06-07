@@ -404,9 +404,11 @@ class Monitor:
         elif direction == 'HS' or direction == 'FS':
             sellPrice = self.getSellPrice(price)
             sellAmount = self.getSellAmount(code)
-            if float(change_p) < -9.8:
+            if float(change_p) < -9.0:
                 # 无法计算跌停价时以现价卖出
                 sellPrice = price
+            if float(change_p) < -8.0 and float(change_p) >= -9.0:
+                sellPrice = price * 0.99
 
             if direction == 'FS':
                 sellAmount = stock_positions[code]
