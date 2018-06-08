@@ -47,7 +47,7 @@ stock_exception = []
 maxMoney = 10000
 maxMoneyPerStock = 10000  # 控制单只股票本金为[5000-10000]
 minMoneyPerStock = 5000
-availableMoney = 4000  # 锁定资金余额为4000
+availableMoney = 1000  # 锁定资金余额为4000
 sleepTime = 0.5
 monitorInterval = 10
 sellThreshold = 0.04
@@ -323,7 +323,7 @@ class Monitor:
             try:
                 self.operation.moveMouse()
 
-                if (self.compare("09", "40") and not self.compare("11", "28")) or (self.compare("13", "02") and not self.compare("14", "58")):
+                if (self.compare("09", "35") and not self.compare("11", "28")) or (self.compare("13", "02") and not self.compare("14", "58")):
                     # 交易时间：[09:30 ~ 11:30, 13:00 ~ 15:00]
                     if not isStarted:
                         self.operation.saveScreenshot("开始交易")
