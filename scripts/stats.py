@@ -58,14 +58,14 @@ def get_code_filter_list(avg_days = 10, file = None):
             if len(prices) <= 0:
                 continue
 
-            if df['volume'][0] < df['v_ma10'][0]:
-                # 忽略缩量的股票
-                continue
+            # if df['volume'][0] < df['v_ma10'][0]:
+            #     # 忽略缩量的股票
+            #     continue
 
             avgs = avg(prices, avg_days)
 
-            # if avgs[0] > numpy.mean(prices[0:math.ceil(days/2)]):  # 不考虑买入10日均线在5日线上的股票，这种为向下趋势
-            #     continue
+            if avgs[0] < numpy.mean(prices[0:2*avg_days]):  # 不考虑买入10日均线在20日线下的股票，这种为向下趋势
+                continue
 
             if prices[0] > avgs[0] * 1.04:  # 不考虑大于10日线*1.04的股票
                 continue
