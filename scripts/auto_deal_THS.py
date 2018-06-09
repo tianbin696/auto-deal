@@ -44,6 +44,7 @@ stock_positions = {}
 stock_chenbens = {}
 stock_ordered = []
 stock_exception = []
+maxChiCangShu = 20
 maxMoney = 10000
 maxMoneyPerStock = 10000  # 控制单只股票本金为[5000-10000]
 minMoneyPerStock = 5000
@@ -482,6 +483,9 @@ class Monitor:
         if code in stock_chenbens and price < stock_chenbens[code] * zhiSunDian and price < avg1:
             # 设置止损点8%
             return 'FS'
+
+        if len(stock_positions) >= maxChiCangShu:
+            return 'N'
 
         if code in stock_positions:
             # 控制单只股票市值
