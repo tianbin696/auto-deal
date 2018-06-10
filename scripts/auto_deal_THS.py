@@ -45,8 +45,7 @@ stock_chenbens = {}
 stock_ordered = []
 stock_exception = []
 maxChiCangShu = 20
-maxMoney = 10000
-maxMoneyPerStock = 10000  # 控制单只股票本金为[5000-10000]
+maxMoneyPerStock = 8500  # 控制单只股票本金为170,000/20=8500
 minMoneyPerStock = 5000
 availableMoney = 10000  # 锁定资金余额为10000
 sleepTime = 0.5
@@ -526,9 +525,9 @@ class Monitor:
 
     def getBuyAmount(self, price, code=None):
         if code and code in stock_positions:
-            amount = math.floor(min(maxMoney - price * stock_positions[code], availableMoney)/price/100) * 100
+            amount = math.floor(min(maxMoneyPerStock - price * stock_positions[code], availableMoney)/price/100) * 100
         else:
-            amount = math.floor(min(maxMoney, availableMoney)/price/100) * 100
+            amount = math.floor(min(maxMoneyPerStock, availableMoney)/price/100) * 100
         if amount * price < minMoneyPerStock:
             amount = 0
         return amount
