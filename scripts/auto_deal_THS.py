@@ -49,7 +49,7 @@ maxMoneyPerStock = 8500  # 控制单只股票本金为170,000/20=8500
 minMoneyPerStock = 5000
 availableMoney = 10000  # 锁定资金余额为10000
 sleepTime = 0.5
-monitorInterval = 10
+monitorInterval = 20
 sellThreshold = 0.04
 buyThreshold = 0.06  # [1-threshold ~ 1+threshold]
 danRiDieFuZhiSunDian = 0.96  # 单日跌幅超过4%时止损清仓
