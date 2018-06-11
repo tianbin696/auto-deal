@@ -493,7 +493,7 @@ class Monitor:
                 return 'N'
 
         indexes = ts.get_index()
-        if float(indexes['change'][0]) < -1:
+        if float(indexes['change'][0]) < -0.5:
             # 大盘大幅下跌时，不考虑买进
             return 'N'
 
