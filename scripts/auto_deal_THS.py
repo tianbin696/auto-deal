@@ -55,6 +55,7 @@ buyThreshold = 0.06  # [1-threshold ~ 1+threshold]
 danRiDieFuZhiSunDian = 0.96  # 单日跌幅超过4%时止损清仓
 zhiYingDian = 1.08  # 止盈点%8
 zhiSunDian = 0.92  # 止损点%8
+dongTaiZhiSunZhiYin = 0.04  # 根据大盘行情动态上下浮动4个点
 avg10Days = 12 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
 
 def readCodes():
@@ -477,11 +478,19 @@ class Monitor:
             # 涨停股不卖出
             return 'N'
 
-        if code in stock_chenbens and price > stock_chenbens[code] * zhiYingDian:
+        indexes = ts.get_index()
+        newZhiSunDian = zhiSunDian
+        newZhiYingDian = zhiYingDian
+        if float(indexes['change'][0]) < -0.5:
+            newZhiSunDian = zhiSunDian - dongTaiZhiSunZhiYin
+        if float(indexes['change'][0]) > 0.5:
+            newZhiYingDian = zhiYingDian + dongTaiZhiSunZhiYin
+
+        if code in stock_chenbens and price > stock_chenbens[code] * newZhiYingDian:
             # 设置止盈点8%
             return 'FS'
 
-        if code in stock_chenbens and price < stock_chenbens[code] * zhiSunDian and price < avg1:
+        if code in stock_chenbens and price < stock_chenbens[code] * newZhiSunDian and price < avg1:
             # 设置止损点8%
             return 'FS'
 
@@ -494,7 +503,6 @@ class Monitor:
             if position > maxMoneyPerStock:
                 return 'N'
 
-        indexes = ts.get_index()
         if float(indexes['change'][0]) < -0.5:
             # 大盘大幅下跌时，不考虑买进
             return 'N'
