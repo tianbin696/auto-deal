@@ -44,8 +44,8 @@ stock_positions = {}
 stock_chenbens = {}
 stock_ordered = []
 stock_exception = []
-maxChiCangShu = 20
-maxMoneyPerStock = 9000  # 控制单只股票本金为180,000/20=9000
+maxChiCangShu = 18
+maxMoneyPerStock = 10000  # 控制单只股票本金为180,000/18 => 10000
 minMoneyPerStock = 5000
 availableMoney = 10000  # 锁定资金余额为10000
 sleepTime = 0.5
@@ -414,6 +414,8 @@ class Monitor:
                 sellAmount = stock_positions[code]
             if self.operation.order(code, 'S', sellPrice, sellAmount):
                 stock_positions[code] -= sellAmount
+                if stock_positions[code] <= 0:
+                    del stock_positions[code]
                 availableMoney += sellAmount * sellPrice
                 stock_ordered.append(code)
                 logger.info("current availabeMoney = %d, stock_ordered = %s, stock_positions = %s"
