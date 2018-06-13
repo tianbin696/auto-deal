@@ -45,9 +45,9 @@ stock_chenbens = {}
 stock_ordered = []
 stock_exception = []
 maxChiCangShu = 18
-maxMoneyPerStock = 10000  # 控制单只股票本金为180,000/18 => 10000
-minMoneyPerStock = 5000
-availableMoney = 10000  # 锁定资金余额为10000
+maxMoneyPerStock = 20000
+minMoneyPerStock = 10000
+availableMoney = 20000  # 锁定资金余额为10000
 sleepTime = 0.5
 monitorInterval = 20
 sellThreshold = 0.04
