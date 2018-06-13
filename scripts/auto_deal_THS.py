@@ -50,8 +50,6 @@ minMoneyPerStock = 10000
 availableMoney = 20000  # 锁定资金余额为10000
 sleepTime = 0.5
 monitorInterval = 20
-sellThreshold = 0.04
-buyThreshold = 0.06  # [1-threshold ~ 1+threshold]
 danRiDieFuZhiSunDian = 0.96  # 单日跌幅超过4%时止损清仓
 zhiYingDian = 1.08  # 止盈点%8
 zhiSunDian = 0.92  # 止损点%8
@@ -466,7 +464,7 @@ class Monitor:
             # 控制当日单只股票操作次数, 监控异常
             return 'N'
 
-        if avg1 * 0.98 < price and price < avg1 * 1.02:
+        if avg1 * 0.99 < price and price < avg1 * 1.01:
             # 如果股价波动过小，则不操作
             return 'N'
 
@@ -515,7 +513,7 @@ class Monitor:
             # 大盘绿柱时，不考虑买进
             return 'N'
 
-        if avg1 < price and open_price < price and avg10 < price and  price < avg10 * (1+buyThreshold):
+        if avg1 < price and open_price < price and avg10 < price:
             # 股价突破10日均值
             if (price - avg1) < (highest_price - avg1) * 0.5:
                 # 当前涨幅小于最高涨幅的一半时，不考虑买入，此时为高位回落
