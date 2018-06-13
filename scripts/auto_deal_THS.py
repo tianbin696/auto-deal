@@ -507,8 +507,12 @@ class Monitor:
             if position > maxMoneyPerStock:
                 return 'N'
 
-        if float(indexes['change'][0]) < -0.5:
-            # 大盘大幅下跌时，不考虑买进
+        if float(indexes['change'][0]) < 0:
+            # 大盘下跌时，不考虑买进
+            return 'N'
+
+        if float(indexes['preclose'][0]) * (1+float(indexes['change'][0])/100) < float(indexes['open'][0]):
+            # 大盘绿柱时，不考虑买进
             return 'N'
 
         if avg1 < price and open_price < price and avg10 < price and  price < avg10 * (1+buyThreshold):
