@@ -49,7 +49,7 @@ sellAmount = 2000
 isBuyed = False
 isSelled = False
 sleepTime = 0.5
-monitorInterval = 20
+monitorInterval = 10
 avg10Days = 12 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
 
 def readCodes():
@@ -300,7 +300,7 @@ class Monitor:
             try:
                 self.operation.moveMouse()
 
-                if (self.compare("09", "35") and not self.compare("11", "28")) or (self.compare("13", "02") and not self.compare("14", "58")):
+                if (self.compare("09", "32") and not self.compare("11", "28")) or (self.compare("13", "02") and not self.compare("14", "58")):
                     # 交易时间：[09:30 ~ 11:30, 13:00 ~ 15:00]
                     if not isStarted:
                         self.operation.saveScreenshot("开始交易")
@@ -316,7 +316,7 @@ class Monitor:
 
                 time.sleep(monitorInterval)
                 totalSleep += monitorInterval
-                if totalSleep % 1800 == 0:
+                if totalSleep % 3600 == 0:
                     self.operation.saveScreenshot("状态更新")
 
                 if not isStarted:
