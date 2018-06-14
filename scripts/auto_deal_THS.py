@@ -42,6 +42,8 @@ logger.addHandler(console)
 stock_codes = ['002024']
 stock_positions = {}
 stock_chenbens = {}
+maxAmount = 10000
+minAmount = 2000
 buyAmount = 2000
 sellAmount = 2000
 isBuyed = False
@@ -356,12 +358,21 @@ class Monitor:
         global availableMoney
         global isSelled, isBuyed
         if direction == 'B':
+            if stock_positions[code] >= maxAmount:
+                # 达到持仓上限，不再买入
+                logger.info("Reach max amount, cannot buy anymore")
+                return
             buyPrice = self.getBuyPrice(price)
             if buyPrice <= 0:
                 return
             if self.operation.order(code, direction, buyPrice, buyAmount):
+                stock_positions[code] += buyAmount
                 isBuyed = True
         elif direction == 'S':
+            if stock_positions[code] <= minAmount:
+                # 达到持仓下限，不再卖出
+                logger.info("Reach min amount, cannot sell anymore")
+                return
             sellPrice = self.getSellPrice(price)
             if float(change_p) < -9.0:
                 # 无法计算跌停价时以现价卖出
@@ -371,6 +382,7 @@ class Monitor:
             if sellPrice <= 0:
                 return
             if self.operation.order(code, 'S', sellPrice, sellAmount):
+                stock_positions[code] -= sellAmount
                 isSelled = True
 
     def getRealTimeData(self, code, p_changes=[], open_prices=[], highest_prices=[]):
