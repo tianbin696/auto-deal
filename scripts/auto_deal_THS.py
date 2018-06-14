@@ -429,27 +429,29 @@ class Monitor:
             return 'N'
 
         if not isSelled:
-            if price > avg10*1.06:
-                # 股价高于10日线6%，止盈
-                if price > avg1*1.02:
-                    # 基于10日线止盈时，要求日涨幅高于2%，满足条件的股价区间为[avg10*0.98 ~ )
+            if price < highest_price:
+                # 只有当股价低于日内最高点时，才考虑卖出，避免卖出持续上涨和一字板的股票
+                if price > avg10*1.06:
+                    # 股价高于10日线6%，止盈
+                    if price > avg1*1.02:
+                        # 基于10日线止盈时，要求日涨幅高于2%，满足条件的股价区间为[avg10*0.98 ~ )
+                        return 'S'
+
+                if price > avg1*1.08:
+                    # 日涨幅超过8%时，止盈
                     return 'S'
 
-            if price > avg1*1.08:
-                # 日涨幅超过8%时，止盈
-                return 'S'
-
-            if price < avg1:
-                # 股票下跌
-                if open_price < price:
-                    # 低开高走时，不考虑卖出
-                    return 'N'
-                if price < avg1*0.96:
-                    # 当日跌幅超过4%时，止损
-                    return 'S'
-                if avg10*0.98 < price and price < avg10:
-                    # 跌破10日均线，止损，满足条件的股价区间为[avg10*1.04 ~ avg10]，共4个点的区间
-                    return 'S'
+                if price < avg1:
+                    # 股票下跌
+                    if open_price < price:
+                        # 低开高走时，不考虑卖出
+                        return 'N'
+                    if price < avg1*0.96:
+                        # 当日跌幅超过4%时，止损
+                        return 'S'
+                    if avg10*0.98 < price and price < avg10:
+                        # 跌破10日均线，止损，满足条件的股价区间为[avg10*1.04 ~ avg10]，共4个点的区间
+                        return 'S'
 
         if not isBuyed:
             if price > avg1:
