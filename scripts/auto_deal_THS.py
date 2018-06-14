@@ -429,7 +429,7 @@ class Monitor:
             return 'N'
 
         if not isSelled:
-            if price < highest_price:
+            if price < highest_price*0.994:
                 # 只有当股价低于日内最高点时，才考虑卖出，避免卖出持续上涨和一字板的股票
                 if price > avg10*1.06:
                     # 股价高于10日线6%，止盈
