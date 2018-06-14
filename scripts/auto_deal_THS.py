@@ -412,7 +412,7 @@ class Monitor:
         if price <= 0:
             return 'N'
 
-        if avg1 * 0.99 < price and price < avg1 * 1.01:
+        if avg1 * 0.98 < price and price < avg1 * 1.01:
             # 如果股价波动过小，则不操作
             return 'N'
 
