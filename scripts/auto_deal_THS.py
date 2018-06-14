@@ -416,14 +416,6 @@ class Monitor:
             # 如果股价波动过小，则不操作
             return 'N'
 
-        if price < avg1 * 0.901:
-            # 跌停股票不用尝试卖出
-            return 'N'
-
-        if price > avg1 * 1.090:
-            # 涨停股不卖出
-            return 'N'
-
         if not isSelled:
             if price > avg10*1.06:
                 # 股价高于10日线6%，止盈
