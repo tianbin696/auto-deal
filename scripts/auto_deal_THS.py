@@ -478,7 +478,7 @@ if __name__ == '__main__':
             hour = time.localtime().tm_hour
             if hour < 7 or hour >= 15:
                 logger.info("Sleep before monitor, current_hour=%d" % hour)
-                time.sleep(600)
+                time.sleep(60)
                 continue
 
             time.sleep(20)
