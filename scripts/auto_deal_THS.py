@@ -419,7 +419,9 @@ class Monitor:
         if not isSelled:
             if price > avg10*1.06:
                 # 股价高于10日线6%，止盈
-                return 'S'
+                if price > avg1*1.02:
+                    # 基于10日线止盈时，要求日涨幅高于2%
+                    return 'S'
 
             if price > avg1*1.08:
                 # 日涨幅超过8%时，止盈
