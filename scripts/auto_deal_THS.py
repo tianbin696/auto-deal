@@ -436,9 +436,6 @@ class Monitor:
                 if avg10*0.97 < price and price < avg10*0.99:
                     # 跌破10日均线
                     return 'S'
-                if avg20*0.97 < price and price < avg20*0.99:
-                    # 跌破20日均线
-                    return 'S'
 
         if not isBuyed:
             if price > avg1:
