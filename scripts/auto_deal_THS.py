@@ -39,21 +39,15 @@ console.setFormatter(formatter)
 logger = logging.getLogger('auto_deal')
 logger.addHandler(console)
 
-stock_codes = ['002647']
+stock_codes = ['002024']
 stock_positions = {}
 stock_chenbens = {}
-stock_ordered = []
-stock_exception = []
-maxChiCangShu = 18
-maxMoneyPerStock = 20000
-minMoneyPerStock = 14000
-availableMoney = 20000  # 锁定资金余额为10000
+buyAmount = 2000
+sellAmount = 2000
+isBuyed = False
+isSelled = False
 sleepTime = 0.5
 monitorInterval = 20
-danRiDieFuZhiSunDian = 0.96  # 单日跌幅超过4%时止损清仓
-zhiYingDian = 1.08  # 止盈点%8
-zhiSunDian = 0.92  # 止损点%8
-dongTaiZhiSunZhiYin = 0.02  # 根据大盘行情动态上下浮动2/4个点
 avg10Days = 12 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
 
 def readCodes():
@@ -255,7 +249,6 @@ class OperationOfThs:
             self.__main_window.CaptureAsImage().save(picName)
             time.sleep(sleepTime)
             self.screenshotCount += 1
-            # pywinauto.application.Application().connect(title = "auto_deal_THS.py").top_window().CaptureAsImage().save(picName)
             sendEmail([picName], status)
         except Exception as e:
             logger.error("Failed to send email: %s" % e)
@@ -268,9 +261,6 @@ class Monitor:
         self.avg10 = {}
         self.avg20 = {}
         self.operation = OperationOfThs()
-        # self.operation.maxWindow()
-
-        # self.loopMonitor()
 
     def testSellBeforeDeal(self):
         self.operation.order('600570', 'S', 0, 200)
@@ -287,23 +277,11 @@ class Monitor:
         self.operation.getPosition() # 开盘前获取持仓情况
         self.operation.getChenben() # 开盘前获取成本情况
 
-        global stock_codes
-        for code in stock_positions:
-            if code not in stock_codes:
-                # make sure all stocks within current position are monitored
-                stock_codes.append(code)
-            if stock_positions[code] <= 0:
-                stock_ordered.append(code)
-
         start_time = time.time()
-        stock2changes = {}
         for code in stock_codes:
-            # 需要45分钟更新所有均值 - 近2800支股票
-            # 因此需要7点半前开机启动
             p_changes = []
             avg = self.getHistoryDayKAvgData(code, 1, p_changes)
             self.avg1[code] = avg
-            stock2changes[code] = p_changes[0]
 
             avg = self.getHistoryDayKAvgData(code, avg10Days)
             self.avg10[code] = avg
@@ -311,10 +289,8 @@ class Monitor:
             avg = self.getHistoryDayKAvgData(code, 2 * avg10Days)
             self.avg20[code] = avg
         end_time = time.time()
-        self.operation.saveScreenshot("均值更新完成，共耗时%d秒，排除异常，可监控%d支股票" % ((end_time - start_time), (len(stock_codes) - len(stock_exception))))
-        stock_codes = self.sortStocks(stock2changes)
-        stock_codes_reversed = self.sortStocks(stock2changes, True)
-        logger.info("Total monitor code size: %d, exception code size: %d" % (len(stock_codes), len(stock_exception)))
+        self.operation.saveScreenshot("均值更新完成，共耗时%d秒，排除异常，可监控%d支股票" % ((end_time - start_time), len(stock_codes)))
+        logger.info("Total monitor code size: %d" % (len(stock_codes)))
 
         isStarted = False
         totalSleep = 0
@@ -347,22 +323,16 @@ class Monitor:
                 print()
                 logger.debug("looping monitor stocks")
 
-                stock2changes = {}
-                for code in stock_codes_reversed:
-                    if code not in stock_exception:
-                        try:
-                            p_changes = []
-                            open_prices = []
-                            highest_prices = []
-                            price = self.getRealTimeData(code, p_changes, open_prices, highest_prices)
-                            stock2changes[code] = p_changes[0]
-                            self.makeDecision(code, price, open_prices[0], p_changes[0], highest_prices[0])
-                        except Exception as e:
-                            logger.error("Failed to monitor %s: %s" % (code, e))
+                for code in stock_codes:
+                    try:
+                        p_changes = []
+                        open_prices = []
+                        highest_prices = []
+                        price = self.getRealTimeData(code, p_changes, open_prices, highest_prices)
+                        self.makeDecision(code, price, open_prices[0], p_changes[0], highest_prices[0])
+                    except Exception as e:
+                        logger.error("Failed to monitor %s: %s" % (code, e))
 
-                stock_codes = self.sortStocks(stock2changes)
-                stock_codes_reversed = self.sortStocks(stock2changes, True)
-                logger.debug("stock_orders = %s, stock_positions = %s" % (stock_ordered, stock_positions))
             except Exception as e:
                 logger.error("Exception happen within loop: %s" % e)
 
@@ -384,41 +354,24 @@ class Monitor:
         direction = self.getDirection(code, price, open_price, highest_price)
         logger.debug("Direction for %s: %s" % (code, direction))
         global availableMoney
+        global isSelled, isBuyed
         if direction == 'B':
             buyPrice = self.getBuyPrice(price)
-            buyAmount = self.getBuyAmount(price, code)
-            if buyPrice <= 0 or buyAmount <= 0:
-                return
-            if float(open_price) > price:
-                # 避免买入高开低走的股票
+            if buyPrice <= 0:
                 return
             if self.operation.order(code, direction, buyPrice, buyAmount):
-                if code not in stock_positions:
-                    stock_positions[code] = 0
-                stock_positions[code] += buyAmount
-                availableMoney -= buyPrice * buyAmount
-                stock_ordered.append(code)
-                logger.info("current availabeMoney = %d, stock_ordered = %s, stock_positions = %s"
-                             % (availableMoney, stock_ordered, stock_positions))
-        elif direction == 'HS' or direction == 'FS':
+                isBuyed = True
+        elif direction == 'S':
             sellPrice = self.getSellPrice(price)
-            sellAmount = self.getSellAmount(code)
             if float(change_p) < -9.0:
                 # 无法计算跌停价时以现价卖出
                 sellPrice = price
             if float(change_p) < -8.0 and float(change_p) >= -9.0:
                 sellPrice = price * 0.99
-
-            if direction == 'FS':
-                sellAmount = stock_positions[code]
+            if sellPrice <= 0:
+                return
             if self.operation.order(code, 'S', sellPrice, sellAmount):
-                stock_positions[code] -= sellAmount
-                if stock_positions[code] <= 0:
-                    del stock_positions[code]
-                availableMoney += sellAmount * sellPrice
-                stock_ordered.append(code)
-                logger.info("current availabeMoney = %d, stock_ordered = %s, stock_positions = %s"
-                             % (availableMoney, stock_ordered, stock_positions))
+                isSelled = True
 
     def getRealTimeData(self, code, p_changes=[], open_prices=[], highest_prices=[]):
         df = ts.get_realtime_quotes(code)
@@ -446,7 +399,6 @@ class Monitor:
         except Exception as e:
             logger.error("Error while get code %s: %s" % (code, e))
             p_changes.append(0)
-            stock_exception.append(code)
         avg = self.formatFloat(total/days)
         logger.debug("Historical %d avg data of %s: %.2f" % (days, code, avg))
         return avg
@@ -458,10 +410,6 @@ class Monitor:
         price = float(price)
         logger.info("%s status: %f, %f, %f, %f" % (code, price, avg1, avg10, avg20))
         if price <= 0:
-            return 'N'
-
-        if code in stock_ordered or code in stock_exception:
-            # 控制当日单只股票操作次数, 监控异常
             return 'N'
 
         if avg1 * 0.99 < price and price < avg1 * 1.01:
@@ -476,81 +424,39 @@ class Monitor:
             # 涨停股不卖出
             return 'N'
 
-        indexes = ts.get_index()
-        newZhiSunDian = zhiSunDian
-        newZhiYingDian = zhiYingDian
-        if float(indexes['change'][0]) < -0.5:
-            newZhiSunDian = zhiSunDian - dongTaiZhiSunZhiYin
-        if float(indexes['change'][0]) < -1.0:
-            newZhiSunDian = zhiSunDian - 2*dongTaiZhiSunZhiYin
-        if float(indexes['change'][0]) > 0.5:
-            newZhiYingDian = zhiYingDian + dongTaiZhiSunZhiYin
-        if float(indexes['change'][0]) > 1.0:
-            newZhiYingDian = zhiYingDian + 2*dongTaiZhiSunZhiYin
+        if not isSelled:
+            if price < avg1:
+                # 股票下跌
+                if open_price < price:
+                    # 低开高走时，不考虑卖出
+                    return 'N'
+                if price < avg1*0.94:
+                    # 当日跌幅超过6%时，卖出
+                    return 'S'
+                if avg10*0.97 < price and price < avg10*0.99:
+                    # 跌破10日均线
+                    return 'S'
 
-        if code in stock_chenbens and price > stock_chenbens[code] * newZhiYingDian:
-            # 设置止盈点8%
-            return 'FS'
-
-        if code in stock_chenbens and price < stock_chenbens[code] * newZhiSunDian and price < avg1:
-            # 设置止损点8%
-            return 'FS'
-
-        if len(stock_positions) >= maxChiCangShu:
-            return 'N'
-
-        if code in stock_positions:
-            # 控制单只股票市值
-            position = stock_positions[code] * price
-            if position > maxMoneyPerStock:
-                return 'N'
-
-        if float(indexes['change'][0]) < 0:
-            # 大盘下跌时，不考虑买进
-            return 'N'
-
-        if float(indexes['preclose'][0]) * (1+float(indexes['change'][0])/100) < float(indexes['open'][0]):
-            # 大盘绿柱时，不考虑买进
-            return 'N'
-
-        if avg1 < price and open_price < price and avg10 < price:
-            # 股价突破10日均值
-            if (price - avg1) < (highest_price - avg1) * 0.5:
-                # 当前涨幅小于最高涨幅的一半时，不考虑买入，此时为高位回落
-                return 'N'
-
-            if price > avg1 * 1.04:
-                # 当日股票涨幅过大，不考虑买入，避免追高
-                return 'N'
-            return 'B'
+        if not isBuyed:
+            if price > avg1:
+                # 股票上涨
+                if open_price > price:
+                    # 高开低走时，不考虑买入
+                    return 'N'
+                if price > avg1 * 1.06:
+                    # 涨幅超过6%时，不考虑买入，避免追高被套
+                    return 'N'
+                if avg10*1.03 > price and price > avg10*1.01:
+                    # 突破10日均线
+                    return 'B'
 
         return 'N'
-
-    def sortStocks(self, stock2score, reverse = False):
-        sortedCodes = sorted(stock2score.items(), key=operator.itemgetter(1), reverse = reverse)
-        codes = []
-        for i in range(0, len(sortedCodes)):
-            codes.append(sortedCodes[i][0])
-        return codes
 
     def getBuyPrice(self, price):
         return price * 1.02
 
     def getSellPrice(self, price):
         return price * 0.98
-
-    def getBuyAmount(self, price, code=None):
-        if code and code in stock_positions:
-            amount = math.floor(min(maxMoneyPerStock - price * stock_positions[code], availableMoney)/price/100) * 100
-        else:
-            amount = math.floor(min(maxMoneyPerStock, availableMoney)/price/100) * 100
-        if amount * price < minMoneyPerStock:
-            amount = 0
-        return amount
-
-    def getSellAmount(self, code):
-        return math.ceil(stock_positions[code]/2/100) * 100
-
 
 if __name__ == '__main__':
     while True:
@@ -568,10 +474,6 @@ if __name__ == '__main__':
             logger.info("Testing ...")
             time.sleep(5)
             monitor.testSellBeforeDeal()
-
-            logger.info("Start to collect codes")
-            get_code_filter_list(avg10Days, "codes.txt")
-            readCodes()
 
             monitor.loopMonitor()
 
