@@ -425,16 +425,24 @@ class Monitor:
             return 'N'
 
         if not isSelled:
+            if price > avg10*1.06:
+                # 股价高于10日线6%，止盈
+                return 'S'
+
+            if price > avg1*1.08:
+                # 日涨幅超过8%时，止盈
+                return 'S'
+
             if price < avg1:
                 # 股票下跌
                 if open_price < price:
                     # 低开高走时，不考虑卖出
                     return 'N'
-                if price < avg1*0.94:
-                    # 当日跌幅超过6%时，卖出
+                if price < avg1*0.96:
+                    # 当日跌幅超过4%时，止损
                     return 'S'
-                if avg10*0.97 < price and price < avg10*0.99:
-                    # 跌破10日均线
+                if avg10*0.98 < price and price < avg10:
+                    # 跌破10日均线，止损
                     return 'S'
 
         if not isBuyed:
@@ -443,10 +451,10 @@ class Monitor:
                 if open_price > price:
                     # 高开低走时，不考虑买入
                     return 'N'
-                if price > avg1 * 1.06:
-                    # 涨幅超过6%时，不考虑买入，避免追高被套
+                if price > avg1 * 1.04:
+                    # 涨幅超过4%时，不考虑买入，避免追高被套
                     return 'N'
-                if avg10*1.03 > price and price > avg10*1.01:
+                if avg10*1.02 > price and price > avg10:
                     # 突破10日均线
                     return 'B'
 
