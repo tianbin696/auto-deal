@@ -43,7 +43,7 @@ stock_codes = ['002024']
 stock_positions = {}
 stock_chenbens = {}
 maxAmount = 10000
-minAmount = 2000
+minAmount = 4000
 buyAmount = 2000
 sellAmount = 2000
 isBuyed = False
@@ -443,10 +443,15 @@ class Monitor:
 
                 if price < avg1:
                     # 股票下跌
+                    zhiSunDian = 0.96
+                    indexes = ts.get_index()
+                    if float(indexes['change'][0]) < -0.5:
+                        # 大盘大幅下跌时，下调止损点位
+                        zhiSunDian = 0.94
                     if open_price < price:
                         # 低开高走时，不考虑卖出
                         return 'N'
-                    if price < avg1*0.96:
+                    if price < avg1*zhiSunDian:
                         # 当日跌幅超过4%时，止损
                         return 'S'
                     if avg10*0.98 < price and price < avg10:
