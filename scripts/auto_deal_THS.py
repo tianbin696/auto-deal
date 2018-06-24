@@ -48,6 +48,8 @@ buyAmount = 2000
 sellAmount = 2000
 isBuyed = False
 isSelled = False
+buyedPrice = 0
+selledPrice = 0
 sleepTime = 0.5
 monitorInterval = 10
 avg10Days = 12 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
@@ -205,6 +207,7 @@ class OperationOfThs:
         logger.info("Trying to order: [%s - %s - %.2f - %d - 成本:%.2f]" % (code, direction, price, quantity, chenben))
         try:
             self.restoreWindow()
+            self.__closePopupWindows()
 
             price = "%.2f" % price
             if direction == 'B':
@@ -242,6 +245,7 @@ class OperationOfThs:
 
     def saveScreenshot(self, status):
         try:
+            self.__closePopupWindows()
             picName = "../../logs/auto_deal_%s.png" % datetime.now().strftime("%Y-%m-%d_%H-%M")
             self.restoreWindow()
             keyboard.SendKeys("{F4}")
@@ -356,7 +360,7 @@ class Monitor:
         direction = self.getDirection(code, price, open_price, highest_price)
         logger.debug("Direction for %s: %s" % (code, direction))
         global availableMoney
-        global isSelled, isBuyed
+        global isSelled, isBuyed, buyedPrice, selledPrice
         if direction == 'B':
             if stock_positions[code] >= maxAmount:
                 # 达到持仓上限，不再买入
@@ -368,6 +372,7 @@ class Monitor:
             if self.operation.order(code, direction, buyPrice, buyAmount):
                 stock_positions[code] += buyAmount
                 isBuyed = True
+                buyedPrice = price
         elif direction == 'S':
             if stock_positions[code] <= minAmount:
                 # 达到持仓下限，不再卖出
@@ -384,6 +389,7 @@ class Monitor:
             if self.operation.order(code, 'S', sellPrice, sellAmount):
                 stock_positions[code] -= sellAmount
                 isSelled = True
+                selledPrice = price
 
     def getRealTimeData(self, code, p_changes=[], open_prices=[], highest_prices=[]):
         df = ts.get_realtime_quotes(code)
@@ -429,9 +435,17 @@ class Monitor:
             return 'N'
 
         if not isSelled:
+            if isBuyed and buyedPrice > 0 and price < buyedPrice*1.04:
+                # 避免高买低卖
+                return 'N'
             if price < highest_price*0.994 and price > avg10*0.92:
                 # 只有当股价低于日内最高点时，才考虑卖出，避免卖出持续上涨和一字板的股票
                 # 且股价高于10日线*0.92，避免持续卖出大幅下跌的股票
+                
+                if isBuyed and buyedPrice > 0 and price > buyedPrice*1.04:
+                    # 做T
+                    return 'S'
+                
                 if price > avg10*1.06:
                     # 股价高于10日线6%，止盈
                     if price > avg1*1.02:
@@ -460,6 +474,9 @@ class Monitor:
                         return 'S'
 
         if not isBuyed:
+            if isSelled and selledPrice > 0 and price > selledPrice*0.96:
+                # 避免低卖高买
+                return 'N'
             if price > avg1:
                 # 股票上涨
                 if open_price > price:
@@ -483,6 +500,12 @@ class Monitor:
 if __name__ == '__main__':
     while True:
         try:
+            wday = time.localtime().tm_wday
+            if wday > 4:
+                logger.info("Sleep before monitor, current_wday=%d" % wday)
+                time.sleep(3600)
+                continue
+            
             hour = time.localtime().tm_hour
             if hour < 7 or hour >= 15:
                 logger.info("Sleep before monitor, current_hour=%d" % hour)

@@ -11,7 +11,7 @@ import smtplib
 
 def sendEmail(photos, status):
     msg = MIMEMultipart()
-    msg['From'] = "tianbin696@163.com"
+    msg['From'] = "tianbin6961@sina.com"
     msg['To'] = "tianbin696@163.com"
     msg['Subject'] = Header(u'交易状态', 'utf-8').encode()
 
@@ -34,10 +34,10 @@ def sendEmail(photos, status):
             # 添加到MIMEMultipart:
             msg.attach(mime)
     server = smtplib.SMTP()
-    server.connect("smtp.163.com")
-    server.login("tianbin696@163.com", "tianbin6961994")
-    server.sendmail("tianbin696@163.com", "tianbin696@163.com", msg.as_string())
+    server.connect("smtp.sina.com")
+    server.login("tianbin6961@sina.com", "tianbin6961994")
+    server.sendmail("tianbin6961@sina.com", "tianbin696@163.com", msg.as_string())
     server.quit()
 
 if __name__ == "__main__":
-    sendEmail(['auto_deal.png', 'THS.png'])
+    sendEmail(['auto_deal.png'],'test')
