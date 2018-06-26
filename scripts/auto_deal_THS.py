@@ -2,9 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import math
-import operator
-import threading
 import time
 import random
 from datetime import datetime
@@ -18,20 +15,17 @@ from pywinauto import keyboard
 from pywinauto import mouse
 from pywinauto import win32defines
 from pywinauto.win32functions import SetForegroundWindow, ShowWindow
-# from timezone_logging.timezone_logging import get_timezone_logger
 
 from email_sender import sendEmail
 from yan_zhen_ma import get_vcode
 from tong_hua_shun import ths_start
 from tong_hua_shun import ths_close
-from stats import get_code_filter_list
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                     datefmt='%a, %d %b %Y %H:%M:%S',
                     filename='../../logs/auto_deal_ths.log',
                     filemode='a')
-# logger = get_timezone_logger('auto_deal', fmt="%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s", log_level=logging.DEBUG)
 console = logging.StreamHandler()
 console.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s')
@@ -44,8 +38,8 @@ stock_positions = {}
 stock_chenbens = {}
 maxAmount = 10000
 minAmount = 4000
-buyAmount = 2000
-sellAmount = 2000
+minBuyAmount = 1000
+minSellAmount = 1000
 isBuyed = False
 isSelled = False
 buyedPrice = 0
@@ -369,6 +363,7 @@ class Monitor:
             buyPrice = self.getBuyPrice(price)
             if buyPrice <= 0:
                 return
+            buyAmount = self.getBuyAmount(code)
             if self.operation.order(code, direction, buyPrice, buyAmount):
                 stock_positions[code] += buyAmount
                 isBuyed = True
@@ -386,6 +381,7 @@ class Monitor:
                 sellPrice = price * 0.99
             if sellPrice <= 0:
                 return
+            sellAmount = self.getSellAmount(code)
             if self.operation.order(code, 'S', sellPrice, sellAmount):
                 stock_positions[code] -= sellAmount
                 isSelled = True
@@ -496,6 +492,16 @@ class Monitor:
 
     def getSellPrice(self, price):
         return price * 0.98
+
+    def getBuyAmount(self, code):
+        if stock_positions[code] > maxAmount/2:
+            return minBuyAmount
+        return 2*minBuyAmount
+
+    def getSellAmount(self, code):
+        if stock_positions[code] > maxAmount/2:
+            return 2*minSellAmount
+        return minSellAmount
 
 if __name__ == '__main__':
     while True:
