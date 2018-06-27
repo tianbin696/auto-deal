@@ -480,7 +480,7 @@ class Monitor:
                 if price > avg1 * 1.03:
                     # 涨幅超过3%时，不考虑买入，避免追高被套
                     return 'N'
-                if avg10*1.03 > price and price > avg10:
+                if avg10*1.02 > price and price > avg10:
                     # 突破10日均线，满足条件的股价区间为[avg10*0.96 ~ avg10*1.01]，共5个点的区间
                     return 'B'
 
