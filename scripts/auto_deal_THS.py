@@ -446,8 +446,8 @@ class Monitor:
                     return 'S'
 
         if not isBuyed:
-            if isSelled and selledPrice > 0 and price > selledPrice*0.96:
-                # 避免低卖高买
+            if price < highest_price*0.96:
+                # 避免买入高位回落股票
                 return 'N'
             if price > avg1*1.01 and price > open_price and price < avg1 * 1.03 and avg10*1.02 > price and price > avg10:
                 # 突破10日均线，满足条件的股价区间为[avg10*0.96 ~ avg10*1.01]，共5个点的区间
