@@ -428,10 +428,6 @@ class Monitor:
         if price <= 0:
             return 'N'
 
-        if avg1 * 0.98 < price and price < avg1 * 1.01:
-            # 如果股价波动过小，则不操作
-            return 'N'
-
         if not isSelled:
             if isBuyed and buyedPrice > 0 and price < buyedPrice*1.04:
                 # 避免高买低卖
@@ -444,45 +440,25 @@ class Monitor:
                     # 做T
                     return 'S'
                 
-                if price > avg10*1.06:
+                if price > avg10*1.06 and price > avg1*1.02:
                     # 股价高于10日线6%，止盈
-                    if price > avg1*1.02:
-                        # 基于10日线止盈时，要求日涨幅高于2%，满足条件的股价区间为[avg10*0.98 ~ )
-                        return 'S'
+                    return 'S'
 
                 if price > avg1*1.08:
                     # 日涨幅超过8%时，止盈
                     return 'S'
 
-                if price < avg1:
-                    # 股票下跌
-                    zhiSunDian = 0.97
-                    indexes = ts.get_index()
-                    if float(indexes['change'][0]) < -0.5:
-                        # 大盘大幅下跌时，下调止损点位
-                        zhiSunDian = 0.96
-                    if open_price < price:
-                        # 低开高走时，不考虑卖出
-                        return 'N'
-                    if price < avg1*zhiSunDian and price < avg10:
-                        # 当日跌幅超过3%且当前股价低于10日线时，止损
-                        return 'S'
+                if price < avg1*0.97 and price < avg10 and price < open_price:
+                    # 当日跌幅超过3%且当前股价低于10日线时，止损
+                    return 'S'
 
         if not isBuyed:
             if isSelled and selledPrice > 0 and price > selledPrice*0.96:
                 # 避免低卖高买
                 return 'N'
-            if price > avg1:
-                # 股票上涨
-                if open_price > price:
-                    # 高开低走时，不考虑买入
-                    return 'N'
-                if price > avg1 * 1.03:
-                    # 涨幅超过3%时，不考虑买入，避免追高被套
-                    return 'N'
-                if avg10*1.02 > price and price > avg10:
-                    # 突破10日均线，满足条件的股价区间为[avg10*0.96 ~ avg10*1.01]，共5个点的区间
-                    return 'B'
+            if price > avg1*1.01 and price > open_price and price < avg1 * 1.03 and avg10*1.02 > price and price > avg10:
+                # 突破10日均线，满足条件的股价区间为[avg10*0.96 ~ avg10*1.01]，共5个点的区间
+                return 'B'
 
         return 'N'
 
