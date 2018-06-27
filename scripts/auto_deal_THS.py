@@ -475,7 +475,7 @@ class Monitor:
             if isSelled and selledPrice > 0 and price > selledPrice*0.96:
                 # 避免低卖高买
                 return 'N'
-            if price > lowest_price * 1.01 and price < avg10 * 0.9:
+            if price > lowest_price * 1.006 and price < avg10 * 0.9:
                 # 当日股价跌破10日线*0.9，且当前股价触底反弹，则抄底
                 return 'B'
             if price > avg1:
