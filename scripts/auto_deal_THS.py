@@ -46,7 +46,7 @@ buyedPrice = 0
 selledPrice = 0
 sleepTime = 0.5
 monitorInterval = 10
-avg10Days = 12 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
+avg10Days = 10 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
 
 def readCodes():
     global stock_codes
@@ -328,8 +328,9 @@ class Monitor:
                         p_changes = []
                         open_prices = []
                         highest_prices = []
-                        price = self.getRealTimeData(code, p_changes, open_prices, highest_prices)
-                        self.makeDecision(code, price, open_prices[0], p_changes[0], highest_prices[0])
+                        lowest_price = []
+                        price = self.getRealTimeData(code, p_changes, open_prices, highest_prices, lowest_price)
+                        self.makeDecision(code, price, open_prices[0], p_changes[0], highest_prices[0], lowest_price[0])
                     except Exception as e:
                         logger.error("Failed to monitor %s: %s" % (code, e))
 
@@ -350,8 +351,8 @@ class Monitor:
         targetTime = tz.localize(datetime.strptime(targetStr, "%Y-%m-%d %H:%M:%S"))
         return now > targetTime
 
-    def makeDecision(self, code, price, open_price, change_p, highest_price):
-        direction = self.getDirection(code, price, open_price, highest_price)
+    def makeDecision(self, code, price, open_price, change_p, highest_price, lowest_price):
+        direction = self.getDirection(code, price, open_price, highest_price, lowest_price)
         logger.debug("Direction for %s: %s" % (code, direction))
         global availableMoney
         global isSelled, isBuyed, buyedPrice, selledPrice
@@ -387,12 +388,13 @@ class Monitor:
                 isSelled = True
                 selledPrice = price
 
-    def getRealTimeData(self, code, p_changes=[], open_prices=[], highest_prices=[]):
+    def getRealTimeData(self, code, p_changes=[], open_prices=[], highest_prices=[], lowest_prices=[]):
         df = ts.get_realtime_quotes(code)
         price = df['price'][0]
         changePercentage = (float(df['price'][0]) - float(df['pre_close'][0])) / float(df['pre_close'][0])  * 100
         open_prices.append(float(df['open'][0]))
         highest_prices.append(float(df['high'][0]))
+        lowest_prices.append(float(df['low'][0]))
         p_changes.append(self.formatFloat(changePercentage))
         logger.debug("Realtime data of %s: %s" %(code, price))
         return float(price)
@@ -417,7 +419,7 @@ class Monitor:
         logger.debug("Historical %d avg data of %s: %.2f" % (days, code, avg))
         return avg
 
-    def getDirection(self, code, price, open_price, highest_price):
+    def getDirection(self, code, price, open_price, highest_price, lowest_price):
         avg1 = float(self.avg1[code])
         avg10 = float(self.avg10[code])
         avg20 = float(self.avg20[code])
@@ -434,9 +436,9 @@ class Monitor:
             if isBuyed and buyedPrice > 0 and price < buyedPrice*1.04:
                 # 避免高买低卖
                 return 'N'
-            if price < highest_price*0.994 and price > avg10*0.92:
+            if price < highest_price*0.994 and price > avg10*0.94:
                 # 只有当股价低于日内最高点时，才考虑卖出，避免卖出持续上涨和一字板的股票
-                # 且股价高于10日线*0.92，避免持续卖出大幅下跌的股票
+                # 且股价高于10日线*0.94，避免持续卖出大幅下跌的股票
                 
                 if isBuyed and buyedPrice > 0 and price > buyedPrice*1.04:
                     # 做T
@@ -454,11 +456,11 @@ class Monitor:
 
                 if price < avg1:
                     # 股票下跌
-                    zhiSunDian = 0.96
+                    zhiSunDian = 0.97
                     indexes = ts.get_index()
                     if float(indexes['change'][0]) < -0.5:
                         # 大盘大幅下跌时，下调止损点位
-                        zhiSunDian = 0.94
+                        zhiSunDian = 0.96
                     if open_price < price:
                         # 低开高走时，不考虑卖出
                         return 'N'
@@ -473,13 +475,16 @@ class Monitor:
             if isSelled and selledPrice > 0 and price > selledPrice*0.96:
                 # 避免低卖高买
                 return 'N'
+            if price > lowest_price * 1.01 and price < avg10 * 0.9:
+                # 当日股价跌破10日线*0.9，且当前股价触底反弹，则抄底
+                return 'B'
             if price > avg1:
                 # 股票上涨
                 if open_price > price:
                     # 高开低走时，不考虑买入
                     return 'N'
-                if price > avg1 * 1.04:
-                    # 涨幅超过4%时，不考虑买入，避免追高被套
+                if price > avg1 * 1.03:
+                    # 涨幅超过3%时，不考虑买入，避免追高被套
                     return 'N'
                 if avg10*1.02 > price and price > avg10:
                     # 突破10日均线，满足条件的股价区间为[avg10*0.96 ~ avg10*1.01]，共5个点的区间
