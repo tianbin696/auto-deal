@@ -464,11 +464,8 @@ class Monitor:
                     if open_price < price:
                         # 低开高走时，不考虑卖出
                         return 'N'
-                    if price < avg1*zhiSunDian:
-                        # 当日跌幅超过4%时，止损
-                        return 'S'
-                    if avg10*0.98 < price and price < avg10:
-                        # 跌破10日均线，止损，满足条件的股价区间为[avg10*1.04 ~ avg10]，共4个点的区间
+                    if price < avg1*zhiSunDian and price < avg10:
+                        # 当日跌幅超过3%且当前股价低于10日线时，止损
                         return 'S'
 
         if not isBuyed:
@@ -483,7 +480,7 @@ class Monitor:
                 if price > avg1 * 1.03:
                     # 涨幅超过3%时，不考虑买入，避免追高被套
                     return 'N'
-                if avg10*1.02 > price and price > avg10:
+                if avg10*1.03 > price and price > avg10:
                     # 突破10日均线，满足条件的股价区间为[avg10*0.96 ~ avg10*1.01]，共5个点的区间
                     return 'B'
 
