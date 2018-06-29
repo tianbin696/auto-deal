@@ -46,7 +46,7 @@ buyedPrice = 0
 selledPrice = 0
 sleepTime = 0.5
 monitorInterval = 10
-avg10Days = 10 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
+avg10Days = 12 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
 
 def readCodes():
     global stock_codes
