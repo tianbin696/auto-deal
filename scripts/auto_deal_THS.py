@@ -351,7 +351,7 @@ class Monitor:
 
     def makeDecision(self, code, price, open_price, change_p, highest_price, lowest_price):
         direction = self.getDirection(code, price, open_price, highest_price, lowest_price)
-        logger.debug("Direction for %s: %s" % (code, direction))
+        logger.info("Direction for %s: %s" % (code, direction))
         if direction == 'B':
             if code in stock_positions and stock_positions[code] >= maxAmount:
                 # 达到持仓上限，不再买入
