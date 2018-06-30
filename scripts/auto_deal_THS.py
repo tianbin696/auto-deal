@@ -33,17 +33,15 @@ console.setFormatter(formatter)
 logger = logging.getLogger('auto_deal')
 logger.addHandler(console)
 
-stock_codes = ['002024']
+stock_codes = ['002024', '002065']
 stock_positions = {}
 stock_chenbens = {}
-maxAmount = 10000
-minAmount = 2000
+isBuyeds = {}
+isSelleds = {}
+maxAmount = 5000
+minAmount = 0
 minBuyAmount = 1000
 minSellAmount = 1000
-isBuyed = False
-isSelled = False
-buyedPrice = 0
-selledPrice = 0
 sleepTime = 0.5
 monitorInterval = 10
 avg10Days = 12 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
@@ -354,10 +352,8 @@ class Monitor:
     def makeDecision(self, code, price, open_price, change_p, highest_price, lowest_price):
         direction = self.getDirection(code, price, open_price, highest_price, lowest_price)
         logger.debug("Direction for %s: %s" % (code, direction))
-        global availableMoney
-        global isSelled, isBuyed, buyedPrice, selledPrice
         if direction == 'B':
-            if stock_positions[code] >= maxAmount:
+            if code in stock_positions and stock_positions[code] >= maxAmount:
                 # 达到持仓上限，不再买入
                 logger.info("Reach max amount, cannot buy anymore")
                 return
@@ -366,11 +362,11 @@ class Monitor:
                 return
             buyAmount = self.getBuyAmount(code)
             if self.operation.order(code, direction, buyPrice, buyAmount):
-                stock_positions[code] += buyAmount
-                isBuyed = True
-                buyedPrice = price
+                # stock_positions[code] += buyAmount
+                # 当日买进的仓位无法卖出，所以不计入当日持仓
+                isBuyeds[code] = True
         elif direction == 'S':
-            if stock_positions[code] <= minAmount:
+            if code not in stock_positions or stock_positions[code] <= minAmount:
                 # 达到持仓下限，不再卖出
                 logger.info("Reach min amount, cannot sell anymore")
                 return
@@ -385,8 +381,7 @@ class Monitor:
             sellAmount = self.getSellAmount(code)
             if self.operation.order(code, 'S', sellPrice, sellAmount):
                 stock_positions[code] -= sellAmount
-                isSelled = True
-                selledPrice = price
+                isSelleds[code] = True
 
     def getRealTimeData(self, code, p_changes=[], open_prices=[], highest_prices=[], lowest_prices=[]):
         df = ts.get_realtime_quotes(code)
@@ -428,7 +423,7 @@ class Monitor:
         if price <= 0:
             return 'N'
 
-        if not isSelled:
+        if code not in isSelleds or not isSelleds[code]:
             if price < highest_price*0.994 and price > avg10*0.94:
                 # 只有当股价低于日内最高点时，才考虑卖出，避免卖出持续上涨和一字板的股票
                 # 且股价高于10日线*0.94，避免持续卖出大幅下跌的股票
@@ -445,7 +440,7 @@ class Monitor:
                     # 当日跌幅超过3%且当前股价低于10日线时，止损
                     return 'S'
 
-        if not isBuyed:
+        if code not in isBuyeds or not isBuyeds[code]:
             if price < highest_price*0.96:
                 # 避免买入高位回落股票
                 return 'N'
@@ -466,13 +461,9 @@ class Monitor:
         return price * 0.98
 
     def getBuyAmount(self, code):
-        if stock_positions[code] > maxAmount/2:
-            return minBuyAmount
-        return 2*minBuyAmount
+        return minBuyAmount
 
     def getSellAmount(self, code):
-        if stock_positions[code] > maxAmount/2:
-            return 2*minSellAmount
         return minSellAmount
 
 if __name__ == '__main__':
