@@ -32,7 +32,7 @@ formatter = logging.Formatter('%(asctime)s %(filename)s[line:%(lineno)d] %(level
 console.setFormatter(formatter)
 logger = logging.getLogger('auto_deal')
 logger.addHandler(console)
-
+# 限定为6个不同行业（计算机应用，零售，饮料制造，化学制药，医药商业，国防军工），分散投资，降低风险
 stock_codes = ['002024', '002065', '000739', '000848', '000519', '002589']
 stock_positions = {}
 stock_chenbens = {}
