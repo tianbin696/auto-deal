@@ -33,7 +33,7 @@ console.setFormatter(formatter)
 logger = logging.getLogger('auto_deal')
 logger.addHandler(console)
 
-stock_codes = ['002024', '002065', '000739', '000848', '000519']
+stock_codes = ['002024', '002065', '000739', '000848', '000519', '002589']
 stock_positions = {}
 stock_chenbens = {}
 isBuyeds = {}
