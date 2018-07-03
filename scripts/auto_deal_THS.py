@@ -33,12 +33,12 @@ console.setFormatter(formatter)
 logger = logging.getLogger('auto_deal')
 logger.addHandler(console)
 
-stock_codes = ['002024', '002065', '000739']
+stock_codes = ['002024', '002065', '000739', '000848', '000519']
 stock_positions = {}
 stock_chenbens = {}
 isBuyeds = {}
 isSelleds = {}
-maxAmount = 5000
+maxAmount = 4000
 minAmount = 0
 minBuyAmount = 1000
 minSellAmount = 1000
@@ -424,11 +424,11 @@ class Monitor:
             return 'N'
 
         if code not in isSelleds or not isSelleds[code]:
-            if price < highest_price*0.994 and price > avg10*0.94:
+            if price < highest_price*0.992 and price > avg10*0.94:
                 # 只有当股价低于日内最高点时，才考虑卖出，避免卖出持续上涨和一字板的股票
                 # 且股价高于10日线*0.94，避免持续卖出大幅下跌的股票
 
-                if price > avg10*1.06 and price > avg1*1.01:
+                if price > avg10*1.06 and price > avg1*1.03:
                     # 股价高于10日线6%，止盈
                     return 'S'
 
