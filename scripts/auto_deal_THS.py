@@ -38,7 +38,7 @@ stock_positions = {}
 stock_chenbens = {}
 isBuyeds = {}
 isSelleds = {}
-maxAmount = 4000
+maxAmount = 3000
 minAmount = 0
 minBuyAmount = 1000
 minSellAmount = 1000
@@ -450,6 +450,10 @@ class Monitor:
 
             if price > avg1*1.03 and price < avg1*1.05 and price > open_price and price < avg10:
                 # 10日线下反转，买入
+                return 'B'
+
+            if price > lowest_price*1.03 and price < avg1*1.03:
+                # 长下影线，反转买入
                 return 'B'
 
         return 'N'
