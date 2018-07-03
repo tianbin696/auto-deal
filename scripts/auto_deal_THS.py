@@ -44,7 +44,7 @@ minBuyAmount = 1000
 minSellAmount = 1000
 sleepTime = 0.5
 monitorInterval = 10
-avg10Days = 22 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
+avg10Days = 22 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到30
 
 def readCodes():
     global stock_codes
@@ -444,15 +444,15 @@ class Monitor:
             if price < highest_price*0.96:
                 # 避免买入高位回落股票
                 return 'N'
-            if price > avg1*1.01 and price > open_price and price < avg1 * 1.03 and avg10*1.02 > price and price > avg10:
+            if price > avg1*1.01 and price > open_price and price < avg1 * 1.03 and price > avg10 and price < avg10*1.02:
                 # 突破10日均线，满足条件的股价区间为[avg10*0.96 ~ avg10*1.01]，共5个点的区间
                 return 'B'
 
-            if price > avg1*1.03 and price < avg1*1.05 and price > open_price and price < avg10:
+            if price > avg1*1.03 and price < avg1*1.04 and price > open_price and price < avg10*1.02:
                 # 10日线下反转，买入
                 return 'B'
 
-            if price > lowest_price*1.03 and price < avg1*1.03 and price < avg10:
+            if price > lowest_price*1.03 and price < avg1*1.03 and price < avg10*1.02:
                 # 长下影线，反转买入
                 return 'B'
 
