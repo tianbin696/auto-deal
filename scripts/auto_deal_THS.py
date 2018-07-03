@@ -452,7 +452,7 @@ class Monitor:
                 # 10日线下反转，买入
                 return 'B'
 
-            if price > lowest_price*1.03 and price < avg1*1.03:
+            if price > lowest_price*1.03 and price < avg1*1.03 and price < avg10:
                 # 长下影线，反转买入
                 return 'B'
 
