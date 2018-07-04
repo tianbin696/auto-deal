@@ -55,7 +55,7 @@ def get_code_filter_list(avg_days = 10, file = None):
         try:
             df = ts.get_historic_price(code)
             prices = df['close'][0:2 * avg_days]
-            if len(prices) <= 0:
+            if len(prices) <= 0 or prices[0] > 15:
                 continue
 
             # if df['volume'][0] < df['v_ma10'][0]:

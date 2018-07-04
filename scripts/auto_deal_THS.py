@@ -32,19 +32,20 @@ formatter = logging.Formatter('%(asctime)s %(filename)s[line:%(lineno)d] %(level
 console.setFormatter(formatter)
 logger = logging.getLogger('auto_deal')
 logger.addHandler(console)
-# 限定为6个不同行业（计算机应用，零售，饮料制造，化学制药，医药商业，国防军工），分散投资，降低风险
-stock_codes = ['002024', '002065', '000739', '000848', '000519', '002589']
+# 限定为8个不同行业（计算机应用，零售，饮料制造，化学制药，医药商业，国防军工, 白色家电，农业种植），分散投资，降低风险
+# 东华软件，苏宁易购，承德露露，普洛药业，瑞康医药，中兵红箭，青岛海尔，隆平高科
+stock_codes = ['002065', '002024', '000848', '000739', '002589', '000519', '600690', '000998']
 stock_positions = {}
 stock_chenbens = {}
 isBuyeds = {}
 isSelleds = {}
-maxAmount = 3000
+maxAmount = 30000
 minAmount = 0
-minBuyAmount = 1000
-minSellAmount = 1000
+minBuyAmount = 10000
+minSellAmount = 10000
 sleepTime = 0.5
 monitorInterval = 10
-avg10Days = 20 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到30
+avg10Days = 12 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
 
 def readCodes():
     global stock_codes
@@ -353,20 +354,20 @@ class Monitor:
         direction = self.getDirection(code, price, open_price, highest_price, lowest_price)
         logger.info("Direction for %s: %s" % (code, direction))
         if direction == 'B':
-            if code in stock_positions and stock_positions[code] >= maxAmount:
+            if code in stock_positions and stock_positions[code]*price >= maxAmount:
                 # 达到持仓上限，不再买入
                 logger.info("Reach max amount, cannot buy anymore")
                 return
             buyPrice = self.getBuyPrice(price)
             if buyPrice <= 0:
                 return
-            buyAmount = self.getBuyAmount(code)
+            buyAmount = self.getBuyAmount(code, price)
             if self.operation.order(code, direction, buyPrice, buyAmount):
                 # stock_positions[code] += buyAmount
                 # 当日买进的仓位无法卖出，所以不计入当日持仓
                 isBuyeds[code] = True
         elif direction == 'S':
-            if code not in stock_positions or stock_positions[code] <= minAmount:
+            if code not in stock_positions or stock_positions[code]*price <= minAmount:
                 # 达到持仓下限，不再卖出
                 logger.info("Reach min amount, cannot sell anymore")
                 return
@@ -378,7 +379,7 @@ class Monitor:
                 sellPrice = price * 0.99
             if sellPrice <= 0:
                 return
-            sellAmount = self.getSellAmount(code)
+            sellAmount = self.getSellAmount(code, price)
             if self.operation.order(code, 'S', sellPrice, sellAmount):
                 stock_positions[code] -= sellAmount
                 isSelleds[code] = True
@@ -452,7 +453,7 @@ class Monitor:
                 # 10日线下反转，买入
                 return 'B'
 
-            if price > lowest_price*1.03 and price < avg1*1.03 and price < avg10*1.02:
+            if price > lowest_price*1.03 and price < avg1*1.04 and price < avg10*1.02:
                 # 长下影线，反转买入
                 return 'B'
 
@@ -464,11 +465,11 @@ class Monitor:
     def getSellPrice(self, price):
         return price * 0.98
 
-    def getBuyAmount(self, code):
-        return minBuyAmount
+    def getBuyAmount(self, code, price):
+        return int(minBuyAmount/100/price)*100
 
-    def getSellAmount(self, code):
-        return minSellAmount
+    def getSellAmount(self, code, price):
+        return min(stock_positions[code], int(minSellAmount/100/price)*100)
 
 if __name__ == '__main__':
     while True:
