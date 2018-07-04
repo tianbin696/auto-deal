@@ -33,8 +33,8 @@ console.setFormatter(formatter)
 logger = logging.getLogger('auto_deal')
 logger.addHandler(console)
 # 限定为8个不同行业（计算机应用，零售，饮料制造，化学制药，医药商业，国防军工, 白色家电，农业种植），分散投资，降低风险
-# 东华软件，苏宁易购，承德露露，普洛药业，瑞康医药，中兵红箭，青岛海尔，隆平高科
-stock_codes = ['002065', '002024', '000848', '000739', '002589', '000519', '600690', '000998']
+# 东华软件，苏宁易购，张裕A，普洛药业，瑞康医药，中兵红箭，青岛海尔，隆平高科
+stock_codes = ['002065', '002024', '000869', '000739', '002589', '000519', '600690', '000998']
 stock_positions = {}
 stock_chenbens = {}
 isBuyeds = {}
@@ -445,7 +445,7 @@ class Monitor:
             if price < highest_price*0.96:
                 # 避免买入高位回落股票
                 return 'N'
-            if price > avg1*1.01 and price > open_price and price < avg1 * 1.03 and price > avg10 and price < avg10*1.02:
+            if price > avg1*1.01 and price < avg1 * 1.03 and price > open_price and price > avg10 and price < avg10*1.02:
                 # 突破10日均线，满足条件的股价区间为[avg10*0.96 ~ avg10*1.01]，共5个点的区间
                 return 'B'
 
@@ -453,7 +453,7 @@ class Monitor:
                 # 10日线下反转，买入
                 return 'B'
 
-            if price > lowest_price*1.03 and price < avg1*1.04 and price < avg10*1.02:
+            if price > lowest_price*1.03 and price < avg1*1.04 and price > open_price and price < avg10*1.02:
                 # 长下影线，反转买入
                 return 'B'
 
