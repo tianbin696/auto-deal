@@ -44,7 +44,7 @@ minBuyAmount = 1000
 minSellAmount = 1000
 sleepTime = 0.5
 monitorInterval = 10
-avg10Days = 22 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到30
+avg10Days = 20 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到30
 
 def readCodes():
     global stock_codes
