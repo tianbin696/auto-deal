@@ -32,9 +32,10 @@ formatter = logging.Formatter('%(asctime)s %(filename)s[line:%(lineno)d] %(level
 console.setFormatter(formatter)
 logger = logging.getLogger('auto_deal')
 logger.addHandler(console)
-# 精选不同行业个股（汽车零部件，化工新材料，银行，计算机应用，零售，饮料制造，化学制药，医药商业，国防军工, 白色家电），分散投资，降低风险
-# 福耀玻璃，石大胜华，上海银行，东华软件，苏宁易购，张裕A，普洛药业，瑞康医药，中兵红箭，青岛海尔
-stock_codes = ['600660', '603026', '601229', '002065', '002024', '000869', '000739', '002589', '000519', '600690']
+# 精选不同行业个股（汽车零部件，化工新材料，银行，计算机应用，零售，饮料制造，化学制药，医药商业，国防军工, 白色家电，有色冶炼），分散投资，降低风险
+# 福耀玻璃，石大胜华，上海银行，东华软件，苏宁易购，张裕A，普洛药业，瑞康医药，中兵红箭，青岛海尔，天齐锂业
+stock_codes = ['600660', '603026', '601229', '002065', '002024', '000869', '000739', '002589', '000519', '600690', '002466']
+ignore_codes = ['002065']
 stock_positions = {}
 stock_chenbens = {}
 isBuyeds = {}
@@ -324,6 +325,8 @@ class Monitor:
 
                 for code in stock_codes:
                     try:
+                        if code in ignore_codes:
+                            continue
                         p_changes = []
                         open_prices = []
                         highest_prices = []
