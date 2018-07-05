@@ -32,7 +32,7 @@ formatter = logging.Formatter('%(asctime)s %(filename)s[line:%(lineno)d] %(level
 console.setFormatter(formatter)
 logger = logging.getLogger('auto_deal')
 logger.addHandler(console)
-# 限定为8个不同行业（化工新材料，银行，计算机应用，零售，饮料制造，化学制药，医药商业，国防军工, 白色家电，农业种植），分散投资，降低风险
+# 精选不同行业个股（化工新材料，银行，计算机应用，零售，饮料制造，化学制药，医药商业，国防军工, 白色家电，农业种植），分散投资，降低风险
 # 石大胜华，上海银行，东华软件，苏宁易购，张裕A，普洛药业，瑞康医药，中兵红箭，青岛海尔，隆平高科
 stock_codes = ['603026', '601229', '002065', '002024', '000869', '000739', '002589', '000519', '600690', '000998']
 stock_positions = {}
