@@ -445,17 +445,17 @@ class Monitor:
             if price < highest_price*0.96:
                 # 避免买入高位回落股票
                 return 'N'
-            if price > avg1*1.01 and price < avg1 * 1.03 and price > open_price and price > avg10 and price < avg10*1.04:
+            if price > avg1*1.02 and price < avg1 * 1.04 and price > open_price and price > avg10 and price < avg10*1.04:
                 # 突破10日均线，满足条件的股价区间为[avg10*0.96 ~ avg10*1.01]，共5个点的区间
                 return 'B'
 
-            if price > avg1*1.03 and price < avg1*1.04 and price > open_price and price < avg10*1.04:
-                # 10日线下反转，买入
-                return 'B'
-
-            if price > lowest_price*1.03 and price < avg1*1.04 and price > open_price and price < avg10*1.04:
-                # 长下影线，反转买入
-                return 'B'
+            # if price > avg1*1.03 and price < avg1*1.04 and price > open_price and price < avg10*1.04:
+            #     # 10日线下反转，买入
+            #     return 'B'
+            #
+            # if price > lowest_price*1.03 and price < avg1*1.04 and price > open_price and price < avg10*1.04:
+            #     # 长下影线，反转买入
+            #     return 'B'
 
         return 'N'
 
