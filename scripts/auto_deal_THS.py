@@ -433,15 +433,15 @@ class Monitor:
                 # 只有当股价低于日内最高点时，才考虑卖出，避免卖出持续上涨和一字板的股票
                 # 且股价高于10日线*0.94，避免持续卖出大幅下跌的股票
 
-                # if price > avg10*1.08 and price > avg1*1.03:
-                #     # 股价高于10日线8%，止盈
-                #     return 'S'
+                if price > avg10*1.08 and price > avg1*1.06:
+                    # 股价高于10日线8%，止盈
+                    return 'S'
 
                 if price > avg1*1.08:
                     # 日涨幅超过8%时，止盈
                     return 'S'
 
-                if price < avg1*0.97 and price < avg10*0.98 and price < open_price:
+                if price < avg1*0.97 and price < avg10*0.98 and price < open_price*0.98:
                     # 当日跌幅超过3%且当前股价低于10日线时，止损
                     return 'S'
 
