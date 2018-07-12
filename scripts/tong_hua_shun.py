@@ -15,7 +15,7 @@ import time
 def ths_start():
     mouse.double_click(coords=(40, 40))
     time.sleep(20)
-    mouse.click(coords=(40, 40))
+    mouse.click(coords=(1, 1))
 
 
 def ths_restore():
