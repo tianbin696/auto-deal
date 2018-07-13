@@ -430,6 +430,7 @@ class Monitor:
         avg10 = float(self.avg10[code])
         avg20 = float(self.avg20[code])
         price = float(price)
+        indexes = ts.get_index()
         logger.info("%s status: %f, %f, %f, %f" % (code, price, avg1, avg10, avg20))
         if price <= 0:
             return 'N'
@@ -452,6 +453,9 @@ class Monitor:
                     return 'S'
 
         if code not in isBuyeds or not isBuyeds[code]:
+            if indexes['change'][0] + indexes['change'][12] + indexes['change'][17] < 0:
+                # 大盘行情不好时，不买入
+                return 'N'
             if price < highest_price*0.96:
                 # 避免买入高位回落股票
                 return 'N'
