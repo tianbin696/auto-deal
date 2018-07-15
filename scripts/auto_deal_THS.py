@@ -452,7 +452,9 @@ class Monitor:
                     return 'S'
 
         if code not in isBuyeds or not isBuyeds[code]:
-            if indexes['change'][0] + indexes['change'][12] + indexes['change'][17] < 0:
+            curr_price = (1+indexes['change'][0]/100)*indexes['preclose'][0] + (1+indexes['change'][12]/100)*indexes['preclose'][12] + (1+indexes['change'][17]/100)*indexes['preclose'][17]
+            high_price = indexes['high'][0] + indexes['high'][12] + indexes['high'][17]
+            if indexes['change'][0] + indexes['change'][12] + indexes['change'][17] < 0 or curr_price < high_price*0.992:
                 # 大盘行情不好时，不买入
                 return 'N'
             if price < highest_price*0.96:
