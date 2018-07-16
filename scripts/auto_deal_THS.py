@@ -435,11 +435,11 @@ class Monitor:
             return 'N'
 
         if code not in isSelleds or not isSelleds[code]:
-            if price < highest_price*0.992 and price > avg10*0.92:
+            if price < highest_price*0.99 and price > avg10*0.92:
                 # 只有当股价低于日内最高点时，才考虑卖出，避免卖出持续上涨和一字板的股票
                 # 且股价高于10日线*0.94，避免持续卖出大幅下跌的股票
 
-                if price > avg10*1.08 and price > avg1*1.04:
+                if price > avg10*1.08 and price > avg1*1.03:
                     # 股价高于10日线8%，止盈
                     return 'S'
 
