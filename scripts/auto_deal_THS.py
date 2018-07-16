@@ -48,6 +48,7 @@ isBuyeds = {}
 isSelleds = {}
 maxAmount = 20000
 minAmount = 0
+availableMoney = 1000
 minBuyAmount = 10000
 minSellAmount = 10000
 sleepTime = 0.5
@@ -362,7 +363,10 @@ class Monitor:
     def makeDecision(self, code, price, open_price, change_p, highest_price, lowest_price):
         direction = self.getDirection(code, price, open_price, highest_price, lowest_price)
         logger.info("Direction for %s: %s" % (code, direction))
+        global availableMoney
         if direction == 'B':
+            if availableMoney < minBuyAmount:
+                return
             if code in stock_positions and stock_positions[code]*price >= maxAmount:
                 # 达到持仓上限，不再买入
                 logger.info("Reach max amount, cannot buy anymore")
@@ -375,6 +379,7 @@ class Monitor:
                 # stock_positions[code] += buyAmount
                 # 当日买进的仓位无法卖出，所以不计入当日持仓
                 isBuyeds[code] = True
+                availableMoney -= buyAmount*price
         elif direction == 'S':
             if code not in stock_positions or stock_positions[code]*price <= minAmount:
                 # 达到持仓下限，不再卖出
@@ -392,6 +397,7 @@ class Monitor:
             if self.operation.order(code, 'S', sellPrice, sellAmount):
                 stock_positions[code] -= sellAmount
                 isSelleds[code] = True
+                availableMoney += sellAmount*price
 
     def getRealTimeData(self, code, p_changes=[], open_prices=[], highest_prices=[], lowest_prices=[]):
         df = ts.get_realtime_quotes(code)
