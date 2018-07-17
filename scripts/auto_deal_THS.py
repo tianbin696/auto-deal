@@ -20,6 +20,7 @@ from email_sender import sendEmail
 from yan_zhen_ma import get_vcode
 from tong_hua_shun import ths_start
 from tong_hua_shun import ths_close
+from stats import get_code_filter_list
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
@@ -505,6 +506,9 @@ if __name__ == '__main__':
 
             time.sleep(30)
             ths_start()
+
+            get_code_filter_list(avg10Days)
+            readCodes()
 
             monitor = Monitor()
             logger.info("Testing ...")

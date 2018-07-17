@@ -55,22 +55,22 @@ def get_code_filter_list(avg_days = 10, file = None):
         try:
             df = ts.get_historic_price(code)
             prices = df['close'][0:2 * avg_days]
-            if len(prices) <= 0 or prices[0] > 15:
-                continue
-
-            if df['volume'][0] < df['v_ma10'][0]:
-                # 忽略缩量的股票
+            if len(prices) <= 0:
                 continue
 
             avgs = avg(prices, avg_days)
 
-            if avgs[0] < numpy.mean(prices[0:2*avg_days]):  # 不考虑买入10日均线在20日线下的股票，这种为向下趋势
+            if prices[0] < min(df['close'][0:12 * avg_days])*1.2:
+                continue
+
+            if avgs[0] < numpy.mean(prices):
+                # 不考虑10日线在20日线下
                 continue
 
             if prices[0] > avgs[0] * 1.03:  # 不考虑大于10日线*1.04的股票
                 continue
 
-            if prices[0] < avgs[0] * 0.97:  # 不考虑小于10日线*0.96的股票
+            if prices[0] < avgs[0] * 0.99:  # 不考虑小于10日线*0.99的股票
                 continue
 
             vars = var(avgs[0:avg_days], avg_days)
@@ -81,20 +81,10 @@ def get_code_filter_list(avg_days = 10, file = None):
         except Exception as e:
             logger.error("Failed to process code: %s" % code)
 
-    median_value = numpy.median(var_list)
     result = []
     for code in code_score.keys():
         if code_score[code] > 2 and code_score[code] < 10:
             df = ts.get_realtime_quotes(code)
-            changePercentage = (float(df['price'][0]) - float(df['pre_close'][0])) / float(df['pre_close'][0])  * 100
-            # if changePercentage > 4:
-            #     # 前一日涨幅超过4%时不考虑，防止追高被套
-            #     print("Ignore code > 4: %s" % code)
-            #     continue
-            # if changePercentage < 1:
-            #     # 前一日涨幅小于1%时不考虑
-            #     print("Ignore code < 1: %s" % code)
-            #     continue
 
             if float(df['open'][0]) > float(df['price'][0]):
                 # 不考虑高开低走的股票
