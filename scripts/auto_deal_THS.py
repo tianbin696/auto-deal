@@ -337,7 +337,7 @@ class Monitor:
 
                 for code in stock_codes:
                     try:
-                        if code in ignore_codes:
+                        if code in ignore_codes or self.avg10[code] <= 0:
                             continue
                         p_changes = []
                         open_prices = []
