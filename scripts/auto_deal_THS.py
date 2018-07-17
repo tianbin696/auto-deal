@@ -284,6 +284,10 @@ class Monitor:
         self.operation.getPosition() # 开盘前获取持仓情况
         self.operation.getChenben() # 开盘前获取成本情况
 
+        for code in stock_positions.keys():
+            if code not in stock_codes:
+                stock_codes.append(code)
+
         start_time = time.time()
         for code in stock_codes:
             p_changes = []
