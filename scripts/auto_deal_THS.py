@@ -462,10 +462,13 @@ class Monitor:
                     # 当日跌幅超过3%且当前股价低于10日线时，止损
                     return 'S'
 
+        if not self.compare("10", "00"):
+            return 'N'
+
         if code not in isBuyeds or not isBuyeds[code]:
             curr_price = (1+indexes['change'][0]/100)*indexes['preclose'][0] + (1+indexes['change'][12]/100)*indexes['preclose'][12] + (1+indexes['change'][17]/100)*indexes['preclose'][17]
             high_price = indexes['high'][0] + indexes['high'][12] + indexes['high'][17]
-            if indexes['change'][0] + indexes['change'][12] + indexes['change'][17] < 0 or curr_price < high_price*0.992:
+            if indexes['change'][0] + indexes['change'][12] + indexes['change'][17] < 1.5 or curr_price < high_price*0.992:
                 # 大盘行情不好时，不买入
                 return 'N'
             if price < highest_price*0.96:
