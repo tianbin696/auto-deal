@@ -510,8 +510,8 @@ if __name__ == '__main__':
             time.sleep(30)
             ths_start()
 
-            get_code_filter_list(avg10Days)
-            readCodes()
+            # get_code_filter_list(avg10Days)
+            # readCodes()
 
             monitor = Monitor()
             logger.info("Testing ...")
