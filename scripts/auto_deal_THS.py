@@ -474,7 +474,7 @@ class Monitor:
             if price < highest_price*0.96:
                 # 避免买入高位回落股票
                 return 'N'
-            if price > avg1*1.01 and price < avg1 * 1.03 and price > open_price and price > avg10 and price < avg10*1.04:
+            if price > avg1*1.01 and price < avg1 * 1.03 and price > open_price and price > avg10 and price < avg10*1.04 and avg10 > avg20:
                 # 突破10日均线，满足条件的股价区间为[avg10*0.96 ~ avg10*1.01]，共5个点的区间
                 return 'B'
 
