@@ -458,9 +458,9 @@ class Monitor:
                     # 日涨幅超过8%时，止盈
                     return 'S'
 
-                if price < avg1*0.96 and price > avg1*0.93 and price < avg10*0.97 and price < open_price*0.98:
-                    # 当日跌幅超过3%且当前股价低于10日线时，止损
-                    return 'S'
+                # if price < avg1*0.96 and price > avg1*0.93 and price < avg10*0.97 and price < open_price*0.98:
+                #     # 当日跌幅超过3%且当前股价低于10日线时，止损
+                #     return 'S'
 
         if not self.compare("10", "00"):
             return 'N'
