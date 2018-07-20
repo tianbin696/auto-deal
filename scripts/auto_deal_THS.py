@@ -420,7 +420,7 @@ class Monitor:
         return float(str)
 
     def getHistoryDayKAvgData(self, code, days, p_changes = []):
-        df = ts.get_h_data(code)
+        df = ts.get_hist_data(code)
         total = 0.0
         i = 0
         try:
