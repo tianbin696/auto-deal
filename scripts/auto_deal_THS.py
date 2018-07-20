@@ -426,7 +426,7 @@ class Monitor:
         try:
             while i < days and 'close' in df:
                 total += df['close'][i]
-                # p_changes.append(df['p_change'][i])
+                p_changes.append(0)
                 i += 1
         except Exception as e:
             logger.error("Error while get code %s: %s" % (code, e))
