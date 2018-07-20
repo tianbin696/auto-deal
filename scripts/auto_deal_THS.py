@@ -461,22 +461,22 @@ class Monitor:
                 # if price < avg1*0.96 and price > avg1*0.93 and price < avg10*0.97 and price < open_price*0.98:
                 #     # 当日跌幅超过3%且当前股价低于10日线时，止损
                 #     return 'S'
-        #
-        # if not self.compare("10", "00"):
-        #     return 'N'
-        #
-        # if code not in isBuyeds or not isBuyeds[code]:
-        #     curr_price = (1+indexes['change'][0]/100)*indexes['preclose'][0] + (1+indexes['change'][12]/100)*indexes['preclose'][12] + (1+indexes['change'][17]/100)*indexes['preclose'][17]
-        #     high_price = indexes['high'][0] + indexes['high'][12] + indexes['high'][17]
-        #     if indexes['change'][0] + indexes['change'][12] + indexes['change'][17] < 1.0 or curr_price < high_price*0.992:
-        #         # 大盘行情不好时，不买入
-        #         return 'N'
-        #     if price < highest_price*0.96:
-        #         # 避免买入高位回落股票
-        #         return 'N'
-        #     if price > avg1*1.01 and price < avg1 * 1.03 and price > open_price and price > avg10 and price < avg10*1.04 and avg10 > avg20:
-        #         # 突破10日均线，满足条件的股价区间为[avg10*0.96 ~ avg10*1.01]，共5个点的区间
-        #         return 'B'
+
+        if not self.compare("10", "00"):
+            return 'N'
+
+        if code not in isBuyeds or not isBuyeds[code]:
+            curr_price = (1+indexes['change'][0]/100)*indexes['preclose'][0] + (1+indexes['change'][12]/100)*indexes['preclose'][12] + (1+indexes['change'][17]/100)*indexes['preclose'][17]
+            high_price = indexes['high'][0] + indexes['high'][12] + indexes['high'][17]
+            if indexes['change'][0] + indexes['change'][12] + indexes['change'][17] < 1.0 or curr_price < high_price*0.992:
+                # 大盘行情不好时，不买入
+                return 'N'
+            if price < highest_price*0.96:
+                # 避免买入高位回落股票
+                return 'N'
+            if price > avg1*1.01 and price < avg1 * 1.02 and price > open_price and price > avg10 and price < avg10*1.04 and avg10 > avg20:
+                # 突破10日均线，满足条件的股价区间为[avg10*0.96 ~ avg10*1.01]，共5个点的区间
+                return 'N'
 
         return 'N'
 
