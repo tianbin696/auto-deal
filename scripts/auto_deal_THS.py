@@ -424,9 +424,16 @@ class Monitor:
         if code in cache:
             df = cache[code]
         else:
-            df = ts.get_h_data(code, pause=20)
+            retry = 30
+            while retry > 0:
+                try:
+                    df = ts.get_h_data(code, pause=10)
+                    break
+                except Exception as e:
+                    logger.error("Failed to get history data")
+                    time.sleep(60)
+                    retry -= 1
             cache[code] = df
-            time.sleep(10)
         total = 0.0
         i = 0
         try:
@@ -502,7 +509,7 @@ if __name__ == '__main__':
     while True:
         try:
             wday = time.localtime().tm_wday
-            if wday > 4:
+            if wday > 6:
                 logger.info("Sleep before monitor, current_wday=%d" % wday)
                 time.sleep(3600)
                 continue
