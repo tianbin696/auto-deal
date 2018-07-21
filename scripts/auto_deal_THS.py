@@ -55,6 +55,7 @@ minSellAmount = 10000
 sleepTime = 0.5
 monitorInterval = 10
 avg10Days = 12 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
+cache = {}
 
 def readCodes():
     global stock_codes
@@ -420,7 +421,12 @@ class Monitor:
         return float(str)
 
     def getHistoryDayKAvgData(self, code, days, p_changes = []):
-        df = ts.get_hist_data(code)
+        if code in cache:
+            df = cache[code]
+        else:
+            df = ts.get_h_data(code, pause=20)
+            cache[code] = df
+            time.sleep(10)
         total = 0.0
         i = 0
         try:
@@ -474,9 +480,9 @@ class Monitor:
             if price < highest_price*0.96:
                 # 避免买入高位回落股票
                 return 'N'
-            if price > avg1*1.01 and price < avg1 * 1.02 and price > open_price and price > avg10 and price < avg10*1.04 and avg10 > avg20:
+            if price > avg1*1.01 and price < avg1 * 1.02 and price > open_price and price > avg10 and price < avg10*1.03 and avg10 > avg20:
                 # 突破10日均线，满足条件的股价区间为[avg10*0.96 ~ avg10*1.01]，共5个点的区间
-                return 'N'
+                return 'B'
 
         return 'N'
 
