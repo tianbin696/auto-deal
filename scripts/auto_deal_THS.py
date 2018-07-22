@@ -471,7 +471,7 @@ class Monitor:
                     # 日涨幅超过8%时，止盈
                     return 'S'
 
-                if price < avg1*0.96 and price > avg1*0.93 and price < avg10*0.97 and price < open_price*0.98:
+                if price < avg1*0.96 and price > avg1*0.93 and price < avg10*0.96 and price < open_price*0.98:
                     # 当日跌幅超过3%且当前股价低于10日线时，止损
                     return 'S'
 
@@ -487,7 +487,7 @@ class Monitor:
             if price < highest_price*0.96:
                 # 避免买入高位回落股票
                 return 'N'
-            if price > avg1*1.01 and price < avg1 * 1.02 and price > open_price and price > avg10 and price < avg10*1.03 and avg10 > avg20:
+            if price > avg1*1.01 and price < avg1 * 1.02 and price > open_price and price > avg10 and price < avg10*1.02 and avg10 > avg20:
                 # 突破10日均线，满足条件的股价区间为[avg10*0.96 ~ avg10*1.01]，共5个点的区间
                 return 'B'
 
@@ -509,7 +509,7 @@ if __name__ == '__main__':
     while True:
         try:
             wday = time.localtime().tm_wday
-            if wday > 6:
+            if wday > 4:
                 logger.info("Sleep before monitor, current_wday=%d" % wday)
                 time.sleep(3600)
                 continue
