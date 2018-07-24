@@ -9,14 +9,14 @@ from email.mime.base import MIMEBase
 import smtplib
 
 
-def sendEmail(photos, status):
+def sendEmail(photos, status, title=u'交易状态'):
     msg = MIMEMultipart()
     msg['From'] = "tianbin6961@sina.com"
     msg['To'] = "tianbin696@163.com"
-    msg['Subject'] = Header(u'交易状态', 'utf-8').encode()
+    msg['Subject'] = Header(title, 'utf-8').encode()
 
     # 邮件正文是MIMEText:
-    msg.attach(MIMEText("交易状态:%s" % status, 'plain', 'utf-8'))
+    msg.attach(MIMEText("%s" % status, 'plain', 'utf-8'))
 
     # 添加附件就是加上一个MIMEBase，从本地读取一个图片:
     for photo in photos:

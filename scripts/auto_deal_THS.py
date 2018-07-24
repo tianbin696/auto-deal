@@ -219,7 +219,7 @@ class OperationOfThs:
                 self.__sell(code, price, quantity)
             self.__closePopupWindows()
             # self.minWindow()
-            self.saveScreenshot("Ordered: [%s - %s - %.2f - %d - 成本:%.2f]" % (code, direction, float(price), quantity, chenben))
+            self.saveScreenshot("Ordered: [%s - %s - %.2f - %d - 成本:%.2f]" % (code, direction, float(price), quantity, chenben), u'操作：%s' % direction)
             return True
         except Exception as e:
             logger.error("Failed to order: %s" % e)
@@ -246,7 +246,7 @@ class OperationOfThs:
     def moveMouse(self):
         mouse.move(coords=(random.randint(0,99), random.randint(0, 99)))
 
-    def saveScreenshot(self, status):
+    def saveScreenshot(self, status, title):
         try:
             self.__closePopupWindows()
             picName = "../../logs/auto_deal_%s.png" % datetime.now().strftime("%Y-%m-%d_%H-%M")
@@ -258,7 +258,7 @@ class OperationOfThs:
             self.__main_window.CaptureAsImage().save(picName)
             time.sleep(sleepTime)
             self.screenshotCount += 1
-            sendEmail([picName], status)
+            sendEmail([picName], status, title)
         except Exception as e:
             logger.error("Failed to send email: %s" % e)
 
@@ -302,7 +302,7 @@ class Monitor:
             avg = self.getHistoryDayKAvgData(code, 2 * avg10Days)
             self.avg20[code] = avg
         end_time = time.time()
-        self.operation.saveScreenshot("均值更新完成，共耗时%d秒，排除异常，可监控%d支股票" % ((end_time - start_time), len(stock_codes)))
+        self.operation.saveScreenshot("均值更新完成，共耗时%d秒，排除异常，可监控%d支股票" % ((end_time - start_time), len(stock_codes)), u'交易前准备')
         logger.info("Total monitor code size: %d" % (len(stock_codes)))
 
         isStarted = False
@@ -314,11 +314,11 @@ class Monitor:
                 if (self.compare("09", "32") and not self.compare("11", "28")) or (self.compare("13", "02") and not self.compare("14", "58")):
                     # 交易时间：[09:30 ~ 11:30, 13:00 ~ 15:00]
                     if not isStarted:
-                        self.operation.saveScreenshot("开始交易")
+                        self.operation.saveScreenshot("开始交易", '开始交易')
                     isStarted = True
                 else:
                     if isStarted:
-                        self.operation.saveScreenshot("停止交易")
+                        self.operation.saveScreenshot("停止交易", '停止交易')
                     isStarted = False
 
                 if self.compare("15", "00"):
@@ -328,7 +328,7 @@ class Monitor:
                 time.sleep(monitorInterval)
                 totalSleep += monitorInterval
                 if totalSleep % 3600 == 0:
-                    self.operation.saveScreenshot("状态更新")
+                    self.operation.saveScreenshot("状态更新", '状态更新')
 
                 if not isStarted:
                     continue
