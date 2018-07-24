@@ -463,15 +463,15 @@ class Monitor:
                 # 只有当股价低于日内最高点时，才考虑卖出，避免卖出持续上涨和一字板的股票
                 # 且股价高于10日线*0.94，避免持续卖出大幅下跌的股票
 
-                if price > avg10*1.07 and price > avg1*1.02:
+                if price > avg10*1.06 and price > avg1*1.02:
                     # 股价高于10日线8%，止盈
                     return 'S'
 
-                if price > avg1*1.07:
+                if price > avg1*1.06:
                     # 日涨幅超过8%时，止盈
                     return 'S'
 
-                if price < avg1*0.96 and price > avg1*0.93 and price < avg10*0.96 and price < open_price*0.98:
+                if price < avg1*0.96 and price > avg1*0.94 and price < avg10*0.96 and price < open_price*0.98:
                     # 当日跌幅超过3%且当前股价低于10日线时，止损
                     return 'S'
 
@@ -487,7 +487,7 @@ class Monitor:
             if price < highest_price*0.96:
                 # 避免买入高位回落股票
                 return 'N'
-            if price > avg1*1.01 and price < avg1 * 1.02 and price > open_price and price > avg10 and price < avg10*1.03 and avg10 > avg20:
+            if price > avg1*1.01 and price < avg1 * 1.02 and price > open_price and price > avg10 and price < avg10*1.04 and avg10 > avg20:
                 # 突破10日均线，满足条件的股价区间为[avg10*0.96 ~ avg10*1.01]，共5个点的区间
                 return 'B'
 
