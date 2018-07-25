@@ -4,6 +4,7 @@
 import logging
 import time
 import random
+import numpy
 from datetime import datetime
 
 import pytz
@@ -21,6 +22,7 @@ from yan_zhen_ma import get_vcode
 from tong_hua_shun import ths_start
 from tong_hua_shun import ths_close
 from stats import get_code_filter_list
+from stats import var
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
@@ -301,9 +303,15 @@ class Monitor:
 
             avg = self.getHistoryDayKAvgData(code, 2 * avg10Days)
             self.avg20[code] = avg
+        temp_arr = []
+        for code in stock_codes:
+            if self.avg10[code] > 0:
+                temp_arr.append(code)
+        stock_codes.clear()
+        stock_codes.extend(temp_arr)
         end_time = time.time()
         self.operation.saveScreenshot("均值更新完成，共耗时%d秒，排除异常，可监控%d支股票" % ((end_time - start_time), len(stock_codes)), u'交易前准备')
-        logger.info("Total monitor code size: %d" % (len(stock_codes)))
+        logger.info("Total monitor code size: %d. Codes=%s" % (len(stock_codes), stock_codes))
 
         isStarted = False
         totalSleep = 0
@@ -424,7 +432,7 @@ class Monitor:
         if code in cache:
             df = cache[code]
         else:
-            retry = 30
+            retry = 10
             while retry > 0:
                 try:
                     df = ts.get_h_data(code, pause=10)
@@ -434,17 +442,19 @@ class Monitor:
                     time.sleep(60)
                     retry -= 1
             cache[code] = df
-        total = 0.0
-        i = 0
+        avg = 0
         try:
-            while i < days and 'close' in df:
-                total += df['close'][i]
+            if df and 'close' in df:
+                if numpy.mean(df['volume'][0:days/2]) > numpy.mean(df['volume'][0:days]):
+                    # 成交量放大
+                    stats_v = var(df['close'][0:days], days)
+                    if stats_v > 2:
+                        # 趋势比较明显
+                        avg = numpy.mean(df['close'][0:days])
                 p_changes.append(0)
-                i += 1
         except Exception as e:
             logger.error("Error while get code %s: %s" % (code, e))
             p_changes.append(0)
-        avg = self.formatFloat(total/days)
         logger.debug("Historical %d avg data of %s: %.2f" % (days, code, avg))
         return avg
 
