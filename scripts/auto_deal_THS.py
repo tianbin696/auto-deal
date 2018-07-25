@@ -433,6 +433,7 @@ class Monitor:
             df = cache[code]
         else:
             retry = 10
+            logger.info("Getting historical data for code: %s" % code)
             while retry > 0:
                 try:
                     df = ts.get_h_data(code, pause=10)
@@ -444,7 +445,7 @@ class Monitor:
             cache[code] = df
         avg = 0
         try:
-            if df and 'close' in df:
+            if 'close' in df:
                 if numpy.mean(df['volume'][0:days/2]) > numpy.mean(df['volume'][0:days]):
                     # 成交量放大
                     stats_v = var(df['close'][0:days], days)
