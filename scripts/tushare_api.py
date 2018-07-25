@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import tushare as ts
 import logging
+import time
 
 logger = logging.getLogger('TushareAPI')
 
@@ -12,6 +13,20 @@ class TushareAPI:
         except Exception as e:
             logger.error("Failed to get historical price for %s: %s" % (code, e))
         return []
+
+    def get_h_data(self, code):
+        retry = 10
+        logger.info("Getting historical data for code: %s" % code)
+        while retry > 0:
+            try:
+                df = ts.get_h_data(code, pause=6)
+                break
+            except Exception as e:
+                logger.error("Failed to get history data")
+                time.sleep(60)
+                retry -= 1
+        return df
+
 
     def get_st_list(self):
         codes = []

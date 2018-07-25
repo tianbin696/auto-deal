@@ -52,49 +52,55 @@ def get_code_filter_list(avg_days = 10, file = None):
     code_score = {}
     var_list = []
     for code in list:
-        try:
-            df = ts.get_historic_price(code)
-            prices = df['close'][0:2 * avg_days]
-            if len(prices) <= 0:
-                continue
+        # print("Processing code: %s" % code)
+        count = 2
+        while count > 1:
+            try:
+                if count == 2:
+                    df = ts.get_historic_price(code)
+                else:
+                    df = ts.get_h_data(code)
 
-            avgs = avg(prices, avg_days)
+                prices = df['close'][0:2 * avg_days]
+                if len(prices) <= 0:
+                    break
 
-            if prices[0] < min(df['close'][0:12 * avg_days])*1.2:
-                continue
+                avgs = avg(prices, avg_days)
+                avg10 = numpy.mean(prices[0:avg_days])
+                avg20 = numpy.mean(prices)
 
-            if avgs[0] < numpy.mean(prices):
-                # 不考虑10日线在20日线下
-                continue
+                if prices[0] < min(df['close'][0:12 * avg_days])*1.2:
+                    break
 
-            if prices[0] > avgs[0] * 1.03:  # 不考虑大于10日线*1.04的股票
-                continue
+                if avg10 < avg20:
+                    # 不考虑10日线在20日线下
+                    break
 
-            if prices[0] < avgs[0] * 0.99:  # 不考虑小于10日线*0.99的股票
-                continue
+                if prices[0] < avg10 or prices[0] > avg10*1.03:
+                    break
 
-            vars = var(avgs[0:avg_days], avg_days)
-            code_score[code] = vars[0]
-            logger.debug("avgs of %s: %s" % (code, avgs))
-            logger.debug("vars of %s: %s" % (code, vars))
+                if count == 2 and df['v_ma5'][0] < df['v_ma10'][0]:
+                    break
+
+                if count ==1 and numpy.mean(df['volume'][0:int(avg_days/2)]) < numpy.mean(df['volume'][0:avg_days]):
+                    break
+
+                vars = var(avgs[0:avg_days], avg_days)
+                code_score[code] = vars[0]
+                if code_score[code] < 2 or code_score[code] > 10:
+                    break
+                count -= 1
+            except Exception as e:
+                logger.error("Failed to process code: %s, exception:%s" % (code,e ))
+                break
+        if count <= 1:
+            print("\navgs of %s: %s" % (code, avgs))
+            print("vars of %s: %s" % (code, vars))
             var_list.append(vars[0])
-        except Exception as e:
-            logger.error("Failed to process code: %s" % code)
 
     result = []
     for code in code_score.keys():
         if code_score[code] > 2 and code_score[code] < 10:
-            df = ts.get_realtime_quotes(code)
-
-            if float(df['open'][0]) > float(df['price'][0]):
-                # 不考虑高开低走的股票
-                print("Open price > close price: %s" % code)
-                continue
-
-            if float(df['high'][0]) > float(df['price'][0]) * 1.04:
-                # 不考虑长上影线的股票
-                print("High price > close price * 1.04: %s" % code)
-                continue
             result.append(code)
 
     if file:
@@ -124,8 +130,4 @@ if __name__ == "__main__":
     # save_all_codes()
 
     days = 12
-    prices = ts.get_historic_price('000615')['close'][0:2 * days]
-    print("avgs: %s" % avg(prices, days))
-    print("vars: %s" % var(avg(prices, days)[0:days], days))
-
     get_code_filter_list(days, "codes.txt")
