@@ -547,7 +547,7 @@ if __name__ == '__main__':
             time.sleep(30)
             ths_start()
 
-            get_code_filter_list(avg10Days)
+            get_code_filter_list(avg10Days, "codes.txt")
             readCodes()
 
             monitor = Monitor()
