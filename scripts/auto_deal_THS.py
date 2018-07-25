@@ -381,7 +381,7 @@ class Monitor:
         if direction == 'B':
             if availableMoney < minBuyAmount:
                 return
-            if code in stock_positions and stock_positions[code]*price >= maxAmount:
+            if code in stock_positions and stock_positions[code]*price + minBuyAmount >= maxAmount:
                 # 达到持仓上限，不再买入
                 logger.info("Reach max amount, cannot buy anymore")
                 return
