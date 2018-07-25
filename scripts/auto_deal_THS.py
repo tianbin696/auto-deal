@@ -478,10 +478,21 @@ class Monitor:
             return 'N'
 
         if code not in isBuyeds or not isBuyeds[code]:
-            curr_price = (1+indexes['change'][0]/100)*indexes['preclose'][0] + (1+indexes['change'][12]/100)*indexes['preclose'][12] + (1+indexes['change'][17]/100)*indexes['preclose'][17]
-            high_price = indexes['high'][0] + indexes['high'][12] + indexes['high'][17]
-            if indexes['change'][0] + indexes['change'][12] + indexes['change'][17] < 1.0 or curr_price < high_price*0.992:
+            idx_curr_price = (1+indexes['change'][0]/100)*indexes['preclose'][0] + (1+indexes['change'][12]/100)*indexes['preclose'][12] + (1+indexes['change'][17]/100)*indexes['preclose'][17]
+            idx_open_price = indexes['open'][0] + indexes['open'][12] + indexes['open'][17]
+            idx_high_price = indexes['high'][0] + indexes['high'][12] + indexes['high'][17]
+            idx_low_price = indexes['low'][0] + indexes['low'][12] + indexes['low'][17]
+            if indexes['change'][0] + indexes['change'][12] + indexes['change'][17] < 0:
                 # 大盘行情不好时，不买入
+                return 'N'
+            if idx_curr_price < idx_open_price:
+                # 高开低走
+                return 'N'
+            if idx_curr_price < idx_high_price*0.99:
+                # 高处回落
+                return 'N'
+            if idx_curr_price < idx_low_price*1.004:
+                # 正在下跌
                 return 'N'
             if price < highest_price*0.96:
                 # 避免买入高位回落股票
