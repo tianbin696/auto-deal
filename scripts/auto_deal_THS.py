@@ -446,7 +446,7 @@ class Monitor:
         avg = 0
         try:
             if 'close' in df:
-                if numpy.mean(df['volume'][0:days/2]) > numpy.mean(df['volume'][0:days]):
+                if numpy.mean(df['volume'][0:int(days/2)]) > numpy.mean(df['volume'][0:days]):
                     # 成交量放大
                     stats_v = var(df['close'][0:days], days)
                     if stats_v > 2:
