@@ -436,7 +436,7 @@ class Monitor:
             logger.info("Getting historical data for code: %s" % code)
             while retry > 0:
                 try:
-                    df = ts.get_h_data(code, pause=10)
+                    df = ts.get_h_data(code, pause=6)
                     break
                 except Exception as e:
                     logger.error("Failed to get history data")
@@ -446,12 +446,16 @@ class Monitor:
         avg = 0
         try:
             if 'close' in df:
-                if numpy.mean(df['volume'][0:int(days/2)]) > numpy.mean(df['volume'][0:days]):
-                    # 成交量放大
-                    stats_v = var(df['close'][0:days], days)
-                    if stats_v > 2:
-                        # 趋势比较明显
-                        avg = numpy.mean(df['close'][0:days])
+                if days == avg10Days and code not in stock_positions:
+                    if numpy.mean(df['volume'][0:int(days/2)]) > numpy.mean(df['volume'][0:days]):
+                        # 成交量放大
+                        stats_v = var(df['close'][0:days], days)
+                        if stats_v[0] > 2:
+                            # 趋势比较明显
+                            if numpy.mean(df['close'][0:days]) > numpy.mean(df['close'][0:2*days]):
+                                avg = numpy.mean(df['close'][0:days])
+                else:
+                    avg = numpy.mean(df['close'][0:days])
                 p_changes.append(0)
         except Exception as e:
             logger.error("Error while get code %s: %s" % (code, e))
