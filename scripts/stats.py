@@ -5,6 +5,7 @@ import math
 import numpy
 from tushare_api import TushareAPI
 import logging
+import time
 
 logger = logging.getLogger('stats')
 ts = TushareAPI()
@@ -48,13 +49,14 @@ def var(array, days, return_size = 0):
     return result
 
 def get_code_filter_list(avg_days = 10, file = None):
+    start_time = time.time()
     list = ts.get_code_list()
     code_score = {}
-    var_list = []
+    result_list = []
     for code in list:
         # print("Processing code: %s" % code)
         count = 2
-        while count > 1:
+        while count > 0:
             try:
                 if count == 2:
                     df = ts.get_historic_price(code)
@@ -93,28 +95,24 @@ def get_code_filter_list(avg_days = 10, file = None):
             except Exception as e:
                 logger.error("Failed to process code: %s, exception:%s" % (code,e ))
                 break
-        if count <= 1:
+        if count <= 0:
             print("\navgs of %s: %s" % (code, avgs))
             print("vars of %s: %s" % (code, vars))
-            var_list.append(vars[0])
-
-    result = []
-    for code in code_score.keys():
-        if code_score[code] > 2 and code_score[code] < 10:
-            result.append(code)
+            result_list.append(code)
 
     if file:
         writer = open(file, "w")
         score_writer = open("code_score.csv", "w")
         score_writer.write("code,score\n")
-        for code in sorted(result):
+        for code in sorted(result_list):
             writer.write(code + "\n")
             score_writer.write("'%s',%.2f\n" % (code, code_score[code]))
         writer.close()
         score_writer.close()
 
-    print("Get %d filter code from total %d codes" % (len(result), len(list)))
-    return result
+    end_time = time.time()
+    print("Get %d filter code from total %d codes. Total cost %d seconds" % (len(result_list), len(list), (end_time - start_time)))
+    return result_list
 
 
 def save_all_codes():
