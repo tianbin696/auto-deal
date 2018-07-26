@@ -78,7 +78,7 @@ def get_code_filter_list(avg_days = 10, file = None):
                     # 不考虑10日线在20日线下
                     break
 
-                if prices[0] < avg10 or prices[0] > avg10*1.03:
+                if prices[0] < avg10 or prices[0] > avg10*1.04 or prices[0] <= min(prices[0:int(avg_days/2)]):
                     break
 
                 if count == 2 and df['v_ma5'][0] < df['v_ma10'][0]:
