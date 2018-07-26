@@ -71,7 +71,7 @@ def get_code_filter_list(avg_days = 10, file = None):
                 avg10 = numpy.mean(prices[0:avg_days])
                 avg20 = numpy.mean(prices)
 
-                if prices[0] < min(df['close'][0:12 * avg_days])*1.2:
+                if prices[0] < min(df['close'][0:12 * avg_days])*1.1:
                     break
 
                 if avg10 < avg20:
