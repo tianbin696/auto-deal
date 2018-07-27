@@ -82,7 +82,10 @@ def get_code_filter_list(avg_days = 10, file = None):
                 if prices[0] < min(df['close'][0:2*avg_days])*1.1:
                     break
 
-                if prices[0] < avg10 or prices[0] > avg10*1.02:
+                if prices[0] < avg10*0.98 or prices[0] > avg10*1.02:
+                    break
+
+                if max(df['high'][0:6]) > min(df['low'][0:6])*1.4 or max(df['close'][0:6]) > min(df['close'][0:6])*1.2:
                     break
 
                 if numpy.mean(df['volume'][0:3]) < numpy.mean(df['volume'][0:6])*1.1:
