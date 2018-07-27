@@ -48,10 +48,19 @@ def var(array, days, return_size = 0):
         result.append(float("%.2f" % numpy.var(new_array[i:i+days])))
     return result
 
+
+def get_zheng_fu(df, avg_days = 10):
+    zhengfu = []
+    i = 0
+    while i < avg_days:
+        zhengfu.append(float("%.2f" % ((df['high'][i] - df['low'][i])/df['low'][i]*100)))
+        i += 1
+    return zhengfu
+
+
 def get_code_filter_list(avg_days = 10, file = None):
     start_time = time.time()
     list = ts.get_code_list()
-    code_score = {}
     result_list = []
     for code in list:
         # print("Processing code: %s" % code)
@@ -69,46 +78,34 @@ def get_code_filter_list(avg_days = 10, file = None):
 
                 avgs = avg(prices, avg_days)
                 avg10 = numpy.mean(prices[0:avg_days])
-                avg20 = numpy.mean(prices)
 
-                if prices[0] < min(df['close'][0:12 * avg_days])*1.1:
+                if prices[0] < min(df['close'][0:2*avg_days])*1.1:
                     break
 
-                if avg10 < avg20:
-                    # 不考虑10日线在20日线下
+                if prices[0] < avg10 or prices[0] > avg10*1.03:
                     break
 
-                if prices[0] < avg10 or prices[0] > avg10*1.04 or prices[0] <= min(prices[0:int(avg_days/2)]):
+                if numpy.mean(df['volume'][0:3]) < numpy.mean(df['volume'][0:6]):
                     break
 
-                if count == 2 and df['v_ma5'][0] < df['v_ma10'][0]:
+                zhengfus = get_zheng_fu(df, avg_days)
+                if numpy.mean(zhengfus[0:6]) < 4 or numpy.mean(zhengfus[0:6]) > 12:
                     break
 
-                if count ==1 and numpy.mean(df['volume'][0:int(avg_days/2)]) < numpy.mean(df['volume'][0:avg_days]):
-                    break
-
-                vars = var(avgs[0:avg_days], avg_days)
-                code_score[code] = vars[0]
-                if code_score[code] < 2 or code_score[code] > 10:
-                    break
                 count -= 1
             except Exception as e:
                 logger.error("Failed to process code: %s, exception:%s" % (code,e ))
                 break
         if count <= 0:
             print("\navgs of %s: %s" % (code, avgs))
-            print("vars of %s: %s" % (code, vars))
+            print("zhengfus of %s: %s" % (code, zhengfus))
             result_list.append(code)
 
     if file:
         writer = open(file, "w")
-        score_writer = open("code_score.csv", "w")
-        score_writer.write("code,score\n")
         for code in sorted(result_list):
             writer.write(code + "\n")
-            score_writer.write("'%s',%.2f\n" % (code, code_score[code]))
         writer.close()
-        score_writer.close()
 
     end_time = time.time()
     print("Get %d filter code from total %d codes. Total cost %d seconds" % (len(result_list), len(list), (end_time - start_time)))
