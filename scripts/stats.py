@@ -82,10 +82,10 @@ def get_code_filter_list(avg_days = 10, file = None):
                 if prices[0] < min(df['close'][0:2*avg_days])*1.1:
                     break
 
-                if prices[0] < avg10 or prices[0] > avg10*1.03:
+                if prices[0] < avg10 or prices[0] > avg10*1.02:
                     break
 
-                if numpy.mean(df['volume'][0:3]) < numpy.mean(df['volume'][0:6]):
+                if numpy.mean(df['volume'][0:3]) < numpy.mean(df['volume'][0:6])*1.1:
                     break
 
                 zhengfus = get_zheng_fu(df, avg_days)
