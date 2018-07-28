@@ -58,55 +58,74 @@ def get_zheng_fu(df, avg_days = 10):
     return zhengfu
 
 
+def get_huan_shou(df, total, avg_days = 10):
+    huanshou = []
+    i = 0
+    while i < avg_days:
+        huanshou.append(float("%.2f" % (df['volume'][i]/(total*100000000)*100)))
+        i += 1
+    return huanshou
+
+
+def fang_liang_xia_die(df, avg_days=10):
+    result = False
+    i = 0
+    while i < avg_days:
+        if df['volume'][i] > df['volume'][i+1]*2 and df['close'][i] < df['close'][i+1] * 0.96:
+            result = True
+            break
+        i += 1
+    return result
+
+
 def get_code_filter_list(avg_days = 10, file = None):
     start_time = time.time()
     totals = {}
     list = ts.get_code_list(totals)
     result_list = []
     for code in list:
-        # print("Processing code: %s" % code)
-        count = 2
-        while count > 0:
-            try:
-                if count == 2:
-                    df = ts.get_historic_price(code)
-                else:
-                    df = ts.get_h_data(code)
+        try:
+            df = ts.get_h_data(code)
+            if len(df) <= 0:
+                continue
 
-                prices = df['close'][0:2 * avg_days]
-                if len(prices) <= 0:
-                    break
+            prices = df['close'][0:4 * avg_days]
+            avgs = avg(prices, avg_days)
+            avg10 = numpy.mean(prices[0:avg_days])
 
-                if prices[0] * totals[code] < 100:
-                    break
+            if prices[0] < avg10*0.98 or prices[0] > avg10*1.02:
+                continue
 
-                avgs = avg(prices, avg_days)
-                avg10 = numpy.mean(prices[0:avg_days])
+            if prices[0] < max(df['high'][0:avg_days])*0.9:
+                continue
 
-                if prices[0] < min(df['close'][0:2*avg_days])*1.1:
-                    break
+            if min(df['low'][0:avg_days]) > max(df['high'][0:avg_days])*0.85:
+                continue
 
-                if prices[0] < avg10*0.98 or prices[0] > avg10*1.02:
-                    break
+            if prices[0] <= min(prices[0:avg_days]) or min(prices[0:avg_days]) < min(prices[0:4 * avg_days])*1.1:
+                continue
 
-                if max(df['high'][0:6]) > min(df['low'][0:6])*1.6 or max(df['close'][0:6]) > min(df['close'][0:6])*1.4:
-                    break
+            if numpy.mean(df['volume'][0:avg_days]) < numpy.mean(df['volume'][0:2*avg_days])*1.1:
+                continue
 
-                if numpy.mean(df['volume'][0:3]) < numpy.mean(df['volume'][0:6])*1.0:
-                    break
+            huanshous = get_huan_shou(df, totals[code], avg_days)
+            if numpy.mean(huanshous) < 1:
+                continue
 
-                zhengfus = get_zheng_fu(df, avg_days)
-                if numpy.mean(zhengfus[0:6]) < 2 or numpy.mean(zhengfus[0:6]) > 12:
-                    break
+            zhengfus = get_zheng_fu(df, avg_days)
+            if numpy.mean(zhengfus) < 4:
+                continue
 
-                count -= 1
-            except Exception as e:
-                logger.error("Failed to process code: %s, exception:%s" % (code,e ))
-                break
-        if count <= 0:
+            if fang_liang_xia_die(df, avg_days):
+                continue
+
             print("\navgs of %s: %s" % (code, avgs))
+            print("huanshou of %s: %s" % (code, huanshous))
             print("zhengfus of %s: %s" % (code, zhengfus))
             result_list.append(code)
+        except Exception as e:
+            logger.error("Failed to process code: %s, exception:%s" % (code,e ))
+            continue
 
     if file:
         writer = open(file, "w")
