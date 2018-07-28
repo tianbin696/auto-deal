@@ -35,16 +35,23 @@ class TushareAPI:
             codes.append(code)
         return codes
 
-    def get_code_list(self):
+    def get_code_list(self, totals={}):
         st_codes = self.get_st_list()
 
         stock_codes = []
         fs = ts.get_stock_basics()
+        id = -1
         for code in fs.index:
+            id += 1
             if code in st_codes:
+                continue
+            if fs['pe'][id] < 0 or fs['pe'][id] > 100 or fs['pb'][id] > 20:
+                continue
+            if fs['rev'][id] < 0 or fs['profit'][id] < 0 or fs['gpr'][id] < 0 or fs['npr'][id] < 0:
                 continue
             if code < '300000' or code >= '600000':
                 stock_codes.append(code)
+                totals[code] = fs['totals'][id]
         return stock_codes
 
     def get_realtime_quotes(self, code):

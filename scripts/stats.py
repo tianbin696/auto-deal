@@ -60,7 +60,8 @@ def get_zheng_fu(df, avg_days = 10):
 
 def get_code_filter_list(avg_days = 10, file = None):
     start_time = time.time()
-    list = ts.get_code_list()
+    totals = {}
+    list = ts.get_code_list(totals)
     result_list = []
     for code in list:
         # print("Processing code: %s" % code)
@@ -76,6 +77,9 @@ def get_code_filter_list(avg_days = 10, file = None):
                 if len(prices) <= 0:
                     break
 
+                if prices[0] * totals[code] < 100:
+                    break
+
                 avgs = avg(prices, avg_days)
                 avg10 = numpy.mean(prices[0:avg_days])
 
@@ -85,14 +89,14 @@ def get_code_filter_list(avg_days = 10, file = None):
                 if prices[0] < avg10*0.98 or prices[0] > avg10*1.02:
                     break
 
-                if max(df['high'][0:6]) > min(df['low'][0:6])*1.4 or max(df['close'][0:6]) > min(df['close'][0:6])*1.2:
+                if max(df['high'][0:6]) > min(df['low'][0:6])*1.6 or max(df['close'][0:6]) > min(df['close'][0:6])*1.4:
                     break
 
-                if numpy.mean(df['volume'][0:3]) < numpy.mean(df['volume'][0:6])*1.1:
+                if numpy.mean(df['volume'][0:3]) < numpy.mean(df['volume'][0:6])*1.0:
                     break
 
                 zhengfus = get_zheng_fu(df, avg_days)
-                if numpy.mean(zhengfus[0:6]) < 4 or numpy.mean(zhengfus[0:6]) > 12:
+                if numpy.mean(zhengfus[0:6]) < 2 or numpy.mean(zhengfus[0:6]) > 12:
                     break
 
                 count -= 1
