@@ -527,7 +527,7 @@ if __name__ == '__main__':
             if hour < 6 or hour >= 15:
                 logger.info("Sleep before monitor, current_hour=%d" % hour)
                 time.sleep(60)
-                if hour == 14:
+                if hour == 16:
                     get_code_filter_list(avg10Days, "codes.txt")
                     time.sleep(3600)
                 continue
