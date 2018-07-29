@@ -497,7 +497,23 @@ class Monitor:
             idx_low_price = indexes['low'][0] + indexes['low'][12] + indexes['low'][17]
             if idx_curr_price < idx_low_price * 1.01:
                 return 'N'
-            if price > lowest_price*1.01 and price < avg1 * 1.02 and price > open_price and price > avg10 and price < avg10*1.04:
+
+            if price < avg10 or price > avg10*1.04:
+                return 'N'
+
+            if price > avg1*1.02:
+                return 'N'
+
+            if open_price <= lowest_price and price > open_price:
+                return 'B'
+
+            if open_price > lowest_price and lowest_price > avg1*0.98 and price > lowest_price*1.01:
+                return 'B'
+
+            if open_price > lowest_price and lowest_price > avg1*0.96 and price > lowest_price*1.02:
+                return 'B'
+
+            if open_price > lowest_price and lowest_price > avg1*0.94 and price > lowest_price*1.03:
                 return 'B'
 
         return 'N'
