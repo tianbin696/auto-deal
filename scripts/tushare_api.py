@@ -41,7 +41,7 @@ class TushareAPI:
                     logger.error("Failed to get history data")
                     time.sleep(60)
                     retry -= 1
-        return df[daysAgo:]
+        return df[daysAgo:].reset_index()
 
 
     def get_st_list(self):

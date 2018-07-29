@@ -155,4 +155,4 @@ if __name__ == "__main__":
     # save_all_codes()
 
     days = 12
-    get_code_filter_list(days, "codes.txt")
+    get_code_filter_list(days, "codes.txt", 0)
