@@ -109,7 +109,7 @@ def get_code_filter_list(avg_days = 10, file = None):
             if prices[0] <= min(prices[0:avg_days]) or min(prices[0:avg_days]) < min(prices[0:4 * avg_days])*1.1:
                 continue
 
-            if numpy.mean(df['volume'][0:avg_days]) < numpy.mean(df['volume'][0:2*avg_days])*1.1:
+            if numpy.mean(df['volume'][0:avg_days]) < numpy.mean(df['volume'][0:2*avg_days])*1.2:
                 continue
 
             huanshous = get_huan_shou(df, totals[code], avg_days)
