@@ -18,7 +18,7 @@ class TushareAPI:
             logger.error("Failed to get historical price for %s: %s" % (code, e))
         return []
 
-    def get_h_data(self, code, timeStr = None):
+    def get_h_data(self, code, timeStr = None, daysAgo = 0):
         retry = 10
         if not timeStr:
             timeStr = time.strftime("%Y%m%d", time.localtime())
@@ -41,12 +41,19 @@ class TushareAPI:
                     logger.error("Failed to get history data")
                     time.sleep(60)
                     retry -= 1
-        return df
+        return df[daysAgo:]
 
 
     def get_st_list(self):
+        cacheFile = cacheFolder + "/codes.csv"
+        if os.path.exists(cacheFile):
+            fs = pandas.read_csv(cacheFile)
+        else:
+            fs = ts.get_st_classified()
+            writer = open(cacheFile, "w")
+            fs.to_csv(writer)
+            writer.close()
         codes = []
-        fs = ts.get_st_classified()
         for code in fs['code']:
             codes.append(code)
         return codes

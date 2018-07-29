@@ -78,7 +78,7 @@ def fang_liang_xia_die(df, avg_days=10):
     return result
 
 
-def get_code_filter_list(avg_days = 10, file = None):
+def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0):
     timeStr = time.strftime("%Y%m%d", time.localtime())
     start_time = time.time()
     totals = {}
@@ -86,7 +86,7 @@ def get_code_filter_list(avg_days = 10, file = None):
     result_list = []
     for code in list:
         try:
-            df = ts.get_h_data(code, timeStr)
+            df = ts.get_h_data(code, timeStr, daysAgo)
             if len(df) <= 0:
                 continue
 
