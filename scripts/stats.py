@@ -96,6 +96,9 @@ def get_code_filter_list(avg_days = 10, file = None):
             if prices[0] < avg10*0.98 or prices[0] > avg10*1.02:
                 continue
 
+            if prices[0] < prices[1]*0.96:
+                continue
+
             if prices[0] < max(df['high'][0:avg_days])*0.9:
                 continue
 
