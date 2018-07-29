@@ -100,32 +100,37 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0):
             if prices[0] < prices[1]*0.96:
                 continue
 
-            if prices[0] < max(df['high'][0:avg_days])*0.9:
+            # 基于当日成交量和涨幅筛选
+            if df['high'][0] > prices[1]*1.04 or prices[0] < prices[1] or df['open'][0] > prices[0]:
+                continue
+            if df['volume'][0] < df['volume'][1]*2:
                 continue
 
-            if min(df['low'][0:avg_days]) > max(df['high'][0:avg_days])*0.9 or min(df['low'][0:avg_days]) < max(df['high'][0:avg_days])*0.8:
-                continue
-
-            if prices[0] <= min(prices[0:avg_days]) or min(prices[0:avg_days]) < min(prices[0:4 * avg_days])*1.1:
-                continue
-
-            if numpy.mean(df['volume'][0:avg_days]) < numpy.mean(df['volume'][0:2*avg_days])*1.2:
-                continue
-
-            huanshous = get_huan_shou(df, totals[code], avg_days)
-            if numpy.mean(huanshous) < 1:
-                continue
-
-            zhengfus = get_zheng_fu(df, avg_days)
-            if numpy.mean(zhengfus) < 4:
-                continue
-
-            if fang_liang_xia_die(df, avg_days):
-                continue
+            # 基于短期价格趋势筛选
+            # if prices[0] < max(df['high'][0:avg_days])*0.9:
+            #     continue
+            #
+            # if min(df['low'][0:avg_days]) > max(df['high'][0:avg_days])*0.9 or min(df['low'][0:avg_days]) < max(df['high'][0:avg_days])*0.8:
+            #     continue
+            #
+            # if prices[0] <= min(prices[0:avg_days]) or min(prices[0:avg_days]) < min(prices[0:4 * avg_days])*1.1:
+            #     continue
+            #
+            # if numpy.mean(df['volume'][0:avg_days]) < numpy.mean(df['volume'][0:2*avg_days])*1.2:
+            #     continue
+            #
+            # huanshous = get_huan_shou(df, totals[code], avg_days)
+            # if numpy.mean(huanshous) < 1:
+            #     continue
+            #
+            # zhengfus = get_zheng_fu(df, avg_days)
+            # if numpy.mean(zhengfus) < 4:
+            #     continue
+            #
+            # if fang_liang_xia_die(df, avg_days):
+            #     continue
 
             print("\navgs of %s: %s" % (code, avgs))
-            print("huanshou of %s: %s" % (code, huanshous))
-            print("zhengfus of %s: %s" % (code, zhengfus))
             result_list.append(code)
         except Exception as e:
             logger.error("Failed to process code: %s, exception:%s" % (code,e ))
