@@ -101,9 +101,11 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0):
                 continue
 
             # 基于当日成交量和涨幅筛选
-            if df['high'][0] > prices[1]*1.04 or prices[0] < prices[1] or df['open'][0] > prices[0]:
+            if df['high'][0] > prices[1]*1.06 or prices[0] < prices[1] or df['open'][0] > prices[0]:
                 continue
             if df['volume'][0] < df['volume'][1]*2:
+                continue
+            if max(df['high'][0:avg_days]) < min(df['low'][0:avg_days])*1.1:
                 continue
 
             # 基于短期价格趋势筛选
