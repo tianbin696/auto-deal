@@ -504,7 +504,7 @@ class Monitor:
             if price > avg1*1.02:
                 return 'N'
 
-            if open_price <= lowest_price and price > open_price:
+            if open_price <= lowest_price and price > min(open_price, avg1)*1.01:
                 return 'B'
 
             if open_price > lowest_price and lowest_price > avg1*0.98 and price > lowest_price*1.01:
