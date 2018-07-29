@@ -45,14 +45,7 @@ class TushareAPI:
 
 
     def get_st_list(self):
-        cacheFile = cacheFolder + "/codes.csv"
-        if os.path.exists(cacheFile):
-            fs = pandas.read_csv(cacheFile)
-        else:
-            fs = ts.get_st_classified()
-            writer = open(cacheFile, "w")
-            fs.to_csv(writer)
-            writer.close()
+        fs = ts.get_st_classified()
         codes = []
         for code in fs['code']:
             codes.append(code)

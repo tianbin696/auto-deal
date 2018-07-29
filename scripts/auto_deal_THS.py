@@ -486,7 +486,7 @@ class Monitor:
                     # 日涨幅超过8%时，止盈
                     return 'S'
 
-                if price < avg1*0.96 and price > avg1*0.94 and price < avg10*0.96 and price < open_price*0.98:
+                if price < avg1*0.96 and price < avg10*0.96:
                     return 'S'
 
         if not self.compare("10", "00"):
@@ -540,7 +540,7 @@ if __name__ == '__main__':
                 continue
             
             hour = time.localtime().tm_hour
-            if hour < 6 or hour >= 15:
+            if hour < 7 or hour >= 15:
                 logger.info("Sleep before monitor, current_hour=%d" % hour)
                 time.sleep(60)
                 if hour == 16:

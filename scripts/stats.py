@@ -157,9 +157,21 @@ def save_all_codes():
     writer.close()
 
 
+def verify(codes, daysAgo):
+    if daysAgo < 3:
+        return
+    for code in codes:
+        df = ts.get_h_data(code)
+        max_increase = float("%.2f" % ((max(df['high'][0:(daysAgo-2)])-df['close'][daysAgo-1])/df['close'][daysAgo-1]*100))
+        min_increase = float("%.2f" % ((min(df['low'][0:(daysAgo-2)])-df['close'][daysAgo-1])/df['close'][daysAgo-1]*100))
+        print("\n%s max_increase: %.2f" % (code, max_increase))
+        print("%s min_increase: %.2f" % (code, min_increase))
+
 if __name__ == "__main__":
 
     # save_all_codes()
 
-    days = 12
-    get_code_filter_list(days, "codes.txt", 0)
+    avgDays = 12
+    daysAgo = 0
+    codes = get_code_filter_list(avgDays, "codes.txt", daysAgo)
+    verify(codes, daysAgo)
