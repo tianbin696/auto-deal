@@ -79,13 +79,14 @@ def fang_liang_xia_die(df, avg_days=10):
 
 
 def get_code_filter_list(avg_days = 10, file = None):
+    timeStr = time.strftime("%Y%m%d", time.localtime())
     start_time = time.time()
     totals = {}
     list = ts.get_code_list(totals)
     result_list = []
     for code in list:
         try:
-            df = ts.get_h_data(code)
+            df = ts.get_h_data(code, timeStr)
             if len(df) <= 0:
                 continue
 
@@ -93,7 +94,7 @@ def get_code_filter_list(avg_days = 10, file = None):
             avgs = avg(prices, avg_days)
             avg10 = numpy.mean(prices[0:avg_days])
 
-            if prices[0] < avg10*0.98 or prices[0] > avg10*1.02:
+            if prices[0] < avg10*0.98 or prices[0] > avg10*1.04:
                 continue
 
             if prices[0] < prices[1]*0.96:
