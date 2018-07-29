@@ -101,7 +101,7 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0):
                 continue
 
             # 基于当日成交量和涨幅筛选
-            if df['high'][0] > prices[1]*1.06 or prices[0] < prices[1] or df['open'][0] > prices[0]:
+            if df['high'][0] > prices[1]*1.06 or prices[0] < prices[1] or df['open'][0] > prices[0] or df['high'][0]*0.96 > prices[0]:
                 continue
             if df['volume'][0] < df['volume'][1]*2:
                 continue
@@ -172,6 +172,8 @@ if __name__ == "__main__":
     # save_all_codes()
 
     avgDays = 12
-    daysAgo = 0
-    codes = get_code_filter_list(avgDays, "codes.txt", daysAgo)
+    codes = get_code_filter_list(avgDays, "codes.txt")
+
+    daysAgo = 10
+    codes = get_code_filter_list(avgDays, None, daysAgo)
     verify(codes, daysAgo)
