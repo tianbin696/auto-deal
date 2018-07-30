@@ -3,10 +3,10 @@
 
 import logging
 import time
-import datetime
 import random
 import numpy
 from datetime import datetime
+from datetime import timedelta
 
 import pytz
 import pywinauto
@@ -440,12 +440,12 @@ class Monitor:
             logger.info("Getting historical data for code: %s" % code)
             while retry > 0:
                 try:
-                    yesterday = (datetime.datetime.now() - datetime.timedelta(days = 1))
+                    yesterday = (datetime.now() - timedelta(days = 1))
                     timeStr = yesterday.strftime("%Y%m%d")
                     df = local_ts.get_h_data(code, timeStr=timeStr)
                     break
                 except Exception as e:
-                    logger.error("Failed to get history data")
+                    logger.error("Failed to get history data: %s" % e)
                     time.sleep(60)
                     retry -= 1
             cache[code] = df
