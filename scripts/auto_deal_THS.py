@@ -51,7 +51,7 @@ isBuyeds = {}
 isSelleds = {}
 maxAmount = 10000
 minAmount = 0
-availableMoney = 10000
+availableMoney = 20000
 minBuyAmount = 10000
 minSellAmount = 10000
 sleepTime = 0.5
@@ -319,7 +319,7 @@ class Monitor:
             try:
                 self.operation.moveMouse()
 
-                if (self.compare("09", "32") and not self.compare("11", "28")) or (self.compare("13", "02") and not self.compare("14", "58")):
+                if (self.compare("09", "40") and not self.compare("11", "28")) or (self.compare("13", "02") and not self.compare("14", "58")):
                     # 交易时间：[09:30 ~ 11:30, 13:00 ~ 15:00]
                     if not isStarted:
                         self.operation.saveScreenshot("开始交易", '开始交易')
@@ -469,7 +469,7 @@ class Monitor:
         avg20 = float(self.avg20[code])
         price = float(price)
         indexes = ts.get_index()
-        logger.info("%s status: %f, %f, %f, %f" % (code, price, avg1, avg10, avg20))
+        logger.info("%s status: %f, %f, %f, %f, %f, %f" % (code, price, highest_price, lowest_price, avg1, avg10, avg20))
         if price <= 0:
             return 'N'
 
