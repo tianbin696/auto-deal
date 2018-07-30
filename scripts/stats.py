@@ -87,10 +87,10 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0):
     for code in list:
         try:
             df = ts.get_h_data(code, timeStr, daysAgo)
-            if len(df) <= 0:
+            if len(df) < avg_days:
                 continue
 
-            prices = df['close'][0:4 * avg_days]
+            prices = df['close']
             avgs = avg(prices, avg_days)
             avg10 = numpy.mean(prices[0:avg_days])
 
