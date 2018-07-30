@@ -3,6 +3,7 @@
 
 import logging
 import time
+import datetime
 import random
 import numpy
 from datetime import datetime
@@ -23,6 +24,9 @@ from tong_hua_shun import ths_start
 from tong_hua_shun import ths_close
 from stats import get_code_filter_list
 from stats import var
+
+from tushare_api import TushareAPI
+local_ts = TushareAPI()
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
@@ -436,7 +440,9 @@ class Monitor:
             logger.info("Getting historical data for code: %s" % code)
             while retry > 0:
                 try:
-                    df = ts.get_h_data(code, pause=6)
+                    yesterday = (datetime.datetime.now() - datetime.timedelta(days = 1))
+                    timeStr = yesterday.strftime("%Y%m%d")
+                    df = local_ts.get_h_data(code, timeStr=timeStr)
                     break
                 except Exception as e:
                     logger.error("Failed to get history data")
