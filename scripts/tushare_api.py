@@ -32,7 +32,7 @@ class TushareAPI:
         else:
             while retry > 0:
                 try:
-                    df = ts.get_h_data(code, start='2018-06-01', pause=4)
+                    df = ts.get_h_data(code, start='2018-06-01', pause=8)
                     writer = open(cacheFile, "w")
                     df.to_csv(writer)
                     writer.close()
