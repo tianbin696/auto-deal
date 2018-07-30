@@ -173,8 +173,9 @@ if __name__ == "__main__":
     # save_all_codes()
 
     avgDays = 12
-    codes = get_code_filter_list(avgDays, "codes.txt")
+    timeStr="20180730"
+    codes = get_code_filter_list(avgDays, "codes.txt", timeStr=timeStr)
 
     daysAgo = 10
-    codes = get_code_filter_list(avgDays, None, daysAgo)
+    codes = get_code_filter_list(avgDays, None, daysAgo, timeStr=timeStr)
     verify(codes, daysAgo)
