@@ -489,8 +489,8 @@ class Monitor:
                 if price < avg1*0.96 and price < avg10*0.96:
                     return 'S'
 
-        if not self.compare("10", "00"):
-            return 'N'
+        # if not self.compare("10", "00"):
+        #     return 'N'
 
         if code not in isBuyeds or not isBuyeds[code]:
             idx_curr_price = (1+indexes['change'][0]/100)*indexes['preclose'][0] + (1+indexes['change'][12]/100)*indexes['preclose'][12] + (1+indexes['change'][17]/100)*indexes['preclose'][17]
