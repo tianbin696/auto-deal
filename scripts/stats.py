@@ -83,7 +83,8 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None, 
         timeStr = time.strftime("%Y%m%d", time.localtime())
     start_time = time.time()
     totals = {}
-    list = ts.get_code_list(totals)
+    liutongs = {}
+    list = ts.get_code_list(totals, liutongs)
     result_list = []
 
     writer = None
@@ -116,6 +117,10 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None, 
             if df['volume'][fangLiangDaysAgo] < df['volume'][fangLiangDaysAgo+1]*2:
                 continue
             if max(df['high'][0:avg_days]) < min(df['low'][0:avg_days])*1.1:
+                continue
+
+            huanshous = get_huan_shou(df, liutongs[code], avg_days)
+            if numpy.sum(huanshous[0:int(avg_days/2)]) < 1.5:
                 continue
 
             # 基于短期价格趋势筛选

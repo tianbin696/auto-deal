@@ -51,7 +51,7 @@ class TushareAPI:
             codes.append(code)
         return codes
 
-    def get_code_list(self, totals={}):
+    def get_code_list(self, totals={}, liutongs={}):
         st_codes = self.get_st_list()
 
         stock_codes = []
@@ -68,6 +68,7 @@ class TushareAPI:
             if code < '300000' or code >= '600000':
                 stock_codes.append(code)
                 totals[code] = fs['totals'][id]
+                liutongs[code] = fs['outstanding'][id]
         return sorted(stock_codes)
 
     def get_realtime_quotes(self, code):
