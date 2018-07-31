@@ -55,7 +55,7 @@ isBuyeds = {}
 isSelleds = {}
 maxAmount = 10000
 minAmount = 0
-availableMoney = 20000
+availableMoney = 10000
 minBuyAmount = 10000
 minSellAmount = 10000
 sleepTime = 0.5
@@ -465,7 +465,6 @@ class Monitor:
         avg10 = float(self.avg10[code])
         avg20 = float(self.avg20[code])
         price = float(price)
-        indexes = ts.get_index()
         logger.info("%s status: %f, %f, %f, %f, %f, %f" % (code, price, highest_price, lowest_price, avg1, avg10, avg20))
         if price <= 0:
             return 'N'
