@@ -145,6 +145,7 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None, 
             result_list.append(code)
             if writer:
                 writer.write(code + "\n")
+                writer.flush()
         except Exception as e:
             logger.error("Failed to process code: %s, exception:%s" % (code,e ))
             continue
