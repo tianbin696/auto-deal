@@ -491,7 +491,7 @@ class Monitor:
         if code not in isBuyeds or not isBuyeds[code]:
             if code in stock_positions:
                 return 'N'
-            if price > avg1 and price < avg1*1.02 and price > min(avg1, lowest_price)*1.01 and price > highest_price*0.96 and price > avg10*0.98 and price < avg10*1.04:
+            if price > avg1 and price < avg1*1.02 and price > lowest_price*1.01 and price > highest_price*0.96 and price > avg10*0.98 and price < avg10*1.04:
                 return 'B'
 
         return 'N'
