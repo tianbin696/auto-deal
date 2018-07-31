@@ -78,7 +78,7 @@ def fang_liang_xia_die(df, avg_days=10):
     return result
 
 
-def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
+def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None, fangLiangDaysAgo=0):
     if not timeStr:
         timeStr = time.strftime("%Y%m%d", time.localtime())
     start_time = time.time()
@@ -102,9 +102,10 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
                 continue
 
             # 基于当日成交量和涨幅筛选
-            if df['high'][0] > prices[1]*1.1 or prices[0] < prices[1] or df['open'][0] > prices[0] or df['high'][0]*0.96 > prices[0]:
+            if df['high'][fangLiangDaysAgo] > prices[fangLiangDaysAgo+1]*1.1 or prices[fangLiangDaysAgo] < prices[fangLiangDaysAgo+1] \
+                    or df['open'][fangLiangDaysAgo] > prices[fangLiangDaysAgo] or df['high'][fangLiangDaysAgo]*0.96 > prices[fangLiangDaysAgo]:
                 continue
-            if df['volume'][0] < df['volume'][1]*2:
+            if df['volume'][fangLiangDaysAgo] < df['volume'][fangLiangDaysAgo+1]*2:
                 continue
             if max(df['high'][0:avg_days]) < min(df['low'][0:avg_days])*1.1:
                 continue
@@ -158,24 +159,22 @@ def save_all_codes():
     writer.close()
 
 
-def verify(codes, daysAgo):
+def verify(codes, daysAgo, timeStr):
     if daysAgo < 3:
         return
     for code in codes:
-        df = ts.get_h_data(code)
+        df = ts.get_h_data(code, timeStr)
         max_increase = float("%.2f" % ((max(df['high'][0:(daysAgo-2)])-df['close'][daysAgo-1])/df['close'][daysAgo-1]*100))
         min_increase = float("%.2f" % ((min(df['low'][0:(daysAgo-2)])-df['close'][daysAgo-1])/df['close'][daysAgo-1]*100))
         print("\n%s max_increase: %.2f" % (code, max_increase))
         print("%s min_increase: %.2f" % (code, min_increase))
 
 if __name__ == "__main__":
-
-    # save_all_codes()
-
     avgDays = 12
-    timeStr="20180730"
-    codes = get_code_filter_list(avgDays, "codes.txt", timeStr=timeStr)
+    timeStr="20180731"
+    fangLiangDaysAgo = 0
+    codes = get_code_filter_list(avgDays, "codes.txt", timeStr=timeStr, fangLiangDaysAgo=fangLiangDaysAgo)
 
     daysAgo = 10
-    codes = get_code_filter_list(avgDays, None, daysAgo, timeStr=timeStr)
-    verify(codes, daysAgo)
+    codes = get_code_filter_list(avgDays, None, daysAgo, timeStr=timeStr, fangLiangDaysAgo=fangLiangDaysAgo)
+    verify(codes, daysAgo, timeStr)
