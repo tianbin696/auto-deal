@@ -86,6 +86,7 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None, 
     list = ts.get_code_list(totals)
     result_list = []
 
+    writer = None
     if file:
         writer = open(file, "w")
 
