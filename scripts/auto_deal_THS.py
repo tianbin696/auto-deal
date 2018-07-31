@@ -486,31 +486,13 @@ class Monitor:
                 if price < avg1*0.96 and price < avg10*0.96:
                     return 'S'
 
-        # if not self.compare("10", "00"):
-        #     return 'N'
+                if price < highest_price*0.94:
+                    return 'S'
 
         if code not in isBuyeds or not isBuyeds[code]:
-            idx_curr_price = (1+indexes['change'][0]/100)*indexes['preclose'][0] + (1+indexes['change'][12]/100)*indexes['preclose'][12] + (1+indexes['change'][17]/100)*indexes['preclose'][17]
-            idx_low_price = indexes['low'][0] + indexes['low'][12] + indexes['low'][17]
-            if idx_curr_price < idx_low_price * 1.01:
+            if code in stock_positions:
                 return 'N'
-
-            if price < avg10 or price > avg10*1.04:
-                return 'N'
-
-            if price > avg1*1.02:
-                return 'N'
-
-            if open_price <= lowest_price and price > min(open_price, avg1)*1.01:
-                return 'B'
-
-            if open_price > lowest_price and lowest_price > avg1*0.98 and price > lowest_price*1.01:
-                return 'B'
-
-            if open_price > lowest_price and lowest_price > avg1*0.96 and price > lowest_price*1.02:
-                return 'B'
-
-            if open_price > lowest_price and lowest_price > avg1*0.94 and price > lowest_price*1.03:
+            if price > avg1 and price < avg1*1.02 and price > min(avg1, lowest_price)*1.01 and price > highest_price*0.96 and price > avg10*0.98 and price < avg10*1.04:
                 return 'B'
 
         return 'N'
