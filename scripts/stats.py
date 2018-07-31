@@ -85,6 +85,10 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None, 
     totals = {}
     list = ts.get_code_list(totals)
     result_list = []
+
+    if file:
+        writer = open(file, "w")
+
     for code in list:
         try:
             df = ts.get_h_data(code, timeStr, daysAgo)
@@ -139,14 +143,13 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None, 
 
             print("\navgs of %s: %s" % (code, avgs))
             result_list.append(code)
+            if writer:
+                writer.write(code + "\n")
         except Exception as e:
             logger.error("Failed to process code: %s, exception:%s" % (code,e ))
             continue
 
     if file:
-        writer = open(file, "w")
-        for code in sorted(result_list):
-            writer.write(code + "\n")
         writer.close()
 
     end_time = time.time()
