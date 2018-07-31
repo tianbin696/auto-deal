@@ -39,7 +39,7 @@ class TushareAPI:
                     break
                 except Exception as e:
                     logger.error("Failed to get history data for code=%s" % code)
-                    time.sleep(60)
+                    time.sleep(10)
                     retry -= 1
         return df[daysAgo:].reset_index()
 
