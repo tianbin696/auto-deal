@@ -478,14 +478,14 @@ class Monitor:
                     # 股价高于10日线8%，止盈
                     return 'S'
 
-                if price > avg1*1.06:
+                if price > avg1*1.04:
                     # 日涨幅超过8%时，止盈
                     return 'S'
 
                 if price < avg1*0.96 and price < avg10*0.96:
                     return 'S'
 
-                if price < highest_price*0.94:
+                if price < highest_price*0.96:
                     return 'S'
 
         if code not in isBuyeds or not isBuyeds[code]:
