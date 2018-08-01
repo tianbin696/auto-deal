@@ -84,7 +84,7 @@ def load_cache(timeStr=None, threadNum=10):
     codes = ts.get_code_list()
     for code in codes:
         print("Submit code: %s" % code)
-        executor.submit(ts.get_h_data(code, timeStr=timeStr))
+        executor.submit(ts.get_h_data, code, timeStr=timeStr)
     executor.shutdown(wait=True)
     print("Finish load cache")
 
