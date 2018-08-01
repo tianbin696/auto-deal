@@ -41,7 +41,7 @@ class TushareAPI:
                 if rtDF['price'][0] > df['price'][0] *1.2 or rtDF['price'][0] < df['price'][0] *0.8:
                     print("Invalid price for code = %s: %.2f, %.2f" % (code, rtDF['price'][0], df['price'][0]))
                     df = ts.get_h_data(code, start='2018-06-01', pause=8)
-                else:
+                elif rtDF['date'][0] != df['date'][0]:
                     df.loc[-1] = [rtDF['date'][0], rtDF['open'][0], rtDF['high'][0], rtDF['price'][0], rtDF['low'][0], rtDF['volume'][0], rtDF['amount'][0]]
                     df.index = df.index+1
                     df = df.sort_index()
