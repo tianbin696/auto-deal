@@ -6,6 +6,8 @@ import time
 import os.path
 import os
 import pandas
+from datetime import datetime
+from datetime import timedelta
 
 logger = logging.getLogger('TushareAPI')
 cacheFolder = "../cache"
@@ -30,17 +32,37 @@ class TushareAPI:
         if os.path.exists(cacheFile):
             df = pandas.read_csv(cacheFile)
         else:
-            while retry > 0:
-                try:
+            yesterday = (datetime.now() - timedelta(days = 1))
+            yesterdayTimeStr = yesterday.strftime("%Y%m%d")
+            yesterdayFilePath = cacheFolder + "/" + yesterdayTimeStr + "/" + code + "_" + yesterdayTimeStr + ".csv"
+            if os.path.exists(yesterdayFilePath):
+                df = pandas.read_csv(yesterdayFilePath)
+                rtDF = ts.get_realtime_quotes(code)
+                if rtDF['price'][0] > df['price'][0] *1.2 or rtDF['price'][0] < df['price'][0] *0.8:
+                    print("Invalid price for code = %s: %.2f, %.2f" % (code, rtDF['price'][0], df['price'][0]))
                     df = ts.get_h_data(code, start='2018-06-01', pause=8)
+                else:
+                    df.loc[-1] = [rtDF['date'][0], rtDF['open'][0], rtDF['high'][0], rtDF['price'][0], rtDF['low'][0], rtDF['volume'][0], rtDF['amount'][0]]
+                    df.index = df.index+1
+                    df = df.sort_index()
+                if len(df) > 0:
                     writer = open(cacheFile, "w")
                     df.to_csv(writer)
                     writer.close()
-                    break
-                except Exception as e:
-                    logger.error("Failed to get history data for code=%s" % code)
-                    time.sleep(10)
-                    retry -= 1
+                df = pandas.read_csv(cacheFile)
+            else:
+                while retry > 0:
+                    try:
+                        df = ts.get_h_data(code, start='2018-06-01', pause=8)
+                        if len(df) > 0:
+                            writer = open(cacheFile, "w")
+                            df.to_csv(writer)
+                            writer.close()
+                        break
+                    except Exception as e:
+                        logger.error("Failed to get history data for code=%s" % code)
+                        time.sleep(10)
+                        retry -= 1
         return df[daysAgo:].reset_index()
 
 
