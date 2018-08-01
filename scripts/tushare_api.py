@@ -38,8 +38,8 @@ class TushareAPI:
             if os.path.exists(yesterdayFilePath):
                 df = pandas.read_csv(yesterdayFilePath)
                 rtDF = ts.get_realtime_quotes(code)
-                if rtDF['price'][0] > df['price'][0] *1.2 or rtDF['price'][0] < df['price'][0] *0.8:
-                    print("Invalid price for code = %s: %.2f, %.2f" % (code, rtDF['price'][0], df['price'][0]))
+                if float(rtDF['price'][0]) > float(df['close'][0]) *1.2 or float(rtDF['price'][0]) < float(df['close'][0]) *0.8:
+                    print("Invalid price for code = %s: %.2f, %.2f" % (code, rtDF['price'][0], df['close'][0]))
                     df = ts.get_h_data(code, start='2018-06-01', pause=8)
                 elif rtDF['date'][0] != df['date'][0]:
                     df.loc[-1] = [rtDF['date'][0], rtDF['open'][0], rtDF['high'][0], rtDF['price'][0], rtDF['low'][0], rtDF['volume'][0], rtDF['amount'][0]]
@@ -51,6 +51,7 @@ class TushareAPI:
                     writer.close()
                 df = pandas.read_csv(cacheFile)
             else:
+                df = pandas.DataFrame()
                 while retry > 0:
                     try:
                         df = ts.get_h_data(code, start='2018-06-01', pause=8)
