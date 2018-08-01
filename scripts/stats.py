@@ -115,10 +115,7 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None, 
             if prices[0] < avg10*0.98 or prices[0] > avg10*1.04:
                 continue
 
-            if prices[0] < prices[1]*0.96:
-                continue
-
-            if totals[code]*prices[0] < 50:
+            if totals[code]*prices[0] < 100:
                 continue
 
             # 基于当日成交量和涨幅筛选
@@ -196,7 +193,7 @@ def verify(codes, daysAgo, timeStr):
 if __name__ == "__main__":
     avgDays = 12
     timeStr="20180801"
-    load_cache(timeStr)
+    # load_cache(timeStr, threadNum=4)
 
     fangLiangDaysAgo = 0
     codes = get_code_filter_list(avgDays, "codes.txt", timeStr=timeStr, fangLiangDaysAgo=fangLiangDaysAgo)
