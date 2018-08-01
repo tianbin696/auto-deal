@@ -54,11 +54,11 @@ class TushareAPI:
                 df = pandas.DataFrame()
                 while retry > 0:
                     try:
-                        df = ts.get_h_data(code, start='2018-06-01', pause=8)
-                        if len(df) > 0:
-                            writer = open(cacheFile, "w")
-                            df.to_csv(writer)
-                            writer.close()
+                        # df = ts.get_h_data(code, start='2018-06-01', pause=8)
+                        # if len(df) > 0:
+                        #     writer = open(cacheFile, "w")
+                        #     df.to_csv(writer)
+                        #     writer.close()
                         break
                     except Exception as e:
                         logger.error("Failed to get history data for code=%s" % code)
