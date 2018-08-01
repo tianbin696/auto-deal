@@ -6,6 +6,7 @@ import numpy
 from tushare_api import TushareAPI
 import logging
 import time
+from concurrent import futures
 
 logger = logging.getLogger('stats')
 ts = TushareAPI()
@@ -78,6 +79,16 @@ def fang_liang_xia_die(df, avg_days=10):
     return result
 
 
+def load_cache(timeStr=None, threadNum=10):
+    executor = futures.ThreadPoolExecutor(max_workers=threadNum)
+    codes = ts.get_code_list()
+    for code in codes:
+        print("Submit code: %s" % code)
+        executor.submit(ts.get_h_data(code, timeStr=timeStr))
+    executor.shutdown(wait=True)
+    print("Finish load cache")
+
+
 def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None, fangLiangDaysAgo=0):
     if not timeStr:
         timeStr = time.strftime("%Y%m%d", time.localtime())
@@ -107,7 +118,7 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None, 
             if prices[0] < prices[1]*0.96:
                 continue
 
-            if totals[code]*prices[0] < 100:
+            if totals[code]*prices[0] < 50:
                 continue
 
             # 基于当日成交量和涨幅筛选
@@ -184,7 +195,9 @@ def verify(codes, daysAgo, timeStr):
 
 if __name__ == "__main__":
     avgDays = 12
-    timeStr="20180731"
+    timeStr="20180801"
+    load_cache(timeStr)
+
     fangLiangDaysAgo = 0
     codes = get_code_filter_list(avgDays, "codes.txt", timeStr=timeStr, fangLiangDaysAgo=fangLiangDaysAgo)
 
