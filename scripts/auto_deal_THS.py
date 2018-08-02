@@ -55,7 +55,7 @@ isBuyeds = {}
 isSelleds = {}
 buyedPrices = {}
 selledPrices = {}
-maxAmount = 40000
+maxAmount = 20000
 minAmount = 0
 availableMoney = 20000
 minBuyAmount = 10000
@@ -473,12 +473,17 @@ class Monitor:
         if price <= 0:
             return 'N'
 
-        if code not in buyedPrices or price > buyedPrices[code]*1.02:
-            if price > avg10*0.94 and price < highest_price*0.98:
-                    return 'S'
+        if code not in isSelleds or not isSelleds[code]:
+            if price > avg1*1.02 and price < highest_price*0.98:
+                # 日内止盈
+                return 'S'
+            if price < avg10*0.96 and price < avg1*0.96:
+                # 趋势破位，止损
+                return 'S'
 
-        if code not in selledPrices or price < selledPrices[code]*0.98:
-            if price < avg10*1.06 and price > lowest_price*1.02:
+        if code not in isBuyeds or not isBuyeds[code]:
+            if price < avg1*1.02 and price > avg1*0.96 and price > avg10*0.98 and price > lowest_price*1.02:
+                # 趋势向上，触底反弹，买入
                 return 'B'
 
         return 'N'
