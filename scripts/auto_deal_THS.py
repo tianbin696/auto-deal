@@ -446,7 +446,7 @@ class Monitor:
                 try:
                     yesterday = (datetime.now() - timedelta(days = 1))
                     timeStr = yesterday.strftime("%Y%m%d")
-                    df = ts.get_h_data(code)
+                    df = ts.get_h_data(code, pause=10)
                     break
                 except Exception as e:
                     logger.error("Failed to get history data: %s" % e)
