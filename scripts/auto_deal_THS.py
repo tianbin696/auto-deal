@@ -325,7 +325,7 @@ class Monitor:
             try:
                 self.operation.moveMouse()
 
-                if (self.compare("09", "40") and not self.compare("11", "28")) or (self.compare("13", "02") and not self.compare("14", "58")):
+                if (self.compare("09", "35") and not self.compare("11", "28")) or (self.compare("13", "02") and not self.compare("14", "58")):
                     # 交易时间：[09:30 ~ 11:30, 13:00 ~ 15:00]
                     if not isStarted:
                         self.operation.saveScreenshot("开始交易", '开始交易')
@@ -465,6 +465,7 @@ class Monitor:
         return avg
 
     def getDirection(self, code, price, open_price, highest_price, lowest_price):
+        # 理论基础：趋势一旦形成，短期不会改变
         avg1 = float(self.avg1[code])
         avg10 = float(self.avg10[code])
         avg20 = float(self.avg20[code])
@@ -521,6 +522,7 @@ if __name__ == '__main__':
             time.sleep(30)
             ths_start()
 
+            stock_codes.clear()
             # readCodes()
 
             monitor = Monitor()
