@@ -53,9 +53,11 @@ stock_positions = {}
 stock_chenbens = {}
 isBuyeds = {}
 isSelleds = {}
-maxAmount = 10000
+buyedPrices = {}
+selledPrices = {}
+maxAmount = 40000
 minAmount = 0
-availableMoney = 10000
+availableMoney = 20000
 minBuyAmount = 10000
 minSellAmount = 10000
 sleepTime = 0.5
@@ -397,6 +399,7 @@ class Monitor:
                 # stock_positions[code] += buyAmount
                 # 当日买进的仓位无法卖出，所以不计入当日持仓
                 isBuyeds[code] = True
+                buyedPrices[code] = price
                 availableMoney -= buyAmount*price
         elif direction == 'S':
             if code not in stock_positions or stock_positions[code]*price <= minAmount:
@@ -415,6 +418,7 @@ class Monitor:
             if self.operation.order(code, 'S', sellPrice, sellAmount):
                 stock_positions[code] -= sellAmount
                 isSelleds[code] = True
+                selledPrices[code] = price
                 availableMoney += sellAmount*price
 
     def getRealTimeData(self, code, p_changes=[], open_prices=[], highest_prices=[], lowest_prices=[]):
@@ -469,29 +473,12 @@ class Monitor:
         if price <= 0:
             return 'N'
 
-        if code not in isSelleds or not isSelleds[code]:
-            if price < highest_price*0.98 and price > avg10*0.92:
-                # 只有当股价低于日内最高点时，才考虑卖出，避免卖出持续上涨和一字板的股票
-                # 且股价高于10日线*0.94，避免持续卖出大幅下跌的股票
-
-                if price > avg10*1.06 and price > avg1*1.02:
-                    # 股价高于10日线8%，止盈
+        if code not in buyedPrices or price > buyedPrices[code]*1.02:
+            if price > avg10*0.94 and price < highest_price*0.98:
                     return 'S'
 
-                if price > avg1*1.04:
-                    # 日涨幅超过8%时，止盈
-                    return 'S'
-
-                if price < avg1*0.96 and price < avg10*0.96:
-                    return 'S'
-
-                if price < highest_price*0.96:
-                    return 'S'
-
-        if code not in isBuyeds or not isBuyeds[code]:
-            if code in stock_positions:
-                return 'N'
-            if price > avg1 and price < avg1*1.02 and price > lowest_price*1.01 and price > highest_price*0.96 and price > avg10*0.98 and price < avg10*1.04:
+        if code not in selledPrices or price < selledPrices[code]*0.98:
+            if price < avg10*1.06 and price > lowest_price*1.02:
                 return 'B'
 
         return 'N'
@@ -529,7 +516,7 @@ if __name__ == '__main__':
             time.sleep(30)
             ths_start()
 
-            readCodes()
+            # readCodes()
 
             monitor = Monitor()
             logger.info("Testing ...")
