@@ -192,7 +192,7 @@ def verify(codes, daysAgo, timeStr):
 
 if __name__ == "__main__":
     avgDays = 12
-    timeStr="20180801"
+    timeStr=None
     # load_cache(timeStr, threadNum=4)
 
     fangLiangDaysAgo = 0
