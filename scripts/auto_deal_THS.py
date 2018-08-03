@@ -462,6 +462,7 @@ class Monitor:
             logger.error("Error while get code %s: %s" % (code, e))
             p_changes.append(0)
         logger.debug("Historical %d avg data of %s: %.2f" % (days, code, avg))
+        print("Historical %d avg data of %s: %.2f" % (days, code, avg))
         return avg
 
     def getDirection(self, code, price, open_price, highest_price, lowest_price):
