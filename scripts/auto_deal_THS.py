@@ -523,7 +523,7 @@ if __name__ == '__main__':
             ths_start()
 
             stock_codes.clear()
-            # readCodes()
+            readCodes()
 
             monitor = Monitor()
             logger.info("Testing ...")

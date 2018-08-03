@@ -39,9 +39,11 @@ class TushareAPI:
                 df = pandas.read_csv(yesterdayFilePath)
                 df = pandas.DataFrame({'date':df['date'], 'open':df['open'], 'high':df['high'],
                                        'close':df['close'], 'low':df['low'], 'volume':df['volume'],
-                                               'amount':df['amount']})
+                                               'amount':df['amount']}, columns=['date', 'open', 'high', 'close', 'low', 'volume', 'amount'])
                 rtDF = ts.get_realtime_quotes(code)
-                if float(rtDF['price'][0]) > float(df['close'][0]) *1.2 or float(rtDF['price'][0]) < float(df['close'][0]) *0.8:
+                if float(rtDF['price'][0]) <= 0:
+                    print("Invalid price for code = %s: %s" % (code, rtDF['price'][0]))
+                elif float(rtDF['price'][0]) > float(df['close'][0]) *1.2 or float(rtDF['price'][0]) < float(df['close'][0]) *0.8:
                     print("Invalid price for code = %s: %s, %s" % (code, rtDF['price'][0], df['close'][0]))
                     df = ts.get_h_data(code, start='2018-06-01', pause=8)
                 elif rtDF['date'][0] != df['date'][0]:

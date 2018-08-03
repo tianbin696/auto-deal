@@ -112,7 +112,7 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None, 
             avgs = avg(prices, avg_days)
             avg10 = numpy.mean(prices[0:avg_days])
 
-            if prices[0] < avg10*0.96 or prices[0] > avg10*1.04:
+            if prices[0] <= 0 or prices[0] < avg10*0.96 or prices[0] > avg10*1.04:
                 continue
 
             if totals[code]*prices[0] < 100:
@@ -122,7 +122,7 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None, 
             if df['high'][fangLiangDaysAgo] > prices[fangLiangDaysAgo+1]*1.1 or prices[fangLiangDaysAgo] < prices[fangLiangDaysAgo+1]*0.98 \
                     or df['open'][fangLiangDaysAgo] > prices[fangLiangDaysAgo]*1.02 or df['high'][fangLiangDaysAgo]*0.96 > prices[fangLiangDaysAgo]:
                 continue
-            if df['volume'][fangLiangDaysAgo] < df['volume'][fangLiangDaysAgo+1]*2:
+            if df['volume'][fangLiangDaysAgo] < df['volume'][fangLiangDaysAgo+1]*2 and df['volume'][fangLiangDaysAgo] < df['volume'][fangLiangDaysAgo+2]*2:
                 continue
             if max(df['high'][0:avg_days]) < min(df['low'][0:avg_days])*1.1:
                 continue
