@@ -193,8 +193,7 @@ def verify(codes, daysAgo, timeStr):
         df = ts.get_h_data(code, timeStr)
         max_increase = float("%.2f" % ((max(df['high'][0:(daysAgo-2)])-df['close'][daysAgo-1])/df['close'][daysAgo-1]*100))
         min_increase = float("%.2f" % ((min(df['low'][0:(daysAgo-2)])-df['close'][daysAgo-1])/df['close'][daysAgo-1]*100))
-        print("\n%s max_increase: %.2f" % (code, max_increase))
-        print("%s min_increase: %.2f" % (code, min_increase))
+        print("%s increase: [%.2f, %.2f]" % (code, min_increase, max_increase))
 
 if __name__ == "__main__":
     avgDays = 12
