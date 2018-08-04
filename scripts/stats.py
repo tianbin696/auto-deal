@@ -124,7 +124,7 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None, 
                 continue
             if df['volume'][fangLiangDaysAgo] < df['volume'][fangLiangDaysAgo+1]*2 and df['volume'][fangLiangDaysAgo] < df['volume'][fangLiangDaysAgo+2]*2:
                 continue
-            if max(df['high'][0:avg_days]) < min(df['low'][0:avg_days])*1.1:
+            if max(df['high'][0:avg_days]) < min(df['low'][0:avg_days])*1.1 or max(df['high'][0:avg_days]) > min(df['low'][0:avg_days])*1.2:
                 continue
 
             huanshous = get_huan_shou(df, liutongs[code], avg_days)

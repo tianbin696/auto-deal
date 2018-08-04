@@ -10,7 +10,7 @@ from datetime import datetime
 from datetime import timedelta
 
 logger = logging.getLogger('TushareAPI')
-cacheFolder = "../cache"
+cacheFolder = "../../cache"
 
 class TushareAPI:
     def get_historic_price(self, code):
