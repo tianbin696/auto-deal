@@ -102,6 +102,32 @@ class TushareAPI:
     def get_realtime_quotes(self, code):
         return ts.get_realtime_quotes(code)
 
+
+    def get_sina_dd(self, code, timeStr):
+        ndf = ts.get_sina_dd(code, date=timeStr).groupby('type').sum().reset_index()
+        if len(ndf) > 2:
+            return ndf[1:].reset_index()
+        return ndf
+
+
+    def get_fangliang_time(self, code, timeStr=None):
+        if not timeStr:
+            timeStr = time.strftime("%Y-%m-%d", time.localtime())
+        df = ts.get_sina_dd(code, date=timeStr)
+        if len(df) < 20:
+            return None
+        index = len(df)-20
+        while index > 0:
+            ndf = df[index:].groupby(['type']).sum().reset_index()
+            if(ndf['volume'][1] > ndf['volume'][2]*1.5):
+                print(ndf)
+                return df['time'][index]
+            index -= 1
+        return None
+
+
 if __name__ == "__main__":
-    df = ts.get_index()
-    print("df: %s" % df)
+    local_ts = TushareAPI()
+    code = '002025'
+    timeStr = '2018-08-03'
+    print("Fangliang time for code=%s: %s" %(code, local_ts.get_fangliang_time(code, timeStr=timeStr)))

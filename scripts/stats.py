@@ -122,9 +122,14 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None, 
             if df['high'][fangLiangDaysAgo] > prices[fangLiangDaysAgo+1]*1.1 or prices[fangLiangDaysAgo] < prices[fangLiangDaysAgo+1]*0.98 \
                     or df['open'][fangLiangDaysAgo] > prices[fangLiangDaysAgo]*1.02 or df['high'][fangLiangDaysAgo]*0.96 > prices[fangLiangDaysAgo]:
                 continue
-            if df['volume'][fangLiangDaysAgo] < df['volume'][fangLiangDaysAgo+1]*2 and df['volume'][fangLiangDaysAgo] < df['volume'][fangLiangDaysAgo+2]*2:
+            if df['volume'][fangLiangDaysAgo] < df['volume'][fangLiangDaysAgo+1]*2 \
+                    and df['volume'][fangLiangDaysAgo] < df['volume'][fangLiangDaysAgo+2]*2 \
+                    and df['volume'][fangLiangDaysAgo] < df['volume'][fangLiangDaysAgo+3]*2:
                 continue
             if max(df['high'][0:avg_days]) < min(df['low'][0:avg_days])*1.1 or max(df['high'][0:avg_days]) > min(df['low'][0:avg_days])*1.2:
+                continue
+            ndf = ts.get_sina_dd(code, df['date'][0])
+            if len(ndf) < 2 or ndf['volume'][0] < ndf['volume'][1]*1.5:
                 continue
 
             huanshous = get_huan_shou(df, liutongs[code], avg_days)
@@ -156,6 +161,7 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None, 
             #     continue
 
             print("\navgs of %s: %s" % (code, avgs))
+            print(ndf)
             result_list.append(code)
             if writer:
                 writer.write(code + "\n")
