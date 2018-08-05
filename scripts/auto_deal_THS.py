@@ -476,8 +476,8 @@ class Monitor:
             return 'N'
 
         if code not in isSelleds or not isSelleds[code]:
-            if price > avg1*1.02 and price < highest_price*0.98:
-                # 日内止盈
+            if price > avg1*1.04 and price < highest_price*0.98:
+                # 止盈
                 return 'S'
             if price < avg10*0.96 and price < avg1*0.96:
                 # 趋势破位，止损
