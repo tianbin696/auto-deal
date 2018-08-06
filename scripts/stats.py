@@ -119,8 +119,7 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None, 
                 continue
 
             # 基于当日成交量和涨幅筛选
-            if df['high'][fangLiangDaysAgo] > prices[fangLiangDaysAgo+1]*1.1 or prices[fangLiangDaysAgo] < prices[fangLiangDaysAgo+1]*0.98 \
-                    or df['open'][fangLiangDaysAgo] > prices[fangLiangDaysAgo]*1.02 or df['high'][fangLiangDaysAgo]*0.96 > prices[fangLiangDaysAgo]:
+            if df['open'][fangLiangDaysAgo] > prices[fangLiangDaysAgo] or df['high'][fangLiangDaysAgo]*0.96 > prices[fangLiangDaysAgo]:
                 continue
             if df['volume'][fangLiangDaysAgo] < df['volume'][fangLiangDaysAgo+1]*2 \
                     and df['volume'][fangLiangDaysAgo] < df['volume'][fangLiangDaysAgo+2]*2 \
