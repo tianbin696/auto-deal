@@ -112,7 +112,7 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None, 
             avgs = avg(prices, avg_days)
             avg10 = numpy.mean(prices[0:avg_days])
 
-            if prices[0] <= 0 or prices[0] < avg10*0.98 or prices[0] > avg10*1.04:
+            if prices[0] <= 0 or prices[0] < avg10*0.98 or prices[0] > avg10*1.02:
                 continue
 
             if totals[code]*prices[0] < 1:
@@ -125,7 +125,11 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None, 
                     and df['volume'][fangLiangDaysAgo] < df['volume'][fangLiangDaysAgo+2]*2 \
                     and df['volume'][fangLiangDaysAgo] < df['volume'][fangLiangDaysAgo+3]*2:
                 continue
+            if df['volume'][fangLiangDaysAgo] < numpy.mean(df['volume'][fangLiangDaysAgo:(fangLiangDaysAgo+avg_days)])*1.2:
+                continue
             if max(df['high'][0:avg_days]) < min(df['low'][0:avg_days])*1.1 or max(df['high'][0:avg_days]) > min(df['low'][0:avg_days])*1.2:
+                continue
+            if max(df['close'][0:avg_days]) < min(df['close'][0:avg_days])*1.05 or max(df['close'][0:avg_days]) > min(df['close'][0:avg_days])*1.15:
                 continue
             ndf = ts.get_sina_dd(code, df['date'][0])
             if len(ndf) < 2 or ndf['volume'][0] < ndf['volume'][1]*1.5:

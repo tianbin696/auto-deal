@@ -104,9 +104,12 @@ class TushareAPI:
 
 
     def get_sina_dd(self, code, timeStr):
-        ndf = ts.get_sina_dd(code, date=timeStr).groupby('type').sum().reset_index()
-        if len(ndf) > 2:
-            return ndf[1:].reset_index()
+        df = ts.get_sina_dd(code, date=timeStr)
+        ndf = pandas.DataFrame()
+        if df is not None:
+            ndf = df.groupby('type').sum().reset_index()
+            if len(ndf) > 2:
+                return ndf[1:].reset_index()
         return ndf
 
 
