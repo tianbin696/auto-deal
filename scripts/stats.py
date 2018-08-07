@@ -196,7 +196,7 @@ def sort_codes(codes, avg_days, timeStr=None):
         df = ts.get_h_data(code, timeStr=timeStr)
         score_volume = df['volume'][0]/numpy.mean(df['volume'[0:avg_days]])
         price_percentage = (df['close'][0]-df['close'][1])/df['close'][1]*100
-        score_price = 3 - abs(price_percentage-4)
+        score_price = 2 - abs(price_percentage-3)
         scores[code] = float("%.2f" % (score_volume+score_price))
     sorted_scores = OrderedDict(sorted(scores.items(), key=lambda t: t[1], reverse=True))
     print("Scores: %s" % sorted_scores)
