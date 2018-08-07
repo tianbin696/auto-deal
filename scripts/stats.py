@@ -125,6 +125,8 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None, 
                     and df['volume'][fangLiangDaysAgo] < df['volume'][fangLiangDaysAgo+2]*2 \
                     and df['volume'][fangLiangDaysAgo] < df['volume'][fangLiangDaysAgo+3]*2:
                 continue
+            if df['volume'][fangLiangDaysAgo] < df['volume'][fangLiangDaysAgo+1]:
+                continue
             if df['volume'][fangLiangDaysAgo] < numpy.mean(df['volume'][fangLiangDaysAgo:(fangLiangDaysAgo+avg_days)])*1.2:
                 continue
             if max(df['high'][0:avg_days]) < min(df['low'][0:avg_days])*1.1 or max(df['high'][0:avg_days]) > min(df['low'][0:avg_days])*1.2:
