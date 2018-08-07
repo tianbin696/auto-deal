@@ -7,6 +7,7 @@ from tushare_api import TushareAPI
 import logging
 import time
 from concurrent import futures
+from collections import OrderedDict
 
 logger = logging.getLogger('stats')
 ts = TushareAPI()
@@ -178,9 +179,30 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None, 
     if file:
         writer.close()
 
+    sortedCodes = sort_codes(result_list, avg_days, timeStr)
+    if file:
+        writer = open(file, 'w')
+        for code in sortedCodes:
+            writer.write(code + "\n")
+        writer.close()
     end_time = time.time()
     print("Get %d filter code from total %d codes. Total cost %d seconds" % (len(result_list), len(list), (end_time - start_time)))
     return result_list
+
+
+def sort_codes(codes, avg_days, timeStr=None):
+    scores = {}
+    for code in codes:
+        df = ts.get_h_data(code, timeStr=timeStr)
+        score_volume = df['volume'][0]/numpy.mean(df['volume'[0:avg_days]])
+        price_percentage = (df['close'][0]-df['close'][1])/df['close'][1]*100
+        score_price = 3 - abs(price_percentage-4)
+        scores[code] = float("%.2f" % (score_volume+score_price))
+    sorted_scores = OrderedDict(sorted(scores.items(), key=lambda t: t[1], reverse=True))
+    print("Scores: %s" % sorted_scores)
+    new_codes = []
+    new_codes.extend(sorted_scores.keys())
+    return new_codes
 
 
 def save_all_codes():
@@ -209,5 +231,5 @@ if __name__ == "__main__":
     codes = get_code_filter_list(avgDays, "codes.txt", timeStr=timeStr, fangLiangDaysAgo=fangLiangDaysAgo)
 
     daysAgo = 10
-    codes = get_code_filter_list(avgDays, None, daysAgo, timeStr=timeStr, fangLiangDaysAgo=fangLiangDaysAgo)
-    verify(codes, daysAgo, timeStr)
+    # codes = get_code_filter_list(avgDays, None, daysAgo, timeStr=timeStr, fangLiangDaysAgo=fangLiangDaysAgo)
+    # verify(codes, daysAgo, timeStr)

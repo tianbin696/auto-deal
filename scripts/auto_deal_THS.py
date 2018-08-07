@@ -24,6 +24,7 @@ from tong_hua_shun import ths_start
 from tong_hua_shun import ths_close
 from stats import get_code_filter_list
 from stats import var
+from stats import sort_codes
 
 from tushare_api import TushareAPI
 local_ts = TushareAPI()
@@ -314,7 +315,9 @@ class Monitor:
             if self.avg10[code] > 0:
                 temp_arr.append(code)
         stock_codes.clear()
-        stock_codes.extend(temp_arr)
+        yesterday = (datetime.now() - timedelta(days = 1))
+        timeStr = yesterday.strftime("%Y%m%d")
+        stock_codes.extend(sort_codes(temp_arr, avg10Days, timeStr))
         end_time = time.time()
         self.operation.saveScreenshot("均值更新完成，共耗时%d秒，排除异常，可监控%d支股票" % ((end_time - start_time), len(stock_codes)), u'交易前准备')
         logger.info("Total monitor code size: %d. Codes=%s" % (len(stock_codes), stock_codes))
