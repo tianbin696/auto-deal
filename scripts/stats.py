@@ -194,10 +194,12 @@ def sort_codes(codes, avg_days, timeStr=None):
     scores = {}
     for code in codes:
         df = ts.get_h_data(code, timeStr=timeStr)
-        score_volume = df['volume'][0]/numpy.mean(df['volume'[0:avg_days]])
+        score_volume = max(2-abs(2-df['volume'][0]/numpy.mean(df['volume'[0:avg_days]])), 0)
         price_percentage = (df['close'][0]-df['close'][1])/df['close'][1]*100
-        score_price = 2 - abs(price_percentage-3)
-        scores[code] = float("%.2f" % (score_volume+score_price))
+        score_price = max(2 - abs(price_percentage-4), 0)
+        price_percentage = (df['close'][0]-numpy.mean(df['close'][0:avg_days]))/numpy.mean(df['close'][0:avg_days])*100
+        score_avg = max(2 - abs(price_percentage-0), 0)
+        scores[code] = float("%.2f" % (score_volume+score_price+score_avg))
     sorted_scores = OrderedDict(sorted(scores.items(), key=lambda t: t[1], reverse=True))
     print("Scores: %s" % sorted_scores)
     new_codes = []
