@@ -130,9 +130,9 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None, 
                 continue
             if df['volume'][fangLiangDaysAgo] < numpy.mean(df['volume'][fangLiangDaysAgo:(fangLiangDaysAgo+avg_days)])*1.2:
                 continue
-            if max(df['high'][0:avg_days]) < min(df['low'][0:avg_days])*1.1 or max(df['high'][0:avg_days]) > min(df['low'][0:avg_days])*1.2:
+            if max(df['high'][0:avg_days]) > min(df['low'][0:avg_days])*1.2:
                 continue
-            if max(df['close'][0:avg_days]) < min(df['close'][0:avg_days])*1.05 or max(df['close'][0:avg_days]) > min(df['close'][0:avg_days])*1.15:
+            if max(df['close'][0:avg_days]) > min(df['close'][0:avg_days])*1.15:
                 continue
             ndf = ts.get_sina_dd(code, df['date'][0])
             if len(ndf) < 2 or ndf['volume'][0] < ndf['volume'][1]*1.5:
@@ -226,7 +226,7 @@ def verify(codes, daysAgo, timeStr):
 
 if __name__ == "__main__":
     avgDays = 12
-    timeStr=None
+    timeStr="20180808"
     # load_cache(timeStr, threadNum=4)
 
     fangLiangDaysAgo = 0
