@@ -417,8 +417,7 @@ class Monitor:
                 sellPrice = price * 0.99
             if sellPrice <= 0:
                 return
-            if direction == 'S':
-                sellAmount = self.getSellAmount(code, price)
+            sellAmount = self.getSellAmount(code, price)
             if direction == 'FS':
                 sellAmount = stock_positions[code]
             if self.operation.order(code, 'S', sellPrice, sellAmount):
