@@ -499,10 +499,10 @@ class Monitor:
         return 'N'
 
     def getBuyPrice(self, price):
-        return price * 1.02
+        return price * 1.01
 
     def getSellPrice(self, price):
-        return price * 0.98
+        return price * 0.99
 
     def getBuyAmount(self, code, price):
         return int(minBuyAmount/100/price)*100
