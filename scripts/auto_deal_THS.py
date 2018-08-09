@@ -40,15 +40,7 @@ formatter = logging.Formatter('%(asctime)s %(filename)s[line:%(lineno)d] %(level
 console.setFormatter(formatter)
 logger = logging.getLogger('auto_deal')
 logger.addHandler(console)
-# 精选不同行业个股，分散投资，降低风险
-# 化工新材料，银行，计算机应用，零售，饮料制造，
-# 化学制药，国防军工, 白色家电，有色冶炼，建筑材料，
-# 房地产，农业服务，物流，新材料，服装家纺，
-# 钢铁，保险，证券，中药，机场航空
-stock_codes = ['603026', '600309', '601229', '601398', '002065', '002280', '002024', '600859', '000869', '600600',
-               '600566', '002001', '000519', '000547', '600690', '000651', '002466', '000975', '600801', '000786',
-               '001979', '000537', '600201', '600195', '002120', '600270', '600516', '000970', '600398', '002327',
-               '000932', '600019', '601336', '601318', '601688', '601901', '603963', '000423', '603885', '600115']
+stock_codes = []
 ignore_codes = []
 stock_positions = {}
 stock_chenbens = {}
@@ -56,11 +48,12 @@ isBuyeds = {}
 isSelleds = {}
 buyedPrices = {}
 selledPrices = {}
-maxAmount = 120000
+maxCodeSize = 3 # 最大持股数
+maxAmount = 60000
 minAmount = 0
 availableMoney = 20000
-minBuyAmount = 20000
-minSellAmount = 20000
+minBuyAmount = 10000
+minSellAmount = 10000
 sleepTime = 0.5
 monitorInterval = 10
 avg10Days = 12 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
@@ -390,6 +383,8 @@ class Monitor:
         if direction == 'B':
             if availableMoney < minBuyAmount:
                 return
+            if code not in stock_positions and len(stock_positions) >= maxCodeSize:
+                return
             if code in stock_positions and stock_positions[code]*price + minBuyAmount >= maxAmount:
                 # 达到持仓上限，不再买入
                 logger.info("Reach max amount, cannot buy anymore")
@@ -399,8 +394,8 @@ class Monitor:
                 return
             buyAmount = self.getBuyAmount(code, price)
             if self.operation.order(code, direction, buyPrice, buyAmount):
-                # stock_positions[code] += buyAmount
-                # 当日买进的仓位无法卖出，所以不计入当日持仓
+                if code not in stock_positions:
+                    stock_positions[code] = 0
                 isBuyeds[code] = True
                 buyedPrices[code] = price
                 availableMoney -= buyAmount*price
@@ -422,6 +417,8 @@ class Monitor:
                 sellAmount = stock_positions[code]
             if self.operation.order(code, 'S', sellPrice, sellAmount):
                 stock_positions[code] -= sellAmount
+                if stock_positions[code] <= 0:
+                    del stock_positions[code]
                 isSelleds[code] = True
                 selledPrices[code] = price
                 availableMoney += sellAmount*price
@@ -494,7 +491,7 @@ class Monitor:
         if code not in isBuyeds or not isBuyeds[code]:
             if price < avg1*1.01 and price > avg1*0.98 and price > avg10*0.98 and price > lowest_price*1.02:
                 # 趋势向上，触底反弹，买入
-                return 'N'
+                return 'B'
 
         return 'N'
 
@@ -532,7 +529,7 @@ if __name__ == '__main__':
             ths_start()
 
             stock_codes.clear()
-            # readCodes()
+            readCodes()
 
             monitor = Monitor()
             logger.info("Testing ...")
