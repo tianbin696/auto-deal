@@ -485,10 +485,10 @@ class Monitor:
             if price > avg1*1.03 and price < highest_price*0.98:
                 # 止盈
                 return 'S'
-            if price < avg10*0.96 and price < max(avg1, highest_price)*0.96:
+            if price < avg10*0.97 and price < max(avg1, highest_price)*0.97:
                 # 趋势破位，清仓
                 return 'FS'
-            if price < max(avg1, highest_price)*0.96:
+            if price < max(avg1, highest_price)*0.97:
                 # 短期回调，止损
                 return 'S'
 
