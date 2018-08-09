@@ -95,6 +95,7 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None, 
         timeStr = time.strftime("%Y%m%d", time.localtime())
     start_time = time.time()
     totals = {}
+    shizhi = {}
     liutongs = {}
     list = ts.get_code_list(totals, liutongs)
     result_list = []
@@ -112,23 +113,19 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None, 
             prices = df['close']
             avgs = avg(prices, avg_days)
             avg10 = numpy.mean(prices[0:avg_days])
+            avg20 = numpy.mean(prices[0:2*avg_days])
+            shizhi[code] = totals[code]*prices[0]
 
-            if prices[0] <= 0 or prices[0] < avg10*0.98 or prices[0] > avg10*1.04:
+            if prices[0] <= 0 or prices[0] < avg10 or prices[0] > avg10*1.04 or avg10 < avg20:
                 continue
 
             if totals[code]*prices[0] < 50:
                 continue
 
             # 基于当日成交量和涨幅筛选
-            if df['open'][fangLiangDaysAgo] > prices[fangLiangDaysAgo] or df['high'][fangLiangDaysAgo]*0.96 > prices[fangLiangDaysAgo]:
+            if df['open'][0] > prices[0] or df['high'][0]*0.96 > prices[0]:
                 continue
-            if df['volume'][fangLiangDaysAgo] < df['volume'][fangLiangDaysAgo+1]*2 \
-                    and df['volume'][fangLiangDaysAgo] < df['volume'][fangLiangDaysAgo+2]*2 \
-                    and df['volume'][fangLiangDaysAgo] < df['volume'][fangLiangDaysAgo+3]*2:
-                continue
-            if df['volume'][fangLiangDaysAgo] < df['volume'][fangLiangDaysAgo+1]:
-                continue
-            if df['volume'][fangLiangDaysAgo] < numpy.mean(df['volume'][fangLiangDaysAgo:(fangLiangDaysAgo+avg_days)])*1.2:
+            if numpy.mean(df['volume'][0:avg_days]) < numpy.mean(df['volume'][0:2*avg_days]):
                 continue
             if max(df['high'][0:avg_days]) > min(df['low'][0:avg_days])*1.2:
                 continue
@@ -179,10 +176,10 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None, 
     if file:
         writer.close()
 
-    sortedCodes = sort_codes(result_list, avg_days, timeStr)
+    sortedCodes = sort_codes(result_list, avg_days, timeStr, shizhi)
     if file:
         writer = open(file, 'w')
-        for code in sortedCodes:
+        for code in sortedCodes[0:3]:
             writer.write(code + "\n")
         writer.close()
     end_time = time.time()
@@ -190,16 +187,19 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None, 
     return result_list
 
 
-def sort_codes(codes, avg_days, timeStr=None):
+def sort_codes(codes, avg_days, timeStr=None, shizhi=None):
     scores = {}
     for code in codes:
         df = ts.get_h_data(code, timeStr=timeStr)
-        score_volume = max(2-abs(2-df['volume'][0]/numpy.mean(df['volume'[0:avg_days]])), 0)
+        score_volume = 2*max(2-abs(2-numpy.mean(df['volume'][0:avg_days])/numpy.mean(df['volume'[0:2*avg_days]])), 0)
         price_percentage = (df['close'][0]-df['close'][1])/df['close'][1]*100
-        score_price = max(2 - abs(price_percentage-4), 0)
+        score_price = max(2 - abs(price_percentage-2), 0)
         price_percentage = (df['close'][0]-numpy.mean(df['close'][0:avg_days]))/numpy.mean(df['close'][0:avg_days])*100
-        score_avg = max(2 - abs(price_percentage-0), 0)
-        scores[code] = float("%.2f" % (score_volume+score_price+score_avg))
+        score_avg = max(2 - abs(price_percentage-2), 0)
+        score_shizhi = 0
+        if shizhi is not None:
+            score_shizhi = max(2-abs(shizhi[code]/200-2), 0)
+        scores[code] = float("%.2f" % (score_volume+score_price+score_avg+score_shizhi))
     sorted_scores = OrderedDict(sorted(scores.items(), key=lambda t: t[1], reverse=True))
     print("Scores: %s" % sorted_scores)
     new_codes = []
@@ -226,7 +226,7 @@ def verify(codes, daysAgo, timeStr):
 
 if __name__ == "__main__":
     avgDays = 12
-    timeStr="20180808"
+    timeStr=None
     # load_cache(timeStr, threadNum=4)
 
     fangLiangDaysAgo = 0
