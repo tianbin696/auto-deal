@@ -56,11 +56,11 @@ isBuyeds = {}
 isSelleds = {}
 buyedPrices = {}
 selledPrices = {}
-maxAmount = 30000
+maxAmount = 120000
 minAmount = 0
-availableMoney = 10000
-minBuyAmount = 10000
-minSellAmount = 10000
+availableMoney = 20000
+minBuyAmount = 20000
+minSellAmount = 20000
 sleepTime = 0.5
 monitorInterval = 10
 avg10Days = 12 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
@@ -404,7 +404,7 @@ class Monitor:
                 isBuyeds[code] = True
                 buyedPrices[code] = price
                 availableMoney -= buyAmount*price
-        elif direction == 'S':
+        elif direction == 'S' or direction == 'FS':
             if code not in stock_positions or stock_positions[code]*price <= minAmount:
                 # 达到持仓下限，不再卖出
                 logger.info("Reach min amount, cannot sell anymore")
@@ -417,7 +417,10 @@ class Monitor:
                 sellPrice = price * 0.99
             if sellPrice <= 0:
                 return
-            sellAmount = self.getSellAmount(code, price)
+            if direction == 'S':
+                sellAmount = self.getSellAmount(code, price)
+            if direction == 'FS':
+                sellAmount = stock_positions[code]
             if self.operation.order(code, 'S', sellPrice, sellAmount):
                 stock_positions[code] -= sellAmount
                 isSelleds[code] = True
@@ -482,8 +485,11 @@ class Monitor:
             if price > avg1*1.04 and price < highest_price*0.98:
                 # 止盈
                 return 'S'
-            if price < avg10*0.96 and price < avg1*0.96:
-                # 趋势破位，止损
+            if price < avg10*0.96 and price < max(avg1, highest_price)*0.96:
+                # 趋势破位，清仓
+                return 'FS'
+            if price < max(avg1, highest_price)*0.96:
+                # 短期回调，止损
                 return 'S'
 
         if code not in isBuyeds or not isBuyeds[code]:
@@ -527,7 +533,7 @@ if __name__ == '__main__':
             ths_start()
 
             stock_codes.clear()
-            readCodes()
+            # readCodes()
 
             monitor = Monitor()
             logger.info("Testing ...")
