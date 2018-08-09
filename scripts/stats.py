@@ -116,7 +116,7 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None, 
             if prices[0] <= 0 or prices[0] < avg10*0.98 or prices[0] > avg10*1.02:
                 continue
 
-            if totals[code]*prices[0] < 1:
+            if totals[code]*prices[0] < 50:
                 continue
 
             # 基于当日成交量和涨幅筛选
