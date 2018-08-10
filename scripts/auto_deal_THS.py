@@ -478,7 +478,7 @@ class Monitor:
             return 'N'
 
         if code not in isSelleds or not isSelleds[code]:
-            if price > avg1*1.03 and price < highest_price*0.98:
+            if price > avg1*1.04 and price < highest_price*0.98:
                 # 止盈
                 return 'S'
             if price < avg10*0.96 and price < max(avg1, highest_price)*0.96:
@@ -489,7 +489,7 @@ class Monitor:
                 return 'S'
 
         if code not in isBuyeds or not isBuyeds[code]:
-            if price < avg1*1.01 and price > avg1*0.98 and price > avg10*0.98 and price > lowest_price*1.02:
+            if price < avg1*1.02 and price > avg1*0.98 and price > avg10 and price > lowest_price*1.02:
                 # 趋势向上，触底反弹，买入
                 return 'B'
 
