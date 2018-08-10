@@ -90,7 +90,7 @@ def load_cache(timeStr=None, threadNum=10):
     print("Finish load cache")
 
 
-def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None, fangLiangDaysAgo=0):
+def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
     if not timeStr:
         timeStr = time.strftime("%Y%m%d", time.localtime())
     start_time = time.time()
@@ -118,33 +118,22 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None, 
 
             if totals[code]*prices[0] < 1:
                 continue
-            if prices[0] <= 0 or df['high'][0]*0.96 > prices[0] or prices[0] < avg10 or prices[0] > avg10*1.04 or avg10 < avg20:
+            if prices[0] <= 0 or df['high'][0]*0.96 > prices[0] or prices[0] < avg10*0.98 or prices[0] > avg10*1.04:
                 continue
-            if numpy.mean(df['volume'][0:avg_days]) < numpy.mean(df['volume'][0:2*avg_days])*1.2:
-                continue
-            if max(df['high'][0:avg_days]) > min(df['low'][0:avg_days])*1.3 or max(df['high'][0:avg_days]) < min(df['low'][0:avg_days])*1.1:
-                continue
-            if max(df['close'][0:avg_days]) > min(df['close'][0:avg_days])*1.2:
-                continue
-            huanshous = get_huan_shou(df, liutongs[code], avg_days)
-            if numpy.sum(huanshous[0:int(avg_days/2)]) < 1.5:
+            if numpy.mean(df['volume'][0:avg_days]) < numpy.mean(df['volume'][0:2*avg_days])*1.1:
                 continue
 
             # 缩量下跌
             if prices[0] > prices[1] or prices[0] > df['open'][0] or prices[0] < prices[1]*0.96:
                 continue
-            if df['volume'][0] > df['volume'][1]*0.5:
+            if df['volume'][0] > numpy.mean(df['volume'][0:avg_days])*0.5:
                 continue
 
             # 放量上涨
-            # if prices[0] < prices[1]*1.02:
+            # if prices[0] < prices[1]*1.01:
             #     continue
-            # if df['volume'][0] < numpy.mean(df['volume'][0:avg_days]):
+            # if df['volume'][0] < numpy.mean(df['volume'][0:avg_days])*1.5:
             #     continue
-            # ndf = ts.get_sina_dd(code, df['date'][0])
-            # if len(ndf) < 2 or ndf['volume'][0] < ndf['volume'][1]*1.5:
-            #     continue
-            # print(ndf)
 
 
             # 基于短期价格趋势筛选
@@ -191,7 +180,7 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None, 
         writer.close()
     end_time = time.time()
     print("Get %d filter code from total %d codes. Total cost %d seconds" % (len(result_list), len(list), (end_time - start_time)))
-    return result_list
+    return sortedCodes[0:3]
 
 
 def sort_codes(codes, avg_days, timeStr=None):
@@ -233,18 +222,18 @@ def verify(codes, daysAgo, timeStr):
         return
     for code in codes:
         df = ts.get_h_data(code, timeStr)
-        max_increase = float("%.2f" % ((max(df['high'][0:(daysAgo-2)])-df['close'][daysAgo-1])/df['close'][daysAgo-1]*100))
-        min_increase = float("%.2f" % ((min(df['low'][0:(daysAgo-2)])-df['close'][daysAgo-1])/df['close'][daysAgo-1]*100))
+        buyPrice = df['low'][daysAgo-1]*1.02
+        max_increase = float("%.2f" % ((max(df['high'][0:(daysAgo-2)])-buyPrice)/buyPrice*100))
+        min_increase = float("%.2f" % ((min(df['low'][0:(daysAgo-2)])-buyPrice)/buyPrice*100))
         print("%s increase: [%.2f, %.2f]" % (code, min_increase, max_increase))
 
 if __name__ == "__main__":
     avgDays = 12
     timeStr=None
-    # load_cache(timeStr, threadNum=4)
 
     fangLiangDaysAgo = 0
-    codes = get_code_filter_list(avgDays, "codes.txt", timeStr=timeStr, fangLiangDaysAgo=fangLiangDaysAgo)
+    codes = get_code_filter_list(avgDays, "codes.txt", timeStr=timeStr)
 
     daysAgo = 10
-    # codes = get_code_filter_list(avgDays, None, daysAgo, timeStr=timeStr, fangLiangDaysAgo=fangLiangDaysAgo)
-    # verify(codes, daysAgo, timeStr)
+    codes = get_code_filter_list(avgDays, None, daysAgo, timeStr=timeStr)
+    verify(codes, daysAgo, timeStr)
