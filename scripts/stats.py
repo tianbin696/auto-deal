@@ -135,7 +135,7 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
                 continue
             if numpy.mean(df['volume'][0:avg_days]) < numpy.mean(df['volume'][0:2*avg_days])*1.1:
                 continue
-            if max(df['close'][0:avg_days]) < min(df['close'][0:avg_days])*1.06 or max(df['close'][0:avg_days]) > min(df['close'][0:avg_days])*1.50:
+            if max(df['close'][0:avg_days]) < min(df['close'][0:avg_days])*1.06 or max(df['close'][0:avg_days]) > min(df['close'][0:avg_days])*1.30:
                 continue
 
             # 缩量下跌
@@ -263,5 +263,5 @@ if __name__ == "__main__":
     codes = get_code_filter_list(avgDays, "codes.txt", timeStr=timeStr)
 
     daysAgo = 10
-    codes = get_code_filter_list(avgDays, None, daysAgo, timeStr=timeStr)
-    verify(codes, daysAgo, timeStr)
+    # codes = get_code_filter_list(avgDays, None, daysAgo, timeStr=timeStr)
+    # verify(codes, daysAgo, timeStr)
