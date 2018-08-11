@@ -131,11 +131,11 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
 
             if totals[code]*prices[0] < 1:
                 continue
-            if prices[0] <= 0 or df['high'][0]*0.96 > prices[0] or prices[0] < avg10*0.98 or prices[0] > avg10*1.04:
+            if prices[0] <= 0 or df['high'][0]*0.96 > prices[0] or prices[0] < avg10 or prices[0] > avg10*1.04:
                 continue
-            if numpy.mean(df['volume'][0:avg_days]) < numpy.mean(df['volume'][0:2*avg_days])*1.2:
+            if numpy.mean(df['volume'][0:avg_days]) < numpy.mean(df['volume'][0:2*avg_days])*1.1:
                 continue
-            if max(df['close'][0:avg_days]) < min(df['close'][0:avg_days])*1.06:
+            if max(df['close'][0:avg_days]) < min(df['close'][0:avg_days])*1.06 or max(df['close'][0:avg_days]) > min(df['close'][0:avg_days])*1.50:
                 continue
 
             # 缩量下跌
@@ -192,12 +192,12 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
     sortedCodes = sort_codes(result_list, avg_days, timeStr, daysAgo)
     if file:
         writer = open(file, 'w')
-        for code in sortedCodes[0:6]:
+        for code in sortedCodes[0:10]:
             writer.write(code + "\n")
         writer.close()
     end_time = time.time()
     print("Get %d filter code from total %d codes. Total cost %d seconds" % (len(result_list), len(list), (end_time - start_time)))
-    return sortedCodes[0:6]
+    return sortedCodes[0:10]
 
 
 def sort_codes(codes, avg_days, timeStr=None, daysAgo=0):
@@ -259,6 +259,7 @@ if __name__ == "__main__":
     avgDays = 12
     timeStr=None
 
+    # 自动筛选+人工审核过滤
     codes = get_code_filter_list(avgDays, "codes.txt", timeStr=timeStr)
 
     daysAgo = 10
