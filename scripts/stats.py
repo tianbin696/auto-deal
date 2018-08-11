@@ -192,7 +192,7 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
     sortedCodes = sort_codes(result_list, avg_days, timeStr, daysAgo)
     if file:
         writer = open(file, 'w')
-        for code in sortedCodes[0:3]:
+        for code in sortedCodes[0:6]:
             writer.write(code + "\n")
         writer.close()
     end_time = time.time()
