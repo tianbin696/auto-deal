@@ -131,11 +131,11 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
 
             if totals[code]*prices[0] < 100:
                 continue
-            if prices[0] <= 0 or df['high'][0]*0.96 > prices[0] or prices[0] < prices[1] * 0.98 or prices[0] < avg10*0.98 or prices[0] > avg10*1.02:
+            if prices[0] <= 0 or df['high'][0]*0.96 > prices[0] or prices[0] < prices[1] * 0.98 or prices[0] < avg10*0.98 or prices[0] > avg10*1.04:
                 continue
-            if numpy.mean(df['volume'][0:avg_days]) < numpy.mean(df['volume'][0:2*avg_days])*1.1:
+            if numpy.mean(df['volume'][0:avg_days]) < numpy.mean(df['volume'][0:2*avg_days]):
                 continue
-            if max(df['close'][0:avg_days]) < min(df['close'][0:avg_days])*1.06 or max(df['close'][0:avg_days]) > min(df['close'][0:avg_days])*1.15:
+            if max(df['close'][0:avg_days]) < min(df['close'][0:avg_days])*1.06 or max(df['close'][0:avg_days]) > min(df['close'][0:avg_days])*1.30:
                 continue
 
             # 缩量下跌
@@ -208,7 +208,7 @@ def sort_codes(codes, avg_days, timeStr=None, daysAgo=0, shizhi=None):
         df = ts.get_h_data(code, timeStr=timeStr, daysAgo=daysAgo)
         scores2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         idx = 0
-        while idx < 10:
+        while idx < 6:
             if df['volume'][idx] > numpy.mean(df['volume'][idx:idx+6])*1.4 and df ['close'][idx] > max(df['open'][idx], df['close'][idx+1])*1.01:
                 scores2[idx] = 2
             elif df['volume'][idx] < numpy.mean(df['volume'][idx:idx+6])*0.6 and df ['close'][idx] < min(df['open'][idx], df['close'][idx+1]):
@@ -226,8 +226,8 @@ def sort_codes(codes, avg_days, timeStr=None, daysAgo=0, shizhi=None):
         score6 = scores2[6]
         score7 = scores2[7]
         score8 = 0
-        score9 = scores2[8]
-        score10 = scores2[9]
+        score9 = 0
+        score10 = 4*min(df['close'][0:avg_days])/df['close'][0]
         if shizhi is not None:
             if shizhi[code] < 100:
                 score8 = 1
