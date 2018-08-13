@@ -129,13 +129,13 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
             avg20 = numpy.mean(prices[0:2*avg_days])
             shizhi[code] = totals[code]*prices[0]
 
-            if totals[code]*prices[0] < 1:
+            if totals[code]*prices[0] < 50:
                 continue
-            if prices[0] <= 0 or df['high'][0]*0.96 > prices[0] or prices[0] < avg10*0.98 or prices[0] > avg10*1.04:
+            if prices[0] <= 0 or df['high'][0]*0.96 > prices[0] or prices[0] < prices[1] * 0.98 or prices[0] < avg10*0.98 or prices[0] > avg10*1.02:
                 continue
-            if numpy.mean(df['volume'][0:avg_days]) < numpy.mean(df['volume'][0:2*avg_days]):
+            if numpy.mean(df['volume'][0:avg_days]) < numpy.mean(df['volume'][0:2*avg_days])*1.1:
                 continue
-            if max(df['close'][0:avg_days]) < min(df['close'][0:avg_days])*1.06 or max(df['close'][0:avg_days]) > min(df['close'][0:avg_days])*1.30:
+            if max(df['close'][0:avg_days]) < min(df['close'][0:avg_days])*1.06 or max(df['close'][0:avg_days]) > min(df['close'][0:avg_days])*1.15:
                 continue
 
             # 缩量下跌
@@ -147,10 +147,10 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
             #     continue
 
             # 放量上涨
-            if prices[0] < max(prices[1], df['open'][0])*1.01:
-                continue
-            if df['volume'][0] < numpy.mean(df['volume'][0:avg_days])*1.1:
-                continue
+            # if prices[0] < max(prices[1], df['open'][0])*1.01:
+            #     continue
+            # if df['volume'][0] < numpy.mean(df['volume'][0:avg_days])*1.1:
+            #     continue
 
 
             # 基于短期价格趋势筛选
@@ -201,39 +201,53 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
 
 
 def sort_codes(codes, avg_days, timeStr=None, daysAgo=0, shizhi=None):
+    print("Start to do sorting...")
     scores = {}
     scores_detail = {}
     for code in codes:
         df = ts.get_h_data(code, timeStr=timeStr, daysAgo=daysAgo)
-        volume = df['volume'][0]
-        volume_avg5 = numpy.mean(df['volume'][0:int(avg_days/2)])
-        volume_avg10 = numpy.mean(df['volume'][0:avg_days])
-        volume_avg20 = numpy.mean(df['volume'][0:2*avg_days])
-        volume_avg40 = numpy.mean(df['volume'][0:4*avg_days])
-        price = df['close'][0]
-        lowest = min(df['close'][0:int(avg_days/2)])
-        highest = max(df['close'][0:int(avg_days/2)])
-        price_avg10 = numpy.mean(df['close'][0:avg_days])
-        price_avg20 = numpy.mean(df['close'][0:2*avg_days])
+        scores2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        idx = 0
+        while idx < 10:
+            if df['volume'][idx] > numpy.mean(df['volume'][idx:idx+6])*1.4 and df ['close'][idx] > max(df['open'][idx], df['close'][idx+1])*1.01:
+                scores2[idx] = 2
+            elif df['volume'][idx] < numpy.mean(df['volume'][idx:idx+6])*0.6 and df ['close'][idx] < min(df['open'][idx], df['close'][idx+1]):
+                scores2[idx] = 1
+            elif df['volume'][idx] > numpy.mean(df['volume'][idx:idx+6])*1.4 and df ['close'][idx] < min(df['open'][idx], df['close'][idx+1])*0.98:
+                scores2[idx] = -2
+            idx += 1
 
-        score0 = highest/price
-        score1 = price/price_avg10
-        score2 = volume_avg10/volume_avg20
-        score3 = 0
-        score4 = 0
-        score5 = 0
-        score6 = 0
-        score7 = 0
+        score0 = scores2[0]
+        score1 = scores2[1]
+        score2 = scores2[2]
+        score3 = scores2[3]
+        score4 = scores2[4]
+        score5 = scores2[5]
+        score6 = scores2[6]
+        score7 = scores2[7]
+        score8 = 0
+        score9 = scores2[8]
+        score10 = scores2[9]
         if shizhi is not None:
-            score7 = min(2, shizhi[code]/1000)
+            if shizhi[code] < 100:
+                score8 = 1
+            elif shizhi[code] < 500:
+                score8 = 2
+            elif shizhi[code] < 1000:
+                score8 = 3
+            else:
+                score8 = 4
 
-        scores[code] = float("%.2f" % (score0 + score1 + score2 + score3 + score4 + score5 + score6 + score7))
-        scores_detail[code] = "%.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f" % \
-                              (score0, score1, score2, score3, score4, score5, score6, score7)
+        scores[code] = float("%.2f" % (score0 + score1 + score2 + score3 + score4 + score5 + score6 + score7 + score8 + score9 + score10))
+        scores_detail[code] = "%.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f" % \
+                              (score0, score1, score2, score3, score4, score5, score6, score7, score9, score10, score8)
     sorted_scores = OrderedDict(sorted(scores.items(), key=lambda t: t[1], reverse=True))
-    print("Scores: %s" % sorted_scores)
+    idx = 0
     for code in sorted_scores.keys():
+        idx += 1
         print("%s: [%s]" % (code, scores_detail[code]))
+        if idx >= 20:
+            break
     new_codes = []
     new_codes.extend(sorted_scores.keys())
     return new_codes
@@ -259,7 +273,7 @@ def verify(codes, daysAgo, timeStr):
 
 if __name__ == "__main__":
     avgDays = 12
-    timeStr=None
+    timeStr="20180813"
 
     # 自动筛选+人工审核过滤
     codes = get_code_filter_list(avgDays, "codes.txt", timeStr=timeStr)
