@@ -131,7 +131,7 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
 
             if totals[code]*prices[0] < 1:
                 continue
-            if prices[0] <= 0 or df['high'][0]*0.96 > prices[0] or prices[0] < avg10 or prices[0] > avg10*1.04:
+            if prices[0] <= 0 or df['high'][0]*0.96 > prices[0] or prices[0] < avg10*0.98 or prices[0] > avg10*1.04:
                 continue
             if numpy.mean(df['volume'][0:avg_days]) < numpy.mean(df['volume'][0:2*avg_days])*1.1:
                 continue
@@ -141,7 +141,7 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
             # 缩量下跌
             if prices[0] > prices[1] or prices[0] > df['open'][0] or prices[0] < prices[1]*0.96:
                 continue
-            if df['volume'][0] > numpy.mean(df['volume'][0:avg_days])*0.5:
+            if df['volume'][0] > numpy.mean(df['volume'][0:avg_days])*0.6:
                 continue
             if fang_liang_xia_die(df, avg_days):
                 continue
@@ -189,7 +189,7 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
     if file:
         writer.close()
 
-    sortedCodes = sort_codes(result_list, avg_days, timeStr, daysAgo)
+    sortedCodes = sort_codes(result_list, avg_days, timeStr, daysAgo, shizhi)
     if file:
         writer = open(file, 'w')
         for code in sortedCodes[0:10]:
@@ -200,7 +200,7 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
     return sortedCodes[0:10]
 
 
-def sort_codes(codes, avg_days, timeStr=None, daysAgo=0):
+def sort_codes(codes, avg_days, timeStr=None, daysAgo=0, shizhi=None):
     scores = {}
     scores_detail = {}
     for code in codes:
@@ -217,13 +217,15 @@ def sort_codes(codes, avg_days, timeStr=None, daysAgo=0):
         price_avg20 = numpy.mean(df['close'][0:2*avg_days])
 
         score0 = highest/price
-        score1 = 0
-        score2 = price/price_avg10
+        score1 = price/price_avg10
+        score2 = volume_avg10/volume_avg20
         score3 = 0
         score4 = 0
         score5 = 0
         score6 = 0
         score7 = 0
+        if shizhi is not None:
+            score4 = shizhi[code]/1000
 
         scores[code] = float("%.2f" % (score0 + score1 + score2 + score3 + score4 + score5 + score6 + score7))
         scores_detail[code] = "%.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f" % \
