@@ -273,7 +273,7 @@ def verify(codes, daysAgo, timeStr):
 
 if __name__ == "__main__":
     avgDays = 12
-    timeStr="20180813"
+    timeStr=None
 
     # 自动筛选+人工审核过滤
     codes = get_code_filter_list(avgDays, "codes.txt", timeStr=timeStr)
