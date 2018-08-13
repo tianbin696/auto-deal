@@ -133,15 +133,15 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
                 continue
             if prices[0] <= 0 or df['high'][0]*0.96 > prices[0] or prices[0] < avg10*0.98 or prices[0] > avg10*1.04:
                 continue
-            if numpy.mean(df['volume'][0:avg_days]) < numpy.mean(df['volume'][0:2*avg_days])*1.1:
+            if numpy.mean(df['volume'][0:avg_days]) < numpy.mean(df['volume'][0:2*avg_days]):
                 continue
             if max(df['close'][0:avg_days]) < min(df['close'][0:avg_days])*1.06 or max(df['close'][0:avg_days]) > min(df['close'][0:avg_days])*1.30:
                 continue
 
             # 缩量下跌
-            # if prices[0] > prices[1] or prices[0] > df['open'][0] or prices[0] < prices[1]*0.96:
+            # if prices[0] > min(df['open'][0], prices[1]) or prices[0] < prices[1]*0.96:
             #     continue
-            # if df['volume'][0] > numpy.mean(df['volume'][0:avg_days])*0.6:
+            # if df['volume'][0] > numpy.mean(df['volume'][0:avg_days])*0.8:
             #     continue
             # if fang_liang_xia_die(df, avg_days):
             #     continue
@@ -149,7 +149,7 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
             # 放量上涨
             if prices[0] < max(prices[1], df['open'][0])*1.01:
                 continue
-            if df['volume'][0] < numpy.mean(df['volume'][0:avg_days])*1.2:
+            if df['volume'][0] < numpy.mean(df['volume'][0:avg_days])*1.1:
                 continue
 
 
@@ -225,7 +225,7 @@ def sort_codes(codes, avg_days, timeStr=None, daysAgo=0, shizhi=None):
         score6 = 0
         score7 = 0
         if shizhi is not None:
-            score7 = shizhi[code]/1000
+            score7 = min(2, shizhi[code]/1000)
 
         scores[code] = float("%.2f" % (score0 + score1 + score2 + score3 + score4 + score5 + score6 + score7))
         scores_detail[code] = "%.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f" % \
@@ -265,5 +265,5 @@ if __name__ == "__main__":
     codes = get_code_filter_list(avgDays, "codes.txt", timeStr=timeStr)
 
     daysAgo = 10
-    # codes = get_code_filter_list(avgDays, None, daysAgo, timeStr=timeStr)
-    # verify(codes, daysAgo, timeStr)
+    codes = get_code_filter_list(avgDays, None, daysAgo, timeStr=timeStr)
+    verify(codes, daysAgo, timeStr)
