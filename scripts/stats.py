@@ -139,18 +139,18 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
                 continue
 
             # 缩量下跌
-            if prices[0] > prices[1] or prices[0] > df['open'][0] or prices[0] < prices[1]*0.96:
-                continue
-            if df['volume'][0] > numpy.mean(df['volume'][0:avg_days])*0.6:
-                continue
-            if fang_liang_xia_die(df, avg_days):
-                continue
+            # if prices[0] > prices[1] or prices[0] > df['open'][0] or prices[0] < prices[1]*0.96:
+            #     continue
+            # if df['volume'][0] > numpy.mean(df['volume'][0:avg_days])*0.6:
+            #     continue
+            # if fang_liang_xia_die(df, avg_days):
+            #     continue
 
             # 放量上涨
-            # if prices[0] < prices[1]*1.01:
-            #     continue
-            # if df['volume'][0] < numpy.mean(df['volume'][0:avg_days])*1.5:
-            #     continue
+            if prices[0] < max(prices[1], df['open'][0])*1.01:
+                continue
+            if df['volume'][0] < numpy.mean(df['volume'][0:avg_days])*1.2:
+                continue
 
 
             # 基于短期价格趋势筛选
@@ -225,7 +225,7 @@ def sort_codes(codes, avg_days, timeStr=None, daysAgo=0, shizhi=None):
         score6 = 0
         score7 = 0
         if shizhi is not None:
-            score4 = shizhi[code]/1000
+            score7 = shizhi[code]/1000
 
         scores[code] = float("%.2f" % (score0 + score1 + score2 + score3 + score4 + score5 + score6 + score7))
         scores_detail[code] = "%.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f" % \
