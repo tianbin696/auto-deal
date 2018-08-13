@@ -129,7 +129,7 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
             avg20 = numpy.mean(prices[0:2*avg_days])
             shizhi[code] = totals[code]*prices[0]
 
-            if totals[code]*prices[0] < 50:
+            if totals[code]*prices[0] < 100:
                 continue
             if prices[0] <= 0 or df['high'][0]*0.96 > prices[0] or prices[0] < prices[1] * 0.98 or prices[0] < avg10*0.98 or prices[0] > avg10*1.02:
                 continue
