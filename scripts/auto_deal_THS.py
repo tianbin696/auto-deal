@@ -528,6 +528,7 @@ if __name__ == '__main__':
             time.sleep(30)
             ths_start()
 
+            cache.clear()
             stock_codes.clear()
             readCodes()
 
