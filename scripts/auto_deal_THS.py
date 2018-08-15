@@ -49,7 +49,7 @@ isSelleds = {}
 buyedPrices = {}
 selledPrices = {}
 maxCodeSize = 3 # 最大持股数
-maxAmount = 60000
+maxAmount = 40000
 minAmount = 0
 availableMoney = 20000
 minBuyAmount = 10000
@@ -481,11 +481,8 @@ class Monitor:
             if price > avg1*1.04 and price < highest_price*0.98:
                 # 止盈
                 return 'S'
-            if price < avg10*0.96 and price < max(avg1, highest_price)*0.96:
-                # 趋势破位，清仓
-                return 'FS'
             if price < max(avg1, highest_price)*0.96:
-                # 短期回调，止损
+                # 止损
                 return 'S'
 
         if code not in isBuyeds or not isBuyeds[code]:
@@ -530,7 +527,7 @@ if __name__ == '__main__':
 
             cache.clear()
             stock_codes.clear()
-            readCodes()
+            # readCodes()
 
             monitor = Monitor()
             logger.info("Testing ...")
