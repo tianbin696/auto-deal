@@ -48,7 +48,7 @@ isBuyeds = {}
 isSelleds = {}
 buyedPrices = {}
 selledPrices = {}
-maxCodeSize = 3 # 最大持股数
+maxCodeSize = 4 # 最大持股数
 maxAmount = 40000
 minAmount = 0
 availableMoney = 20000
@@ -484,7 +484,7 @@ class Monitor:
                 return 'S'
 
         if code not in isBuyeds or not isBuyeds[code]:
-            if price < avg1*1.04 and price > lowest_price*1.02 and price < avg10*0.98:
+            if price < avg1*1.04 and price > max(avg1*0.98, lowest_price*1.02) and price < avg10:
                 # 低吸
                 return 'B'
 
@@ -526,7 +526,9 @@ if __name__ == '__main__':
             cache.clear()
             stock_codes.clear()
             stock_codes.append("002230") # 精选低价绩优蓝筹股：科大讯飞
-            # readCodes()
+            isBuyeds['600706'] = True
+            isBuyeds['600643'] = True
+            isBuyeds['000683'] = True
 
             monitor = Monitor()
             logger.info("Testing ...")
