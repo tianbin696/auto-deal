@@ -473,17 +473,21 @@ class Monitor:
         avg10 = float(self.avg10[code])
         avg20 = float(self.avg20[code])
         price = float(price)
+        df = cache[code]
         logger.info("%s status: %f, %f, %f, %f, %f, %f" % (code, price, highest_price, lowest_price, avg1, avg10, avg20))
         if price <= 0:
             return 'N'
 
         # 针对精选个股，做高抛低吸
         if code not in isSelleds or not isSelleds[code]:
-            if price > avg1*1.04 and price < highest_price*0.98 and price > avg10*1.02:
-                # 高抛
+            if price > avg1*1.04 and price < highest_price*0.98 and price > avg10:
+                # 日内冲高，高抛
                 return 'S'
-            if price < max(highest_price, avg1)*0.96 and price > avg10*1.04:
-                # 高抛
+            if price < max(highest_price, avg1)*0.96 and price > avg10:
+                # 短期从高位快速下跌，高抛
+                return 'S'
+            if price < highest_price*0.97 and highest_price > max(df['high'][0:avg10Days]) and price > avg10:
+                # 短期高位回落，高抛
                 return 'S'
 
         if code not in isBuyeds or not isBuyeds[code]:
