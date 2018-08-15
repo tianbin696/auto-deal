@@ -56,7 +56,7 @@ minBuyAmount = 10000
 minSellAmount = 10000
 sleepTime = 0.5
 monitorInterval = 10
-avg10Days = 12 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
+avg10Days = 10 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
 cache = {}
 
 def readCodes():
@@ -477,17 +477,15 @@ class Monitor:
         if price <= 0:
             return 'N'
 
+        # 针对精选个股，做高抛低吸
         if code not in isSelleds or not isSelleds[code]:
-            if price > avg1*1.04 and price < highest_price*0.98:
-                # 止盈
-                return 'S'
-            if price < max(avg1, highest_price)*0.96:
-                # 止损
+            if price > avg1*1.04 and price < highest_price*0.98 and price > avg10*1.02:
+                # 高抛
                 return 'S'
 
         if code not in isBuyeds or not isBuyeds[code]:
-            if price < avg1*1.02 and price > avg1*0.98 and price > avg10 and price > lowest_price*1.02:
-                # 趋势向上，触底反弹，买入
+            if price < avg1*1.04 and price > lowest_price*1.02 and price < avg10*0.98:
+                # 低吸
                 return 'B'
 
         return 'N'
@@ -517,9 +515,9 @@ if __name__ == '__main__':
             if hour < 7 or hour >= 15:
                 logger.info("Sleep before monitor, current_hour=%d" % hour)
                 time.sleep(60)
-                if hour == 18:
-                    get_code_filter_list(avg10Days, "codes.txt")
-                    time.sleep(3600)
+                # if hour == 18:
+                #     get_code_filter_list(avg10Days, "codes.txt")
+                #     time.sleep(3600)
                 continue
 
             time.sleep(30)
@@ -527,6 +525,7 @@ if __name__ == '__main__':
 
             cache.clear()
             stock_codes.clear()
+            stock_codes.append("002230") # 精选低价绩优蓝筹股：科大讯飞
             # readCodes()
 
             monitor = Monitor()
