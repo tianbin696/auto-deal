@@ -482,6 +482,9 @@ class Monitor:
             if price > avg1*1.04 and price < highest_price*0.98 and price > avg10*1.02:
                 # 高抛
                 return 'S'
+            if price < max(highest_price, avg1)*0.96 and price > avg10*1.04:
+                # 高抛
+                return 'S'
 
         if code not in isBuyeds or not isBuyeds[code]:
             if price < avg1*1.04 and price > max(avg1*0.98, lowest_price*1.02) and price < avg10:
