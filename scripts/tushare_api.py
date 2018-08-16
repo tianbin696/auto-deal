@@ -21,7 +21,7 @@ class TushareAPI:
         return []
 
     def get_h_data(self, code, timeStr = None, daysAgo = 0):
-        retry = 2
+        retry = 6
         if not timeStr:
             timeStr = time.strftime("%Y%m%d", time.localtime())
         cacheFile = cacheFolder + "/" + timeStr + "/" + code + "_" + timeStr + ".csv"
@@ -59,11 +59,11 @@ class TushareAPI:
                 df = pandas.DataFrame()
                 while retry > 0:
                     try:
-                        # df = ts.get_h_data(code, start='2018-06-01', pause=8)
-                        # if len(df) > 0:
-                        #     writer = open(cacheFile, "w")
-                        #     df.to_csv(writer)
-                        #     writer.close()
+                        df = ts.get_h_data(code, start='2018-06-01', pause=8)
+                        if len(df) > 0:
+                            writer = open(cacheFile, "w")
+                            df.to_csv(writer)
+                            writer.close()
                         break
                     except Exception as e:
                         logger.error("Failed to get history data for code=%s" % code)
