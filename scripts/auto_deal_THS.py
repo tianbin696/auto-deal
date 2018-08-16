@@ -519,7 +519,7 @@ if __name__ == '__main__':
                 continue
             
             hour = time.localtime().tm_hour
-            if hour < 7 or hour >= 15:
+            if hour < 6 or hour >= 15:
                 logger.info("Sleep before monitor, current_hour=%d" % hour)
                 time.sleep(60)
                 # if hour == 18:
@@ -533,9 +533,6 @@ if __name__ == '__main__':
             cache.clear()
             stock_codes.clear()
             stock_codes.append("002230") # 精选低价绩优蓝筹股：科大讯飞
-            isBuyeds['600706'] = True
-            isBuyeds['600643'] = True
-            isBuyeds['000683'] = True
 
             monitor = Monitor()
             logger.info("Testing ...")
