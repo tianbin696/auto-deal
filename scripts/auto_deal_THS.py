@@ -527,7 +527,7 @@ if __name__ == '__main__':
                 #     time.sleep(3600)
                 continue
 
-            time.sleep(30)
+            time.sleep(60)
             ths_start()
 
             cache.clear()
