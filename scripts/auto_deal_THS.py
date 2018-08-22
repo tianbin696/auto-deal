@@ -480,15 +480,12 @@ class Monitor:
 
         # 针对精选个股，做高抛低吸
         if code not in isSelleds or not isSelleds[code]:
-            if price < highest_price*0.98 and price > avg1*1.02 and price > avg10:
-                # 日内冲高，高抛
-                return 'S'
             if price < max(highest_price, avg1)*0.96 and price > avg10:
                 # 短期从高位快速下跌，高抛
                 return 'S'
 
         if code not in isBuyeds or not isBuyeds[code]:
-            if price > lowest_price*1.02 and price > avg1*0.98 and price < avg10:
+            if price > max(lowest_price*1.02, avg1*0.98) and price < avg10:
                 # 低吸
                 return 'B'
 
