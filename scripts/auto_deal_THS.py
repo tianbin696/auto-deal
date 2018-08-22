@@ -312,7 +312,9 @@ class Monitor:
         timeStr = yesterday.strftime("%Y%m%d")
         stock_codes.extend(sort_codes(temp_arr, avg10Days, timeStr))
         end_time = time.time()
-        self.operation.saveScreenshot("均值更新完成，共耗时%d秒，排除异常，可监控%d支股票" % ((end_time - start_time), len(stock_codes)), u'交易前准备')
+        self.operation.saveScreenshot("均值更新完成，共耗时%d秒，排除异常，可监控%d支股票。"
+                                      "avg1=%s, avg10=%s, avg20=%s" % ((end_time - start_time), len(stock_codes),
+                                                                       self.avg1, self.avg10, self.avg20), u'交易前准备')
         logger.info("Total monitor code size: %d. Codes=%s" % (len(stock_codes), stock_codes))
 
         isStarted = False
