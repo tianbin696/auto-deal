@@ -48,10 +48,10 @@ isBuyeds = {}
 isSelleds = {}
 buyedPrices = {}
 selledPrices = {}
-maxCodeSize = 4 # 最大持股数
+maxCodeSize = 3 # 最大持股数
 maxAmount = 100000
 minAmount = 0
-availableMoney = 20000
+availableMoney = 30000
 minBuyAmount = 10000
 minSellAmount = 10000
 sleepTime = 0.5
@@ -528,7 +528,9 @@ if __name__ == '__main__':
 
             cache.clear()
             stock_codes.clear()
-            stock_codes.append("002230") # 精选低价绩优蓝筹股：科大讯飞
+            stock_codes.append("002230") # 人工智能：科大讯飞
+			stock_codes.append("000538") # 大健康：云南白药
+			stock_codes.append("600887") # 大消费：伊利股份
 
             monitor = Monitor()
             logger.info("Testing ...")
