@@ -487,7 +487,7 @@ class Monitor:
                 return 'S'
 
         if code not in isBuyeds or not isBuyeds[code]:
-            if price > max(avg1, open_price, avg10) and avg1 < avg10:
+            if price > max(avg1, open_price, avg10) and avg1 < avg10 and price < avg10*1.03:
                 # 有效突破：突破10日线
                 return 'B'
 
