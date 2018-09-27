@@ -503,7 +503,7 @@ class Monitor:
         return int(minBuyAmount/100/price)*100
 
     def getSellAmount(self, code, price):
-        return min(stock_positions[code], int(minSellAmount/100/price)*100)
+        return max(int(stock_positions[code]/200)*100, 100)
 
 if __name__ == '__main__':
     while True:
@@ -528,8 +528,12 @@ if __name__ == '__main__':
 
             cache.clear()
             stock_codes.clear()
+            stock_codes.append("600332") # 大健康：白云山
             stock_codes.append("000538") # 大健康：云南白药
             stock_codes.append("600887") # 大消费：伊利股份
+            stock_codes.append("600809") # 大消费：山西汾酒
+            stock_codes.append("600801") # 大基建：华新水泥
+            stock_codes.append("000932") # 大基建：华菱钢铁
 
             monitor = Monitor()
             logger.info("Testing ...")
