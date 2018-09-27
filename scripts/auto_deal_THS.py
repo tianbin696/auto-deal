@@ -528,7 +528,6 @@ if __name__ == '__main__':
 
             cache.clear()
             stock_codes.clear()
-            stock_codes.append("002230") # 人工智能：科大讯飞
             stock_codes.append("000538") # 大健康：云南白药
             stock_codes.append("600887") # 大消费：伊利股份
 
