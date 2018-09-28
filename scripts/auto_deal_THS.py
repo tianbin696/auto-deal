@@ -461,6 +461,7 @@ class Monitor:
         try:
             if 'close' in df:
                 avg = numpy.mean(df['close'][0:days])
+                avg = float("%.2f" % avg)
                 p_changes.append(0)
         except Exception as e:
             logger.error("Error while get code %s: %s" % (code, e))
@@ -537,6 +538,8 @@ if __name__ == '__main__':
             stock_codes.append("600809") # 大消费：山西汾酒
             stock_codes.append("600801") # 大基建：华新水泥
             stock_codes.append("000932") # 大基建：华菱钢铁
+            
+            ignore_codes.append("002230")
 
             monitor = Monitor()
             logger.info("Testing ...")
