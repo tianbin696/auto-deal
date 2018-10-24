@@ -532,19 +532,6 @@ if __name__ == '__main__':
 
             cache.clear()
             stock_codes.clear()
-            stock_codes.append("000932") # 华菱钢铁，<259.59%, 28.49%, 3.50>
-            stock_codes.append("600801") # 华新水泥，<184.07%, 16.16%, 7.23>
-            stock_codes.append("600332") # 白云山，<126.14%, 12.98%, 10.36>
-            stock_codes.append("600585") # 海螺水泥，<92.68%, 13.65%, 6.86>
-            stock_codes.append("600809") # 山西汾酒， <55.76%, 16.27%, 25.43%>
-            stock_codes.append("600309") # 万学化学， <42.97%, 25.43%, 7.26>
-            stock_codes.append("601318") # 中国平安， <33.78%, 11.60%, 9.73>
-            stock_codes.append("600340") # 华夏幸福， <29.05%, 16.55%, 4.94>
-            stock_codes.append("600276") # 恒瑞医药， <21.38%, 11.67%, 53.56>
-            stock_codes.append("600690") # 青岛海尔， <10.01%, 14.10%, 9.38>
-            stock_codes.append("000538") # 云南白药， <4.35%, 8.61%, 22.39>
-            stock_codes.append("600887") # 伊利股份， <2.43%, 12.79%, 21.34>
-            
             ignore_codes.append("")
 
             monitor = Monitor()
