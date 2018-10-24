@@ -541,6 +541,8 @@ if __name__ == '__main__':
 
             monitor.loopMonitor()
 
+            get_code_filter_list(avg10Days, "codes.txt", timeStr=None)
+
             logger.info("Close THS after deal")
             time.sleep(120)
             ths_close()
