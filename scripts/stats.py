@@ -124,60 +124,19 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
                 continue
 
             prices = df['close']
-            avgs = avg(prices, avg_days)
             avg10 = numpy.mean(prices[0:avg_days])
             avg20 = numpy.mean(prices[0:2*avg_days])
-            shizhi[code] = totals[code]*prices[0]
 
-            if totals[code]*prices[0] < 100:
+            if totals[code]*prices[0] < 50 or totals[code]*prices[0] > 2000:
                 continue
-            if prices[0] <= 0 or df['high'][0]*0.96 > prices[0] or prices[0] < prices[1] * 0.98 or prices[0] < avg10*0.98 or prices[0] > avg10*1.04:
+            if prices[0] <= 0:
                 continue
-            if numpy.mean(df['volume'][0:avg_days]) < numpy.mean(df['volume'][0:2*avg_days]):
+            if avg10 < avg20:
                 continue
-            if max(df['close'][0:avg_days]) < min(df['close'][0:avg_days])*1.06 or max(df['close'][0:avg_days]) > min(df['close'][0:avg_days])*1.30:
+            if prices[0] > avg10*1.03 or prices[0] < avg10:
                 continue
 
-            # 缩量下跌
-            # if prices[0] > min(df['open'][0], prices[1]) or prices[0] < prices[1]*0.96:
-            #     continue
-            # if df['volume'][0] > numpy.mean(df['volume'][0:avg_days])*0.8:
-            #     continue
-            # if fang_liang_xia_die(df, avg_days):
-            #     continue
-
-            # 放量上涨
-            # if prices[0] < max(prices[1], df['open'][0])*1.01:
-            #     continue
-            # if df['volume'][0] < numpy.mean(df['volume'][0:avg_days])*1.1:
-            #     continue
-
-
-            # 基于短期价格趋势筛选
-            # if prices[0] < max(df['high'][0:avg_days])*0.9:
-            #     continue
-            #
-            # if min(df['low'][0:avg_days]) > max(df['high'][0:avg_days])*0.9 or min(df['low'][0:avg_days]) < max(df['high'][0:avg_days])*0.8:
-            #     continue
-            #
-            # if prices[0] <= min(prices[0:avg_days]) or min(prices[0:avg_days]) < min(prices[0:4 * avg_days])*1.1:
-            #     continue
-            #
-            # if numpy.mean(df['volume'][0:avg_days]) < numpy.mean(df['volume'][0:2*avg_days])*1.2:
-            #     continue
-            #
-            # huanshous = get_huan_shou(df, totals[code], avg_days)
-            # if numpy.mean(huanshous) < 1:
-            #     continue
-            #
-            # zhengfus = get_zheng_fu(df, avg_days)
-            # if numpy.mean(zhengfus) < 4:
-            #     continue
-            #
-            # if fang_liang_xia_die(df, avg_days):
-            #     continue
-
-            print("\navgs of %s: %s" % (code, avgs))
+            print("\navg10 of %s: %s" % (code, avg10))
             result_list.append(code)
             if writer:
                 writer.write(code + "\n")
@@ -189,15 +148,9 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
     if file:
         writer.close()
 
-    sortedCodes = sort_codes(result_list, avg_days, timeStr, daysAgo, shizhi)
-    if file:
-        writer = open(file, 'w')
-        for code in sortedCodes[0:10]:
-            writer.write(code + "\n")
-        writer.close()
     end_time = time.time()
     print("Get %d filter code from total %d codes. Total cost %d seconds" % (len(result_list), len(list), (end_time - start_time)))
-    return sortedCodes[0:10]
+    return result_list[0:10]
 
 
 def sort_codes(codes, avg_days, timeStr=None, daysAgo=0, shizhi=None):
@@ -272,12 +225,8 @@ def verify(codes, daysAgo, timeStr):
         print("%s increase at %s: [%.2f, %.2f]" % (code, df['date'][daysAgo], min_increase, max_increase))
 
 if __name__ == "__main__":
-    avgDays = 12
+    avgDays = 10
     timeStr=None
 
     # 自动筛选+人工审核过滤
     codes = get_code_filter_list(avgDays, "codes.txt", timeStr=timeStr)
-
-    daysAgo = 10
-    codes = get_code_filter_list(avgDays, None, daysAgo, timeStr=timeStr)
-    verify(codes, daysAgo, timeStr)
