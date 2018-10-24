@@ -486,14 +486,14 @@ class Monitor:
             if price < max(highest_price, avg1)*0.97 and price > avg10:
                 # 短期从高位快速下跌，高抛
                 return 'S'
-            if price < min(avg1, open_price, avg10) and avg1 > avg10 and price < max(highest_price, avg1)*0.98:
+            if price < min(avg1, open_price, avg10) and avg1 > avg10 and price < max(highest_price, avg1)*0.97:
                 # 破位下跌，卖出
-                return 'S'
+                return 'FS'
 
         if code not in isBuyeds or not isBuyeds[code]:
             if price > max(avg1, open_price, avg10) and avg1 < avg10 and price < avg10*1.03:
                 # 有效突破：突破10日线
-                return 'B'
+                return 'N'
 
         return 'N'
 
