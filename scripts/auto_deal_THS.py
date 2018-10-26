@@ -25,6 +25,7 @@ from tong_hua_shun import ths_close
 from stats import get_code_filter_list
 from stats import var
 from stats import sort_codes
+from macd import get_MACD
 
 from tushare_api import TushareAPI
 local_ts = TushareAPI()
@@ -303,6 +304,9 @@ class Monitor:
 
             avg = self.getHistoryDayKAvgData(code, 2 * avg10Days)
             self.avg20[code] = avg
+
+            get_MACD(cache[code], 12, 26, 9)
+            logger.info("MACD of %s: %.2f", (code, cache[code][0]))
         temp_arr = []
         for code in stock_codes:
             if self.avg10[code] > 0:
@@ -456,6 +460,11 @@ class Monitor:
                     logger.error("Failed to get history data: %s" % e)
                     time.sleep(60)
                     retry -= 1
+            # Extend df
+            rtDF = ts.get_realtime_quotes(code)
+            df.loc[-1] = [rtDF['date'][0], rtDF['open'][0], rtDF['high'][0], rtDF['price'][0], rtDF['low'][0], rtDF['volume'][0], rtDF['amount'][0]]
+            df.index = df.index+1
+            df = df.sort_index()
             cache[code] = df
         avg = 0
         try:
@@ -469,6 +478,11 @@ class Monitor:
         logger.debug("Historical %d avg data of %s: %.2f" % (days, code, avg))
         print("Historical %d avg data of %s: %.2f" % (days, code, avg))
         return avg
+
+    def getRealTimeMACD(self, code, price):
+        cache[code]['close'] = price
+        get_MACD(cache[code],12,26,9)
+        return cache[code]['macd']
 
     def getDirection(self, code, price, open_price, highest_price, lowest_price):
         # 理论基础：趋势一旦形成，短期不会改变
@@ -485,9 +499,14 @@ class Monitor:
         if code not in isSelleds or not isSelleds[code]:
             if price < max(highest_price, avg1)*0.97 and price > avg10:
                 # 短期从高位快速下跌，高抛
-                return 'S'
+                return 'N'
             if price < min(avg1, open_price, avg10) and avg1 > avg10 and price < max(highest_price, avg1)*0.97:
                 # 破位下跌，卖出
+                return 'N'
+
+            macd = self.getRealTimeMACD(code, price)
+            if macd < 0:
+                logger.info("MACD of %s: %.2f", (code, macd))
                 return 'FS'
 
         if code not in isBuyeds or not isBuyeds[code]:
