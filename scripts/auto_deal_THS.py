@@ -306,8 +306,6 @@ class Monitor:
             avg = self.getHistoryDayKAvgData(code, 2 * avg10Days)
             self.avg20[code] = avg
 
-            # Test
-            logger.info("Code=%s, direction=%s, macd=%.2f" % (code, self.getDirection(code, self.avg1[code], self.avg1[code], self.avg1[code], self.avg1[code]), cache[code]['macd'][0]))
         temp_arr = []
         for code in stock_codes:
             if self.avg10[code] > 0:
@@ -474,7 +472,7 @@ class Monitor:
         avg = 0
         try:
             if 'close' in df:
-                avg = numpy.mean(df['close'][0:days])
+                avg = numpy.mean(df['close'][1:days+1])
                 avg = float("%.2f" % avg)
                 p_changes.append(0)
         except Exception as e:
@@ -509,7 +507,7 @@ class Monitor:
                 # 破位下跌，卖出
                 return 'FS'
             macd = self.getRealTimeMACD(code, price)
-            if macd[0] < 0:
+            if macd[0] < 0 and price < open_price:
                 logger.info("MACD of %s: %.2f" % (code, macd[0]))
                 return 'FS'
 
@@ -539,8 +537,8 @@ if __name__ == '__main__':
             monitor = Monitor()
 
             # Test before start
-            code = "002047"
-            price = monitor.getHistoryDayKAvgData(code, 10)
+            code = "000538"
+            price = monitor.getHistoryDayKAvgData(code, 1)
             monitor.avg1[code] = price
             monitor.avg10[code] = price
             monitor.avg20[code] = price
@@ -554,7 +552,7 @@ if __name__ == '__main__':
                 continue
             
             hour = time.localtime().tm_hour
-            if hour < 7 or hour >= 24:
+            if hour < 7 or hour >= 15:
                 logger.info("Sleep before monitor, current_hour=%d" % hour)
                 time.sleep(60)
                 # if hour == 18:
