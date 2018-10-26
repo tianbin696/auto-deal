@@ -10,6 +10,7 @@ from datetime import datetime
 from datetime import timedelta
 from concurrent import futures
 from collections import OrderedDict
+from macd import get_MACD
 
 logger = logging.getLogger('stats')
 ts = TushareAPI()
@@ -131,12 +132,17 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
                 continue
             if prices[0] <= 0:
                 continue
-            if avg10 < avg20:
-                continue
-            if prices[0] > avg10*1.03 or prices[0] < avg10:
+            # if avg10 < avg20:
+            #     continue
+            # if prices[0] > avg10*1.03 or prices[0] < avg10:
+            #     continue
+            get_MACD(df,12,26,9)
+            if not(df['macd'][0] > 0 and df['macd'][1] < 0):
                 continue
 
-            print("\navg10 of %s: %s" % (code, avg10))
+            print("\ncode=%s:" % (code))
+            print("diff=%.2f, dea=%.2f, macd=%.2f" % (df['diff'][0], df['dea'][0], df['macd'][0]))
+            print("diff=%.2f, dea=%.2f, macd=%.2f" % (df['diff'][1], df['dea'][1], df['macd'][1]))
             result_list.append(code)
             if writer:
                 writer.write(code + "\n")

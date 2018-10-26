@@ -506,10 +506,13 @@ class Monitor:
             if price < min(avg1, open_price, avg10) and avg1 > avg10 and price < max(highest_price, avg1)*0.96:
                 # 破位下跌，卖出
                 return 'FS'
-            macd = self.getRealTimeMACD(code, price)
-            if macd[0] < 0 and price < open_price:
-                logger.info("MACD of %s: %.2f" % (code, macd[0]))
-                return 'FS'
+            try:
+                macd = self.getRealTimeMACD(code, price)
+                if macd[0] < 0 and price < open_price:
+                    logger.info("MACD of %s: %.2f" % (code, macd[0]))
+                    return 'FS'
+            except Exception as e:
+                logger.error("Failed to calculate realtime macd of %s: %s" % (code, e))
 
         if code not in isBuyeds or not isBuyeds[code]:
             if price > max(avg1, open_price, avg10) and avg1 < avg10 and price < avg10*1.03:
