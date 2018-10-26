@@ -13,6 +13,7 @@ import pywinauto
 import pywinauto.application
 import pywinauto.clipboard
 import tushare as ts
+import pandas as pd
 from pywinauto import keyboard
 from pywinauto import mouse
 from pywinauto import win32defines
@@ -305,8 +306,8 @@ class Monitor:
             avg = self.getHistoryDayKAvgData(code, 2 * avg10Days)
             self.avg20[code] = avg
 
-            get_MACD(cache[code], 12, 26, 9)
-            logger.info("MACD of %s: %.2f", (code, cache[code][0]))
+            # Test
+            logger.info("Code=%s, direction=%s, macd=%.2f" % (code, self.getDirection(code, self.avg1[code], self.avg1[code], self.avg1[code], self.avg1[code]), cache[code]['macd'][0]))
         temp_arr = []
         for code in stock_codes:
             if self.avg10[code] > 0:
@@ -460,11 +461,15 @@ class Monitor:
                     logger.error("Failed to get history data: %s" % e)
                     time.sleep(60)
                     retry -= 1
+            d = {'open':list(df['open'][0:52]), 'high':list(df['high'][0:52]), 'close':list(df['close'][0:52]), 'low':list(df['low'][0:52]), 'volume':list(df['volume'][0:52]), 'amount':list(df['amount'][0:52])}
+            ndf = pd.DataFrame(d, index=list(range(1, 53)))
+
             # Extend df
             rtDF = ts.get_realtime_quotes(code)
-            df.loc[-1] = [rtDF['date'][0], rtDF['open'][0], rtDF['high'][0], rtDF['price'][0], rtDF['low'][0], rtDF['volume'][0], rtDF['amount'][0]]
-            df.index = df.index+1
-            df = df.sort_index()
+            nd2 = {'open':rtDF['open'][0:1], 'high':rtDF['high'][0:1], 'close':rtDF['price'][0:1], 'low':rtDF['low'][0:1], 'volume':rtDF['volume'][0:1], 'amount':rtDF['amount'][0:1]}
+            ndf2 = pd.DataFrame(nd2)
+
+            df = pd.concat([ndf2, ndf])
             cache[code] = df
         avg = 0
         try:
@@ -480,8 +485,8 @@ class Monitor:
         return avg
 
     def getRealTimeMACD(self, code, price):
-        cache[code]['close'] = price
-        get_MACD(cache[code],12,26,9)
+        cache[code]['close'][0] = price
+        cache[code] = get_MACD(cache[code],12,26,9)
         return cache[code]['macd']
 
     def getDirection(self, code, price, open_price, highest_price, lowest_price):
@@ -497,16 +502,15 @@ class Monitor:
 
         # 针对精选个股，做高抛低吸
         if code not in isSelleds or not isSelleds[code]:
-            if price < max(highest_price, avg1)*0.97 and price > avg10:
+            if price < max(highest_price, avg1)*0.94 and price > avg10:
                 # 短期从高位快速下跌，高抛
-                return 'N'
-            if price < min(avg1, open_price, avg10) and avg1 > avg10 and price < max(highest_price, avg1)*0.97:
+                return 'FS'
+            if price < min(avg1, open_price, avg10) and avg1 > avg10 and price < max(highest_price, avg1)*0.96:
                 # 破位下跌，卖出
-                return 'N'
-
+                return 'FS'
             macd = self.getRealTimeMACD(code, price)
-            if macd < 0:
-                logger.info("MACD of %s: %.2f", (code, macd))
+            if macd[0] < 0:
+                logger.info("MACD of %s: %.2f" % (code, macd[0]))
                 return 'FS'
 
         if code not in isBuyeds or not isBuyeds[code]:
@@ -528,9 +532,21 @@ class Monitor:
     def getSellAmount(self, code, price):
         return max(int(stock_positions[code]/200)*100, 100)
 
+
 if __name__ == '__main__':
     while True:
         try:
+            monitor = Monitor()
+
+            # Test before start
+            code = "002047"
+            price = monitor.getHistoryDayKAvgData(code, 1)
+            monitor.avg1[code] = price
+            monitor.avg10[code] = price
+            monitor.avg20[code] = price
+            direction = monitor.getDirection(code, price, price, price, price)
+            logger.info("Code=%s, direction=%s, macd=%.2f" % (code, direction, cache[code]['macd'][1]))
+
             wday = time.localtime().tm_wday
             if wday > 4:
                 logger.info("Sleep before monitor, current_wday=%d" % wday)
@@ -538,7 +554,7 @@ if __name__ == '__main__':
                 continue
             
             hour = time.localtime().tm_hour
-            if hour < 7 or hour >= 15:
+            if hour < 7 or hour >= 22:
                 logger.info("Sleep before monitor, current_hour=%d" % hour)
                 time.sleep(60)
                 # if hour == 18:
