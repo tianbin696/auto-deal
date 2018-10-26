@@ -461,15 +461,15 @@ class Monitor:
                     logger.error("Failed to get history data: %s" % e)
                     time.sleep(60)
                     retry -= 1
-            d = {'open':list(df['open'][0:52]), 'high':list(df['high'][0:52]), 'close':list(df['close'][0:52]), 'low':list(df['low'][0:52]), 'volume':list(df['volume'][0:52]), 'amount':list(df['amount'][0:52])}
-            ndf = pd.DataFrame(d, index=list(range(1, 53)))
+            d = {'close':df['close'][0:52].astype('float')}
+            ndf = pd.DataFrame(d)
 
             # Extend df
             rtDF = ts.get_realtime_quotes(code)
-            nd2 = {'open':rtDF['open'][0:1], 'high':rtDF['high'][0:1], 'close':rtDF['price'][0:1], 'low':rtDF['low'][0:1], 'volume':rtDF['volume'][0:1], 'amount':rtDF['amount'][0:1]}
+            nd2 = {'close':rtDF['price'][0:1].astype('float')}
             ndf2 = pd.DataFrame(nd2)
 
-            df = pd.concat([ndf2, ndf])
+            df = pd.concat([ndf2, ndf]).reset_index()
             cache[code] = df
         avg = 0
         try:
@@ -485,7 +485,7 @@ class Monitor:
         return avg
 
     def getRealTimeMACD(self, code, price):
-        cache[code]['close'][0] = price
+        cache[code].update(pd.DataFrame({'close':[price]}, index=[0]))
         cache[code] = get_MACD(cache[code],12,26,9)
         return cache[code]['macd']
 
@@ -540,7 +540,7 @@ if __name__ == '__main__':
 
             # Test before start
             code = "002047"
-            price = monitor.getHistoryDayKAvgData(code, 1)
+            price = monitor.getHistoryDayKAvgData(code, 10)
             monitor.avg1[code] = price
             monitor.avg10[code] = price
             monitor.avg20[code] = price
@@ -554,7 +554,7 @@ if __name__ == '__main__':
                 continue
             
             hour = time.localtime().tm_hour
-            if hour < 7 or hour >= 22:
+            if hour < 7 or hour >= 24:
                 logger.info("Sleep before monitor, current_hour=%d" % hour)
                 time.sleep(60)
                 # if hour == 18:
