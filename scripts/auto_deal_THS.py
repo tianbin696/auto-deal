@@ -508,7 +508,7 @@ class Monitor:
                 return 'FS'
             try:
                 macd = self.getRealTimeMACD(code, price)
-                if macd[0] < 0 and price < open_price:
+                if macd[0] < 0 and price < open_price and price < avg1*0.98:
                     logger.info("MACD of %s: %.2f" % (code, macd[0]))
                     return 'FS'
             except Exception as e:
