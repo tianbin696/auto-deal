@@ -540,12 +540,12 @@ if __name__ == '__main__':
             monitor = Monitor()
 
             # Test before start
-            code = "000538"
+            code = "600570"
             price = monitor.getHistoryDayKAvgData(code, 1)
             monitor.avg1[code] = price
             monitor.avg10[code] = price
             monitor.avg20[code] = price
-            direction = monitor.getDirection(code, price, price, price, price)
+            direction = monitor.getDirection(code, 47.24, price, price, price)
             logger.info("Code=%s, direction=%s, macd=%.2f" % (code, direction, cache[code]['macd'][1]))
 
             wday = time.localtime().tm_wday
