@@ -137,7 +137,11 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
             # if prices[0] > avg10*1.03 or prices[0] < avg10:
             #     continue
             get_MACD(df,12,26,9)
-            if not(df['macd'][0] > 0 and df['macd'][1] < 0):
+            if numpy.mean(df['macd'][0:10]) > -0.3:
+                continue
+            if not(df['macd'][0] > 0 and 0 > df['macd'][1] and df['macd'][1] > df['macd'][2]
+                   and df['macd'][2] > df['macd'][3] and df['macd'][3] > df['macd'][4]
+                   and df['macd'][4] > df['macd'][5]):
                 continue
 
             print("\ncode=%s:" % (code))
