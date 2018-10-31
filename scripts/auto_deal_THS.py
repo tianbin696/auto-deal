@@ -500,12 +500,6 @@ class Monitor:
 
         # 针对精选个股，做高抛低吸
         if code not in isSelleds or not isSelleds[code]:
-            if price < max(highest_price, avg1)*0.94 and price > avg10:
-                # 短期从高位快速下跌，高抛
-                return 'FS'
-            if price < min(avg1, open_price, avg10) and avg1 > avg10 and price < max(highest_price, avg1)*0.96:
-                # 破位下跌，卖出
-                return 'FS'
             try:
                 macd = self.getRealTimeMACD(code, price)
                 if macd[0] < 0 and price < open_price and price < avg1*0.98:
@@ -538,13 +532,13 @@ if __name__ == '__main__':
     monitor = Monitor()
 
     # Test before start
-    code = "600570"
+    code = "000672"
     price = monitor.getHistoryDayKAvgData(code, 1)
     monitor.avg1[code] = price
     monitor.avg10[code] = price
     monitor.avg20[code] = price
-    direction = monitor.getDirection(code, 47.24, price, price, price)
-    logger.info("Code=%s, direction=%s, macd=%.2f" % (code, direction, cache[code]['macd'][1]))
+    direction = monitor.getDirection(code, price*0.90, price, price, price)
+    logger.info("Code=%s, direction=%s, macd=%.2f" % (code, direction, cache[code]['macd'][0]))
 
     while True:
         try:
