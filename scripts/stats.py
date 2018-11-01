@@ -104,6 +104,24 @@ def load_cache(timeStr=None, threadNum=10):
     print("Finish load cache")
 
 
+def getRSI(prices, days=6):
+    positiveSum = 0
+    positiveCount = 0
+    negativeSum = 0
+    negativeCount = 0
+    totalSum = 0
+    for i in range(0, days):
+        increase = (prices[i] - prices[i+1])/prices[i+1]
+        if increase > 0:
+            positiveSum += increase
+            positiveCount += 1
+        else:
+            negativeSum += increase
+            negativeCount += 1
+    result = ((positiveSum)*100) / ((positiveSum + abs(negativeSum)))
+    return int(result)
+
+
 def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
     if not timeStr:
         timeStr = time.strftime("%Y%m%d", time.localtime())
@@ -143,9 +161,12 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
                    and df['macd'][2] > df['macd'][3] and df['macd'][3] > df['macd'][4]
                    and df['macd'][4] > df['macd'][5]):
                 continue
+            rsi = getRSI(df['close'])
+            if rsi > 80 or rsi < 50:
+                continue
 
             print("\ncode=%s:" % (code))
-            print("diff=%.2f, dea=%.2f, macd=%.2f" % (df['diff'][0], df['dea'][0], df['macd'][0]))
+            print("diff=%.2f, dea=%.2f, macd=%.2f, rsi=%d" % (df['diff'][0], df['dea'][0], df['macd'][0], rsi))
             print("diff=%.2f, dea=%.2f, macd=%.2f" % (df['diff'][1], df['dea'][1], df['macd'][1]))
             result_list.append(code)
             if writer:
