@@ -273,6 +273,8 @@ class Monitor:
         self.avg1 = {}
         self.avg10 = {}
         self.avg20 = {}
+        self.rsis = {}
+        self.macds = {}
         self.operation = OperationOfThs()
 
     def testSellBeforeDeal(self):
@@ -310,16 +312,23 @@ class Monitor:
         for code in stock_codes:
             if self.avg10[code] > 0:
                 temp_arr.append(code)
+
                 ndf = cache[code]['close'][1:20].reset_index()
-                logger.info("RSI of %s: %d" % (code, getRSI(ndf['close'])))
+                rsi = getRSI(ndf['close'])
+                self.rsis[code] = rsi
+                logger.info("RSI of %s: %d" % (code, rsi))
+
+                macd = self.getRealTimeMACD(code, self.avg1[0])
+                self.macds[code] = float("%.2f" % macd[0])
+                logger.info("macd of %s: %.2f" % (code, macd[0]))
         stock_codes.clear()
         yesterday = (datetime.now() - timedelta(days = 1))
         timeStr = yesterday.strftime("%Y%m%d")
         stock_codes.extend(sort_codes(temp_arr, avg10Days, timeStr))
         end_time = time.time()
         self.operation.saveScreenshot("均值更新完成，共耗时%d秒，排除异常，可监控%d支股票。"
-                                      "avg1=%s, avg10=%s, avg20=%s" % ((end_time - start_time), len(stock_codes),
-                                                                       self.avg1, self.avg10, self.avg20), u'交易前准备')
+                                      "avg1=%s, macd=%s, rsi=%s" % ((end_time - start_time), len(stock_codes),
+                                                                       self.avg1, self.macds, self.rsis), u'交易前准备')
         logger.info("Total monitor code size: %d. Codes=%s" % (len(stock_codes), stock_codes))
 
         isStarted = False
@@ -556,7 +565,7 @@ if __name__ == '__main__':
     monitor = Monitor()
 
     # Test before start
-    code = "000932"
+    code = "600781"
     price = monitor.getHistoryDayKAvgData(code, 1)
     monitor.avg1[code] = price
     monitor.avg10[code] = price
