@@ -310,6 +310,8 @@ class Monitor:
         for code in stock_codes:
             if self.avg10[code] > 0:
                 temp_arr.append(code)
+                ndf = cache[code]['close'][1:20].reset_index()
+                logger.info("RSI of %s: %d" % (code, getRSI(ndf['close'])))
         stock_codes.clear()
         yesterday = (datetime.now() - timedelta(days = 1))
         timeStr = yesterday.strftime("%Y%m%d")
