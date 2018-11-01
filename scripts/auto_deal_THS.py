@@ -505,6 +505,11 @@ class Monitor:
                 if macd[0] < 0 and price < open_price and price < avg1*0.98:
                     logger.info("MACD of %s: %.2f" % (code, macd[0]))
                     return 'FS'
+
+                rsi = getRSI(cache[code]['close'])
+                if rsi > 90 and price < highest_price*0.98:
+                    logger.info("RSI of %s: %d" % (code, rsi))
+                    return 'FS'
             except Exception as e:
                 logger.error("Failed to calculate realtime macd of %s: %s" % (code, e))
 
@@ -528,6 +533,16 @@ class Monitor:
         return max(int(stock_positions[code]/200)*100, 100)
 
 
+def getRSI(prices, days=6):
+    positiveSum = 0
+    totalSum = 0
+    for i in range(0, days):
+        increase = prices[i] - prices[i+1]
+        if increase > 0:
+            positiveSum += increase
+        totalSum += abs(increase)
+    return int(positiveSum*100/totalSum)
+
 if __name__ == '__main__':
     monitor = Monitor()
 
@@ -537,8 +552,10 @@ if __name__ == '__main__':
     monitor.avg1[code] = price
     monitor.avg10[code] = price
     monitor.avg20[code] = price
-    direction = monitor.getDirection(code, price*0.90, price, price, price)
-    logger.info("Code=%s, direction=%s, macd=%.2f" % (code, direction, cache[code]['macd'][0]))
+    direction = monitor.getDirection(code, price*1.26, price, price*1.3, price)
+    ndf = cache[code]['close'][1:20]
+    ndf = ndf.reset_index()
+    logger.info("Code=%s, direction=%s, macd=%.2f, rsi=%d, rsi=%d" % (code, direction, cache[code]['macd'][0], getRSI(ndf['close']), getRSI(cache[code]['close'])))
 
     while True:
         try:
