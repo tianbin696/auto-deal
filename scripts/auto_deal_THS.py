@@ -318,7 +318,7 @@ class Monitor:
                 self.rsis[code] = rsi
                 logger.info("RSI of %s: %d" % (code, rsi))
 
-                macd = self.getRealTimeMACD(code, self.avg1[0])
+                macd = self.getRealTimeMACD(code, self.avg1[code])
                 self.macds[code] = float("%.2f" % macd[0])
                 logger.info("macd of %s: %.2f" % (code, macd[0]))
         stock_codes.clear()
