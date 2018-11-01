@@ -535,24 +535,31 @@ class Monitor:
 
 def getRSI(prices, days=6):
     positiveSum = 0
+    positiveCount = 0
+    negativeSum = 0
+    negativeCount = 0
     totalSum = 0
     for i in range(0, days):
-        increase = prices[i] - prices[i+1]
+        increase = (prices[i] - prices[i+1])/prices[i+1]
         if increase > 0:
             positiveSum += increase
-        totalSum += abs(increase)
-    return int(positiveSum*100/totalSum)
+            positiveCount += 1
+        else:
+            negativeSum += increase
+            negativeCount += 1
+    result = ((positiveSum)*100) / ((positiveSum + abs(negativeSum)))
+    return int(result)
 
 if __name__ == '__main__':
     monitor = Monitor()
 
     # Test before start
-    code = "000672"
+    code = "000932"
     price = monitor.getHistoryDayKAvgData(code, 1)
     monitor.avg1[code] = price
     monitor.avg10[code] = price
     monitor.avg20[code] = price
-    direction = monitor.getDirection(code, price*1.26, price, price*1.3, price)
+    direction = monitor.getDirection(code, price*1.2, price, price*1.3, price)
     ndf = cache[code]['close'][1:20]
     ndf = ndf.reset_index()
     logger.info("Code=%s, direction=%s, macd=%.2f, rsi=%d, rsi=%d" % (code, direction, cache[code]['macd'][0], getRSI(ndf['close']), getRSI(cache[code]['close'])))
