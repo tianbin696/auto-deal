@@ -148,14 +148,14 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
 
             if totals[code]*prices[0] < 50 or totals[code]*prices[0] > 2000:
                 continue
-            if prices[0] <= 0:
+            if prices[0] <= 0 or prices[0] >= 60:
                 continue
             # if avg10 < avg20:
             #     continue
             # if prices[0] > avg10*1.03 or prices[0] < avg10:
             #     continue
             get_MACD(df,12,26,9)
-            if numpy.mean(df['macd'][0:10]) > -0.2:
+            if numpy.mean(df['macd'][0:10]) > -0.15:
                 continue
             if not(df['macd'][0] > 0 and 0 > df['macd'][1] and df['macd'][1] > df['macd'][2]
                    and df['macd'][2] > df['macd'][3] and df['macd'][3] > df['macd'][4]
@@ -179,6 +179,13 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
     if file:
         writer.close()
 
+    sortedCodes = sort_codes(result_list, avg_days, timeStr, daysAgo, shizhi)
+    if file:
+        writer = open(file, 'w')
+        for code in sortedCodes[0:2]:
+            writer.write(code + "\n")
+        writer.close()
+
     end_time = time.time()
     print("Get %d filter code from total %d codes. Total cost %d seconds" % (len(result_list), len(list), (end_time - start_time)))
     return result_list[0:10]
@@ -190,41 +197,9 @@ def sort_codes(codes, avg_days, timeStr=None, daysAgo=0, shizhi=None):
     scores_detail = {}
     for code in codes:
         df = ts.get_h_data(code, timeStr=timeStr, daysAgo=daysAgo)
-        scores2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        idx = 0
-        while idx < 6:
-            if df['volume'][idx] > numpy.mean(df['volume'][idx:idx+6])*1.4 and df ['close'][idx] > max(df['open'][idx], df['close'][idx+1])*1.01:
-                scores2[idx] = 2
-            elif df['volume'][idx] < numpy.mean(df['volume'][idx:idx+6])*0.6 and df ['close'][idx] < min(df['open'][idx], df['close'][idx+1]):
-                scores2[idx] = 1
-            elif df['volume'][idx] > numpy.mean(df['volume'][idx:idx+6])*1.4 and df ['close'][idx] < min(df['open'][idx], df['close'][idx+1])*0.98:
-                scores2[idx] = -2
-            idx += 1
-
-        score0 = scores2[0]
-        score1 = scores2[1]
-        score2 = scores2[2]
-        score3 = scores2[3]
-        score4 = scores2[4]
-        score5 = scores2[5]
-        score6 = scores2[6]
-        score7 = scores2[7]
-        score8 = 0
-        score9 = 0
-        score10 = 4*min(df['close'][0:avg_days])/df['close'][0]
-        if shizhi is not None:
-            if shizhi[code] < 100:
-                score8 = 1
-            elif shizhi[code] < 500:
-                score8 = 2
-            elif shizhi[code] < 1000:
-                score8 = 3
-            else:
-                score8 = 4
-
-        scores[code] = float("%.2f" % (score0 + score1 + score2 + score3 + score4 + score5 + score6 + score7 + score8 + score9 + score10))
-        scores_detail[code] = "%.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f" % \
-                              (score0, score1, score2, score3, score4, score5, score6, score7, score9, score10, score8)
+        score = df['volume'][0]*5/numpy.sum(df['volume'][0:5])
+        scores[code] = float("%.2f" % score)
+        scores_detail[code] = "%.2f" % score
     sorted_scores = OrderedDict(sorted(scores.items(), key=lambda t: t[1], reverse=True))
     idx = 0
     for code in sorted_scores.keys():
