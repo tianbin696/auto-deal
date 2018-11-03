@@ -43,6 +43,7 @@ console.setFormatter(formatter)
 logger = logging.getLogger('auto_deal')
 logger.addHandler(console)
 stock_codes = []
+new_codes = []
 ignore_codes = []
 stock_positions = {}
 stock_chenbens = {}
@@ -51,10 +52,10 @@ isSelleds = {}
 buyedPrices = {}
 selledPrices = {}
 maxCodeSize = 8 # 最大持股数
-maxAmount = 100000
+maxAmount = 10000
 minAmount = 0
-availableMoney = 60000
-minBuyAmount = 10000
+availableMoney = 20000
+minBuyAmount = 6000
 minSellAmount = 10000
 sleepTime = 0.5
 monitorInterval = 10
@@ -62,11 +63,11 @@ avg10Days = 10 #参考均线天数，默认为10，可以根据具体情况手�
 cache = {}
 
 def readCodes():
-    global stock_codes
-    stock_codes = []
+    global new_codes
+    new_codes = []
     for code in list(open("codes.txt")):
-        stock_codes.append(code.strip())
-    logger.info("Monitor codes: %s" % stock_codes)
+        new_codes.append(code.strip())
+    logger.info("Monitor codes: %s" % new_codes)
 
 
 class OperationOfThs:
@@ -296,6 +297,10 @@ class Monitor:
             if code not in stock_codes:
                 stock_codes.append(code)
 
+        for code in new_codes:
+            if code not in stock_codes:
+                stock_codes.append(code)
+
         start_time = time.time()
         for code in stock_codes:
             p_changes = []
@@ -327,8 +332,8 @@ class Monitor:
         stock_codes.extend(sort_codes(temp_arr, avg10Days, timeStr))
         end_time = time.time()
         self.operation.saveScreenshot("均值更新完成，共耗时%d秒，排除异常，可监控%d支股票。"
-                                      "avg1=%s, macd=%s, rsi=%s" % ((end_time - start_time), len(stock_codes),
-                                                                       self.avg1, self.macds, self.rsis), u'交易前准备')
+                                      "avg1=%s, macd=%s, rsi=%s, new_codes=%s" % ((end_time - start_time), len(stock_codes),
+                                                                       self.avg1, self.macds, self.rsis, new_codes), u'交易前准备')
         logger.info("Total monitor code size: %d. Codes=%s" % (len(stock_codes), stock_codes))
 
         isStarted = False
@@ -525,9 +530,9 @@ class Monitor:
                 logger.error("Failed to calculate realtime macd of %s: %s" % (code, e))
 
         if code not in isBuyeds or not isBuyeds[code]:
-            if price > max(avg1, open_price, avg10) and avg1 < avg10 and price < avg10*1.03:
+            if code in new_codes and price > open_price:
                 # 有效突破：突破10日线
-                return 'N'
+                return 'B'
 
         return 'N'
 
@@ -597,6 +602,7 @@ if __name__ == '__main__':
 
             cache.clear()
             stock_codes.clear()
+            readCodes()
             ignore_codes.append("")
 
             monitor = Monitor()
