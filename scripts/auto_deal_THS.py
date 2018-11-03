@@ -549,7 +549,7 @@ class Monitor:
         return max(int(stock_positions[code]/200)*100, 100)
 
 
-def getRSI(prices, days=6):
+def getRSI(prices, days=8):
     positiveSum = 0
     positiveCount = 0
     negativeSum = 0
@@ -570,12 +570,12 @@ if __name__ == '__main__':
     monitor = Monitor()
 
     # Test before start
-    code = "600781"
+    code = "600118"
     price = monitor.getHistoryDayKAvgData(code, 1)
     monitor.avg1[code] = price
     monitor.avg10[code] = price
     monitor.avg20[code] = price
-    direction = monitor.getDirection(code, price*1.2, price, price*1.3, price)
+    direction = monitor.getDirection(code, price*1.08, price*1.11, price, price)
     ndf = cache[code]['close'][1:20]
     ndf = ndf.reset_index()
     logger.info("Code=%s, direction=%s, macd=%.2f, rsi=%d, rsi=%d" % (code, direction, cache[code]['macd'][0], getRSI(ndf['close']), getRSI(cache[code]['close'])))
