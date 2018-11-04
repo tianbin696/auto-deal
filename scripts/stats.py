@@ -136,6 +136,8 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
     if file:
         writer = open(file, "w")
 
+    filter_codes = []
+
     for code in list:
         try:
             df = ts.get_h_data(code, timeStr, daysAgo)
@@ -150,6 +152,8 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
                 continue
             if prices[0] <= 0 or prices[0] >= 60:
                 continue
+            if getRSI(prices, 12) > 80:
+                filter_codes.append(code)
             # if avg10 < avg20:
             #     continue
             # if prices[0] > avg10*1.03 or prices[0] < avg10:
@@ -161,12 +165,13 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
                    and df['macd'][2] > df['macd'][3] and df['macd'][3] > df['macd'][4]
                    and df['macd'][4] > df['macd'][5]):
                 continue
-            rsi = getRSI(df['close'])
-            if rsi > 80 or rsi < 50:
+            rsi6 = getRSI(df['close'], 6)
+            rsi12 = getRSI(df['close'], 12)
+            if not (50 < rsi12 and rsi12 < rsi6 and rsi6 < 80):
                 continue
 
             print("\ncode=%s:" % (code))
-            print("diff=%.2f, dea=%.2f, macd=%.2f, rsi=%d" % (df['diff'][0], df['dea'][0], df['macd'][0], rsi))
+            print("diff=%.2f, dea=%.2f, macd=%.2f, rsi6=%d, rsi12=%d" % (df['diff'][0], df['dea'][0], df['macd'][0], rsi6, rsi12))
             print("diff=%.2f, dea=%.2f, macd=%.2f" % (df['diff'][1], df['dea'][1], df['macd'][1]))
             result_list.append(code)
             if writer:
@@ -188,6 +193,7 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
 
     end_time = time.time()
     print("Get %d filter code from total %d codes. Total cost %d seconds" % (len(result_list), len(list), (end_time - start_time)))
+    print("Filter_codes: %s" % filter_codes)
     return result_list[0:10]
 
 
