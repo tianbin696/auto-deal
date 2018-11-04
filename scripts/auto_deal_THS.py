@@ -319,9 +319,10 @@ class Monitor:
                 temp_arr.append(code)
 
                 ndf = cache[code]['close'][1:20].reset_index()
-                rsi = getRSI(ndf['close'])
-                self.rsis[code] = rsi
-                logger.info("RSI of %s: %d" % (code, rsi))
+                rsi6 = getRSI(ndf['close'], 6)
+                rsi12 = getRSI(ndf['close'], 12)
+                self.rsis[code] = "%d-%d" % (rsi6, rsi12)
+                logger.info("RSI of %s: %d-%d" % (code, rsi6, rsi12))
 
                 macd = self.getRealTimeMACD(code, self.avg1[code])
                 self.macds[code] = float("%.2f" % macd[0])
@@ -518,13 +519,14 @@ class Monitor:
         if code not in isSelleds or not isSelleds[code]:
             try:
                 macd = self.getRealTimeMACD(code, price)
+                logger.info("MACD of %s: %.2f" % (code, macd[0]))
                 if macd[0] < 0 and price < open_price and price < avg1*0.98:
-                    logger.info("MACD of %s: %.2f" % (code, macd[0]))
                     return 'FS'
 
-                rsi = getRSI(cache[code]['close'])
-                if rsi > 90 and price < highest_price*0.98:
-                    logger.info("RSI of %s: %d" % (code, rsi))
+                rsi6 = getRSI(cache[code]['close'], 6)
+                rsi12 = getRSI(cache[code]['close'], 12)
+                logger.info("RSI of %s: rsi6=%d, rsi12=%d" % (code, rsi6, rsi12))
+                if rsi6 < rsi12 and rsi6 > 80 and price < open_price:
                     return 'FS'
             except Exception as e:
                 logger.error("Failed to calculate realtime macd of %s: %s" % (code, e))
@@ -575,10 +577,10 @@ if __name__ == '__main__':
     monitor.avg1[code] = price
     monitor.avg10[code] = price
     monitor.avg20[code] = price
-    direction = monitor.getDirection(code, price*1.08, price*1.11, price, price)
+    direction = monitor.getDirection(code, price*0.98, price*1.1, price, price)
     ndf = cache[code]['close'][1:20]
     ndf = ndf.reset_index()
-    logger.info("Code=%s, direction=%s, macd=%.2f, rsi=%d, rsi=%d" % (code, direction, cache[code]['macd'][0], getRSI(ndf['close']), getRSI(cache[code]['close'])))
+    logger.info("Code=%s, direction=%s, macd=%.2f, rsi6=%d, rsi12=%d" % (code, direction, cache[code]['macd'][0], getRSI(ndf['close'], 6), getRSI(ndf['close'], 12)))
 
     while True:
         try:
