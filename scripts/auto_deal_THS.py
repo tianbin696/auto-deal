@@ -318,7 +318,7 @@ class Monitor:
             if self.avg10[code] > 0:
                 temp_arr.append(code)
 
-                ndf = cache[code]['close'][1:20].reset_index()
+                ndf = cache[code]['close'][0:20].reset_index()
                 rsi6 = getRSI(ndf['close'], 6)
                 rsi12 = getRSI(ndf['close'], 12)
                 self.rsis[code] = "%d-%d" % (rsi6, rsi12)
