@@ -51,7 +51,7 @@ isBuyeds = {}
 isSelleds = {}
 buyedPrices = {}
 selledPrices = {}
-maxCodeSize = 8 # 最大持股数
+maxCodeSize = 20 # 最大持股数
 maxAmount = 10000
 minAmount = 0
 availableMoney = 20000
@@ -532,7 +532,7 @@ class Monitor:
                 logger.error("Failed to calculate realtime macd of %s: %s" % (code, e))
 
         if code not in isBuyeds or not isBuyeds[code]:
-            if code in new_codes and price > open_price:
+            if code in new_codes and price > lowest_price * 1.01:
                 # 有效突破：突破10日线
                 return 'B'
 
