@@ -577,8 +577,8 @@ if __name__ == '__main__':
     monitor.avg1[code] = price
     monitor.avg10[code] = price
     monitor.avg20[code] = price
-    direction = monitor.getDirection(code, price*0.98, price*1.1, price, price)
-    ndf = cache[code]['close'][1:20]
+    direction = monitor.getDirection(code, price, price, price, price)
+    ndf = cache[code]['close'][0:20]
     ndf = ndf.reset_index()
     logger.info("Code=%s, direction=%s, macd=%.2f, rsi6=%d, rsi12=%d" % (code, direction, cache[code]['macd'][0], getRSI(ndf['close'], 6), getRSI(ndf['close'], 12)))
 
