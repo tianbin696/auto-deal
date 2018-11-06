@@ -159,11 +159,14 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
             # if prices[0] > avg10*1.03 or prices[0] < avg10:
             #     continue
             get_MACD(df,12,26,9)
-            if numpy.mean(df['macd'][0:10]) > -0.15:
-                continue
-            if not(df['macd'][0] > 0 and 0 > df['macd'][1] and df['macd'][1] > df['macd'][2]
-                   and df['macd'][2] > df['macd'][3] and df['macd'][3] > df['macd'][4]
-                   and df['macd'][4] > df['macd'][5]):
+            # if numpy.mean(df['macd'][0:10]) > -0.10:
+            #     continue
+            if not(df['macd'][0] > 0 and 0 > df['macd'][1]
+                   and df['macd'][1] > df['macd'][2]
+                   and df['macd'][2] > df['macd'][3]
+                   # and df['macd'][3] > df['macd'][4]
+                   # and df['macd'][4] > df['macd'][5]
+            ):
                 continue
             rsi6 = getRSI(df['close'], 6)
             rsi12 = getRSI(df['close'], 12)
