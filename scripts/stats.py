@@ -161,7 +161,7 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
 
             rsi6 = getRSI(df['close'], 6)
             rsi12 = getRSI(df['close'], 12)
-            if not (50 < rsi12 and rsi12 < rsi6 and rsi6 < 70):
+            if not (50 < rsi12 and rsi12 < rsi6 and rsi6 < 75):
                 continue
 
             print("\ncode=%s:" % (code))
