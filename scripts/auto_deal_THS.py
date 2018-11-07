@@ -528,7 +528,7 @@ class Monitor:
                 logger.info("RSI of %s: rsi6=%d, rsi12=%d" % (code, rsi6, rsi12))
                 if 80 < rsi6 and rsi6 < rsi12 and price < open_price and price < avg1*0.98:
                     return 'FS'
-                if rsi12 > 90 and price < highest_price*0.98:
+                if rsi12 > 80 and price < highest_price*0.98:
                     return 'FS'
             except Exception as e:
                 logger.error("Failed to calculate realtime macd of %s: %s" % (code, e))
