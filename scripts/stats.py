@@ -162,8 +162,8 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
             # if numpy.mean(df['macd'][0:10]) > -0.10:
             #     continue
             if not(df['macd'][0] > 0 and 0 > df['macd'][1]
-                   and df['macd'][1] > df['macd'][2]
-                   and df['macd'][2] > df['macd'][3]
+                   # and df['macd'][1] > df['macd'][2]
+                   # and df['macd'][2] > df['macd'][3]
                    # and df['macd'][3] > df['macd'][4]
                    # and df['macd'][4] > df['macd'][5]
             ):
@@ -207,6 +207,7 @@ def sort_codes(codes, avg_days, timeStr=None, daysAgo=0, shizhi=None):
     for code in codes:
         df = ts.get_h_data(code, timeStr=timeStr, daysAgo=daysAgo)
         score = df['volume'][0]*5/numpy.sum(df['volume'][0:5])
+        score += 1.0/score
         scores[code] = float("%.2f" % score)
         scores_detail[code] = "%.2f" % score
     sorted_scores = OrderedDict(sorted(scores.items(), key=lambda t: t[1], reverse=True))
