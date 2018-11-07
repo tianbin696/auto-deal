@@ -136,8 +136,6 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
     if file:
         writer = open(file, "w")
 
-    filter_codes = []
-
     for code in list:
         try:
             df = ts.get_h_data(code, timeStr, daysAgo)
@@ -152,29 +150,18 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
                 continue
             if prices[0] <= 0 or prices[0] >= 60:
                 continue
-            if getRSI(prices, 12) > 80:
-                filter_codes.append(code)
-            # if avg10 < avg20:
-            #     continue
-            # if prices[0] > avg10*1.03 or prices[0] < avg10:
-            #     continue
+
             get_MACD(df,12,26,9)
-            if numpy.mean(df['macd'][0:10]) > 0:
+            if numpy.mean(df['macd'][0:12]) > numpy.mean(df['macd'][0:6]):
                 continue
-            if df['macd'][0] < df['macd'][1]:
+            if df['macd'][0] < 0:
                 continue
-            if df['macd'][0] > 0.1:
+            if df['macd'][0] < df['macd'][1] or df['macd'][1] < df['macd'][2] or df['macd'][2] < df['macd'][3]:
                 continue
-            if not(df['macd'][0] > df['macd'][1]
-                   and df['macd'][1] > df['macd'][2]
-                   and df['macd'][2] > df['macd'][3]
-                   and df['macd'][3] > df['macd'][4]
-                   and df['macd'][4] > df['macd'][5]
-            ):
-                continue
+
             rsi6 = getRSI(df['close'], 6)
             rsi12 = getRSI(df['close'], 12)
-            if not (50 < rsi12 and rsi12 < rsi6 and rsi6 < 80):
+            if not (50 < rsi12 and rsi12 < rsi6 and rsi6 < 70):
                 continue
 
             print("\ncode=%s:" % (code))
@@ -200,7 +187,6 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
 
     end_time = time.time()
     print("Get %d filter code from total %d codes. Total cost %d seconds" % (len(result_list), len(list), (end_time - start_time)))
-    print("Filter_codes: %s" % filter_codes)
     return result_list[0:10]
 
 
@@ -210,8 +196,7 @@ def sort_codes(codes, avg_days, timeStr=None, daysAgo=0, shizhi=None):
     scores_detail = {}
     for code in codes:
         df = ts.get_h_data(code, timeStr=timeStr, daysAgo=daysAgo)
-        score = df['volume'][0]*5/numpy.sum(df['volume'][0:5])
-        score += 1.0/score
+        score = numpy.mean(df['volume'][0:6])/numpy.mean(df['volume'][0:12])
         scores[code] = float("%.2f" % score)
         scores_detail[code] = "%.2f" % score
     sorted_scores = OrderedDict(sorted(scores.items(), key=lambda t: t[1], reverse=True))
