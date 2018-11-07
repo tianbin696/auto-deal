@@ -168,8 +168,8 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
             if not(df['macd'][0] > df['macd'][1]
                    and df['macd'][1] > df['macd'][2]
                    and df['macd'][2] > df['macd'][3]
-                   # and df['macd'][3] > df['macd'][4]
-                   # and df['macd'][4] > df['macd'][5]
+                   and df['macd'][3] > df['macd'][4]
+                   and df['macd'][4] > df['macd'][5]
             ):
                 continue
             rsi6 = getRSI(df['close'], 6)
