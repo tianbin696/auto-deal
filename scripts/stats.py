@@ -196,7 +196,7 @@ def sort_codes(codes, avg_days, timeStr=None, daysAgo=0, shizhi=None):
     scores_detail = {}
     for code in codes:
         df = ts.get_h_data(code, timeStr=timeStr, daysAgo=daysAgo)
-        score = numpy.mean(df['volume'][0:6])/numpy.mean(df['volume'][0:12])
+        score = numpy.mean(df['volume'][0:3])/numpy.mean(df['volume'][0:6])
         scores[code] = float("%.2f" % score)
         scores_detail[code] = "%.2f" % score
     sorted_scores = OrderedDict(sorted(scores.items(), key=lambda t: t[1], reverse=True))
