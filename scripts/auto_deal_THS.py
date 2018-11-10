@@ -399,7 +399,10 @@ class Monitor:
         return now > targetTime
 
     def makeDecision(self, code, price, open_price, change_p, highest_price, lowest_price):
-        direction = self.getDirection(code, price, open_price, highest_price, lowest_price)
+        chen_ben = 0
+        if code in stock_chenbens:
+            chen_ben = stock_chenbens[code]
+        direction = self.getDirection(code, price, open_price, highest_price, lowest_price, chen_ben)
         logger.info("Direction for %s: %s" % (code, direction))
         global availableMoney
         if direction == 'B':
@@ -504,7 +507,7 @@ class Monitor:
         cache[code] = get_MACD(cache[code],12,26,9)
         return cache[code]['macd']
 
-    def getDirection(self, code, price, open_price, highest_price, lowest_price):
+    def getDirection(self, code, price, open_price, highest_price, lowest_price, chen_ben=0):
         # 理论基础：趋势一旦形成，短期不会改变
         avg1 = float(self.avg1[code])
         avg10 = float(self.avg10[code])
@@ -519,23 +522,27 @@ class Monitor:
         if code not in isSelleds or not isSelleds[code]:
             try:
                 macd = self.getRealTimeMACD(code, price)
-                logger.info("MACD of %s: %.2f" % (code, macd[0]))
-                if macd[0] < 0 and price < open_price and price < avg1*0.98:
-                    return 'FS'
+                # logger.info("MACD of %s: %.2f" % (code, macd[0]))
+                # if macd[0] < 0 and price < open_price and price < avg1*0.98:
+                #     return 'FS'
+                #
+                # rsi6 = getRSI(cache[code]['close'], 6)
+                # rsi12 = getRSI(cache[code]['close'], 12)
+                # logger.info("RSI of %s: rsi6=%d, rsi12=%d" % (code, rsi6, rsi12))
+                # if 75 < rsi6 and rsi6 < rsi12 and price < open_price and price < avg1*0.98:
+                #     return 'FS'
+                # if rsi12 > 75 and price < highest_price*0.98:
+                #     return 'FS'
 
-                rsi6 = getRSI(cache[code]['close'], 6)
-                rsi12 = getRSI(cache[code]['close'], 12)
-                logger.info("RSI of %s: rsi6=%d, rsi12=%d" % (code, rsi6, rsi12))
-                if 75 < rsi6 and rsi6 < rsi12 and price < open_price and price < avg1*0.98:
+                if chen_ben > 0 and price > chen_ben*1.08 and price < highest_price*0.98:
                     return 'FS'
-                if rsi12 > 75 and price < highest_price*0.98:
+                if chen_ben > 0 and price < chen_ben*0.92 and price < avg1*0.98:
                     return 'FS'
             except Exception as e:
                 logger.error("Failed to calculate realtime macd of %s: %s" % (code, e))
 
         if code not in isBuyeds or not isBuyeds[code]:
-            if code in new_codes and price > lowest_price * 1.01:
-                # 有效突破：突破10日线
+            if code in new_codes and price > lowest_price * 1.02 and price < avg1*1.02:
                 return 'B'
 
         return 'N'
@@ -570,19 +577,34 @@ def getRSI(prices, days=8):
     result = ((positiveSum)*100) / ((positiveSum + abs(negativeSum)))
     return int(result)
 
-if __name__ == '__main__':
+def test():
     monitor = Monitor()
 
     # Test before start
-    code = "600118"
-    price = monitor.getHistoryDayKAvgData(code, 1)
-    monitor.avg1[code] = price
-    monitor.avg10[code] = price
-    monitor.avg20[code] = price
-    direction = monitor.getDirection(code, price, price, price, price)
-    ndf = cache[code]['close'][0:20]
-    ndf = ndf.reset_index()
-    logger.info("Code=%s, direction=%s, macd=%.2f, rsi6=%d, rsi12=%d" % (code, direction, cache[code]['macd'][0], getRSI(ndf['close'], 6), getRSI(ndf['close'], 12)))
+    test_codes = ["600118"]
+    for code in test_codes:
+        price = monitor.getHistoryDayKAvgData(code, 1)
+        monitor.avg1[code] = price
+        monitor.avg10[code] = price
+        monitor.avg20[code] = price
+        #  测试高抛
+        direction = monitor.getDirection(code, price, price, price*1.03, price, price*0.91)
+        ndf = cache[code]['close'][0:20]
+        ndf = ndf.reset_index()
+        logger.info("Code=%s, direction=%s, macd=%.2f, rsi6=%d, rsi12=%d" % (code, direction, cache[code]['macd'][0], getRSI(ndf['close'], 6), getRSI(ndf['close'], 12)))
+        direction = monitor.getDirection(code, price, price, price*1.02, price, price*0.91)
+        logger.info("code=%s, direction=%s" % (code, direction))
+        # 测试低抛
+        monitor.avg1[code] = price*1.03
+        direction = monitor.getDirection(code, price, price, price, price, price*1.09)
+        logger.info("code=%s, direction=%s" % (code, direction))
+        monitor.avg1[code] = price*1.02
+        direction = monitor.getDirection(code, price, price, price, price, price*1.09)
+        logger.info("code=%s, direction=%s" % (code, direction))
+
+
+if __name__ == '__main__':
+    test()
 
     while True:
         try:
