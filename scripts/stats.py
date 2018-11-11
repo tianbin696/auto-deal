@@ -146,27 +146,31 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
             avg10 = numpy.mean(prices[0:avg_days])
             avg20 = numpy.mean(prices[0:2*avg_days])
 
-            if totals[code]*prices[0] < 50 or totals[code]*prices[0] > 2000:
-                continue
+            # if totals[code]*prices[0] < 50 or totals[code]*prices[0] > 2000:
+            #     continue
             if prices[0] <= 0 or prices[0] >= 60:
                 continue
 
-            get_MACD(df,12,26,9)
-            if numpy.mean(df['macd'][0:12]) > numpy.mean(df['macd'][0:6]):
-                continue
-            if df['macd'][0] < 0:
-                continue
-            if df['macd'][0] < df['macd'][1] or df['macd'][1] < df['macd'][2] or df['macd'][2] < df['macd'][3]:
+            # get_MACD(df,12,26,9)
+            # if numpy.mean(df['macd'][0:12]) > numpy.mean(df['macd'][0:6]):
+            #     continue
+            # if df['macd'][0] < 0:
+            #     continue
+            # if df['macd'][0] < df['macd'][1] or df['macd'][1] < df['macd'][2] or df['macd'][2] < df['macd'][3]:
+            #     continue
+            #
+            # rsi6 = getRSI(df['close'], 6)
+            # rsi12 = getRSI(df['close'], 12)
+            # if not (40 < rsi12 and rsi12 < rsi6 and rsi6 < 75):
+            #     continue
+            #
+            # print("\ncode=%s:" % (code))
+            # print("diff=%.2f, dea=%.2f, macd=%.2f, rsi6=%d, rsi12=%d" % (df['diff'][0], df['dea'][0], df['macd'][0], rsi6, rsi12))
+            # print("diff=%.2f, dea=%.2f, macd=%.2f" % (df['diff'][1], df['dea'][1], df['macd'][1]))
+
+            if prices[0] < prices[1]*1.06:
                 continue
 
-            rsi6 = getRSI(df['close'], 6)
-            rsi12 = getRSI(df['close'], 12)
-            if not (40 < rsi12 and rsi12 < rsi6 and rsi6 < 75):
-                continue
-
-            print("\ncode=%s:" % (code))
-            print("diff=%.2f, dea=%.2f, macd=%.2f, rsi6=%d, rsi12=%d" % (df['diff'][0], df['dea'][0], df['macd'][0], rsi6, rsi12))
-            print("diff=%.2f, dea=%.2f, macd=%.2f" % (df['diff'][1], df['dea'][1], df['macd'][1]))
             result_list.append(code)
             if writer:
                 writer.write(code + "\n")
@@ -181,7 +185,7 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
     sortedCodes = sort_codes(result_list, avg_days, timeStr, daysAgo, shizhi)
     if file:
         writer = open(file, 'w')
-        for code in sortedCodes[0:2]:
+        for code in sortedCodes[0:20]:
             writer.write(code + "\n")
         writer.close()
 
