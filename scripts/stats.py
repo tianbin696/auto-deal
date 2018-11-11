@@ -151,7 +151,19 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
             if prices[0] <= 0 or prices[0] >= 60:
                 continue
 
-            if prices[0] < numpy.min(prices[0:3])*1.2 or prices[0] > numpy.min(prices[0:6])*1.4:
+            if numpy.mean(df['volume'][0:1]) > numpy.mean(df['volume'][1:2])*3:
+                continue
+
+            if numpy.mean(df['volume'][0:1]) > numpy.mean(df['volume'][1:4])*3:
+                continue
+
+            if numpy.mean(df['volume'][0:3]) > numpy.mean(df['volume'][3:9])*2:
+                continue
+
+            if prices[0] < numpy.min(prices[0:3])*1.1 or prices[0] > numpy.min(prices[0:6])*1.3:
+                continue
+
+            if prices[0] < prices[1]*1.06:
                 continue
 
             # get_MACD(df,12,26,9)
@@ -170,9 +182,6 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
             # print("\ncode=%s:" % (code))
             # print("diff=%.2f, dea=%.2f, macd=%.2f, rsi6=%d, rsi12=%d" % (df['diff'][0], df['dea'][0], df['macd'][0], rsi6, rsi12))
             # print("diff=%.2f, dea=%.2f, macd=%.2f" % (df['diff'][1], df['dea'][1], df['macd'][1]))
-
-            if prices[0] < prices[1]*1.06:
-                continue
 
             result_list.append(code)
             if writer:
@@ -194,7 +203,7 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
 
     end_time = time.time()
     print("Get %d filter code from total %d codes. Total cost %d seconds" % (len(result_list), len(list), (end_time - start_time)))
-    return sortedCodes[0:20]
+    return sortedCodes
 
 
 def sort_codes(codes, avg_days, timeStr=None, daysAgo=0, shizhi=None):
@@ -203,7 +212,8 @@ def sort_codes(codes, avg_days, timeStr=None, daysAgo=0, shizhi=None):
     scores_detail = {}
     for code in codes:
         df = ts.get_h_data(code, timeStr=timeStr, daysAgo=daysAgo)
-        score = numpy.mean(df['volume'][0:3])/numpy.mean(df['volume'][0:1])
+        score = numpy.mean(df['volume'][0:1])/numpy.mean(df['volume'][1:4])
+        score += 1.0/score
         scores[code] = float("%.2f" % score)
         scores_detail[code] = "%.2f" % score
     sorted_scores = OrderedDict(sorted(scores.items(), key=lambda t: t[1], reverse=True))
@@ -241,6 +251,7 @@ if __name__ == "__main__":
 
     yesterday = (datetime.now() - timedelta(days = 5))
     timeStr = yesterday.strftime("%Y%m%d")
+    df = ts.get_h_data('002066', timeStr)
     codes = ['600570']
     codes = get_code_filter_list(avgDays, "codes.txt", timeStr=timeStr)
     verify(codes, 3, None)
