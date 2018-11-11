@@ -151,6 +151,9 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
             if prices[0] <= 0 or prices[0] >= 60:
                 continue
 
+            if prices[0] < numpy.min(prices[0:3])*1.2 or prices[0] > numpy.min(prices[0:6])*1.4:
+                continue
+
             # get_MACD(df,12,26,9)
             # if numpy.mean(df['macd'][0:12]) > numpy.mean(df['macd'][0:6]):
             #     continue
@@ -191,7 +194,7 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
 
     end_time = time.time()
     print("Get %d filter code from total %d codes. Total cost %d seconds" % (len(result_list), len(list), (end_time - start_time)))
-    return result_list[0:10]
+    return sortedCodes[0:20]
 
 
 def sort_codes(codes, avg_days, timeStr=None, daysAgo=0, shizhi=None):
@@ -200,7 +203,7 @@ def sort_codes(codes, avg_days, timeStr=None, daysAgo=0, shizhi=None):
     scores_detail = {}
     for code in codes:
         df = ts.get_h_data(code, timeStr=timeStr, daysAgo=daysAgo)
-        score = numpy.mean(df['volume'][0:3])/numpy.mean(df['volume'][0:6])
+        score = numpy.mean(df['volume'][0:3])/numpy.mean(df['volume'][0:1])
         scores[code] = float("%.2f" % score)
         scores_detail[code] = "%.2f" % score
     sorted_scores = OrderedDict(sorted(scores.items(), key=lambda t: t[1], reverse=True))
@@ -229,13 +232,19 @@ def verify(codes, daysAgo, timeStr):
     for code in codes:
         df = ts.get_h_data(code, timeStr)
         buyPrice = df['low'][daysAgo-1]*1.02
-        max_increase = float("%.2f" % ((max(df['high'][0:(daysAgo-2)])-buyPrice)/buyPrice*100))
-        min_increase = float("%.2f" % ((min(df['low'][0:(daysAgo-2)])-buyPrice)/buyPrice*100))
+        max_increase = float("%.2f" % ((max(df['high'][0:(daysAgo-1)])-buyPrice)/buyPrice*100))
+        min_increase = float("%.2f" % ((min(df['low'][0:(daysAgo-1)])-buyPrice)/buyPrice*100))
         print("%s increase at %s: [%.2f, %.2f]" % (code, df['date'][daysAgo], min_increase, max_increase))
 
 if __name__ == "__main__":
     avgDays = 10
-    timeStr=None
+
+    yesterday = (datetime.now() - timedelta(days = 5))
+    timeStr = yesterday.strftime("%Y%m%d")
+    codes = ['600570']
+    codes = get_code_filter_list(avgDays, "codes.txt", timeStr=timeStr)
+    verify(codes, 3, None)
 
     # 自动筛选+人工审核过滤
+    timeStr=None
     codes = get_code_filter_list(avgDays, "codes.txt", timeStr=timeStr)
