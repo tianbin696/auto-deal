@@ -542,7 +542,7 @@ class Monitor:
                 logger.error("Failed to calculate realtime macd of %s: %s" % (code, e))
 
         if code not in isBuyeds or not isBuyeds[code]:
-            if code in new_codes and price > lowest_price * 1.02 and price < avg1*1.02:
+            if code in new_codes and price > max(lowest_price * 1.02, open_price) and price < avg1*1.02:
                 return 'B'
 
         return 'N'
