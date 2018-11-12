@@ -241,7 +241,7 @@ def verify(codes, daysAgo, timeStr):
         return
     for code in codes:
         df = ts.get_h_data(code, timeStr)
-        buyPrice = df['low'][daysAgo-1]*1.02
+        buyPrice = max(df['open'][daysAgo-1], df['low'][daysAgo-1]*1.02)
         max_increase = float("%.2f" % ((max(df['high'][0:(daysAgo-1)])-buyPrice)/buyPrice*100))
         min_increase = float("%.2f" % ((min(df['low'][0:(daysAgo-1)])-buyPrice)/buyPrice*100))
         print("%s increase at %s: [%.2f, %.2f]" % (code, df['date'][daysAgo], min_increase, max_increase))

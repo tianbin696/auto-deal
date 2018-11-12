@@ -51,7 +51,7 @@ isBuyeds = {}
 isSelleds = {}
 buyedPrices = {}
 selledPrices = {}
-maxCodeSize = 21 # 最大持股数
+maxCodeSize = 22 # 最大持股数
 maxAmount = 10000
 minAmount = 0
 availableMoney = 20000
@@ -542,7 +542,7 @@ class Monitor:
                 logger.error("Failed to calculate realtime macd of %s: %s" % (code, e))
 
         if code not in isBuyeds or not isBuyeds[code]:
-            if code in new_codes and price > max(lowest_price * 1.02, open_price) and price < avg1*1.02:
+            if code in new_codes and price > max(lowest_price * 1.02, open_price, highest_price*0.96) and price < avg1*1.02:
                 return 'B'
 
         return 'N'
