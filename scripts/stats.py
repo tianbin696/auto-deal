@@ -148,7 +148,10 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
 
             # if totals[code]*prices[0] < 50 or totals[code]*prices[0] > 2000:
             #     continue
-            if prices[0] <= 0 or prices[0] >= 60:
+            if prices[0] <= 0 or prices[0] >= 50:
+                continue
+
+            if prices[0] >= 25 and prices[0] < 40:
                 continue
 
             if numpy.mean(df['volume'][0:1]) > numpy.mean(df['volume'][1:2])*3:
@@ -160,7 +163,7 @@ def get_code_filter_list(avg_days = 10, file = None, daysAgo = 0, timeStr=None):
             if numpy.mean(df['volume'][0:3]) > numpy.mean(df['volume'][3:9])*2:
                 continue
 
-            if prices[0] < numpy.min(prices[0:3])*1.1 or prices[0] > numpy.min(prices[0:6])*1.3:
+            if prices[0] < numpy.min(prices[0:3])*1.1 or prices[0] > numpy.min(prices[0:6])*1.4:
                 continue
 
             if prices[0] < prices[1]*1.06:
@@ -249,12 +252,12 @@ def verify(codes, daysAgo, timeStr):
 if __name__ == "__main__":
     avgDays = 10
 
-    yesterday = (datetime.now() - timedelta(days = 5))
+    yesterday = (datetime.now() - timedelta(days = 7))
     timeStr = yesterday.strftime("%Y%m%d")
     df = ts.get_h_data('002066', timeStr)
     codes = ['600570']
     codes = get_code_filter_list(avgDays, "codes.txt", timeStr=timeStr)
-    verify(codes, 3, None)
+    verify(codes, 5, None)
 
     # 自动筛选+人工审核过滤
     timeStr=None
