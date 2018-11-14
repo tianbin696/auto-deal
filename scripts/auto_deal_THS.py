@@ -52,11 +52,10 @@ isSelleds = {}
 buyedPrices = {}
 selledPrices = {}
 maxCodeSize = 10 # 最大持股数
-maxAmount = 10000
+maxAmount = 20000
 minAmount = 0
-availableMoney = 10000
-minBuyAmount = 10000
-minSellAmount = 10000
+availableMoney = 12000
+minBuyAmount = 6000
 sleepTime = 0.5
 monitorInterval = 10
 avg10Days = 10 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
@@ -64,9 +63,9 @@ cache = {}
 
 def readCodes():
     global new_codes
-    new_codes = []
-    for code in list(open("codes.txt")):
-        new_codes.append(code.strip())
+    new_codes = ['600570', '000413']
+    # for code in list(open("codes.txt")):
+    #     new_codes.append(code.strip())
     logger.info("Monitor codes: %s" % new_codes)
 
 
@@ -534,15 +533,18 @@ class Monitor:
                 # if rsi12 > 75 and price < highest_price*0.98:
                 #     return 'FS'
 
-                if chen_ben > 0 and price > chen_ben*1.08 and price < highest_price*0.98:
-                    return 'FS'
-                if chen_ben > 0 and price < chen_ben*0.92 and price < avg1*0.98:
-                    return 'FS'
+                # if chen_ben > 0 and price > chen_ben*1.08 and price < highest_price*0.98:
+                #     return 'FS'
+                # if chen_ben > 0 and price < chen_ben*0.92 and price < avg1*0.98:
+                #     return 'FS'
+
+                if price < min(avg1*0.96, open_price):
+                    return 'S'
             except Exception as e:
                 logger.error("Failed to calculate realtime macd of %s: %s" % (code, e))
 
         if code not in isBuyeds or not isBuyeds[code]:
-            if code in new_codes and price > max(lowest_price * 1.02, open_price, highest_price*0.96) and price < avg1*1.02:
+            if code in new_codes and price > max(avg1*1.04, open_price):
                 return 'B'
 
         return 'N'
