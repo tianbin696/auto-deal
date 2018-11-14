@@ -63,7 +63,7 @@ cache = {}
 
 def readCodes():
     global new_codes
-    new_codes = ['600570', '000413']
+    new_codes = ['600570', '000413', '600191', '600020', '603058', '000538']
     # for code in list(open("codes.txt")):
     #     new_codes.append(code.strip())
     logger.info("Monitor codes: %s" % new_codes)
@@ -583,25 +583,25 @@ def test():
     monitor = Monitor()
 
     # Test before start
-    test_codes = ["600118"]
-    for code in test_codes:
+    new_codes.append('600570')
+    for code in new_codes:
         price = monitor.getHistoryDayKAvgData(code, 1)
         monitor.avg1[code] = price
         monitor.avg10[code] = price
         monitor.avg20[code] = price
         #  测试高抛
-        direction = monitor.getDirection(code, price, price, price*1.03, price, price*0.91)
+        direction = monitor.getDirection(code, price, price, price, price, price)
         ndf = cache[code]['close'][0:20]
         ndf = ndf.reset_index()
         logger.info("Code=%s, direction=%s, macd=%.2f, rsi6=%d, rsi12=%d" % (code, direction, cache[code]['macd'][0], getRSI(ndf['close'], 6), getRSI(ndf['close'], 12)))
-        direction = monitor.getDirection(code, price, price, price*1.02, price, price*0.91)
+        direction = monitor.getDirection(code, price*1.05, price, price, price, price)
         logger.info("code=%s, direction=%s" % (code, direction))
         # 测试低抛
-        monitor.avg1[code] = price*1.03
+        monitor.avg1[code] = price
         direction = monitor.getDirection(code, price, price, price, price, price*1.09)
         logger.info("code=%s, direction=%s" % (code, direction))
-        monitor.avg1[code] = price*1.02
-        direction = monitor.getDirection(code, price, price, price, price, price*1.09)
+        monitor.avg1[code] = price
+        direction = monitor.getDirection(code, price*0.95, price, price, price, price*1.09)
         logger.info("code=%s, direction=%s" % (code, direction))
 
 
