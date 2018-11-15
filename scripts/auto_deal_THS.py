@@ -523,14 +523,14 @@ class Monitor:
         if code not in isSelleds or not isSelleds[code]:
             try:
                 self.getRealTimeMACD(code, price)
-                if price < open_price*0.96 and price > numpy.max(df['high'][1:25])*0.9 and volume > numpy.mean(df['volume'][1:6]):
+                if price < open_price*0.96 and price > numpy.max(df['close'][1:25])*0.9 and volume > numpy.mean(df['volume'][1:6]):
                     # 高位放量长阴线，卖出
                     return 'S'
             except Exception as e:
                 logger.error("Failed to calculate realtime macd of %s: %s" % (code, e))
 
         if code not in isBuyeds or not isBuyeds[code]:
-            if price > open_price*1.04 and price < numpy.min(df['low'][1:25])*1.1 and volume > numpy.mean(df['volume'][1:6]):
+            if price > open_price*1.04 and price < numpy.min(df['close'][1:25])*1.1 and volume > numpy.mean(df['volume'][1:6]):
                 # 低位放量长阳线，买入
                 return 'B'
 
@@ -579,19 +579,15 @@ def test():
         monitor.avg1[code] = price
         monitor.avg10[code] = price
         monitor.avg20[code] = price
+        df = cache[code]
         #  测试高抛
-        direction = monitor.getDirection(code, price, price, price, price, price, volume)
-        ndf = cache[code]['close'][0:20]
-        ndf = ndf.reset_index()
-        logger.info("Code=%s, direction=%s, macd=%.2f, rsi6=%d, rsi12=%d" % (code, direction, cache[code]['macd'][0], getRSI(ndf['close'], 6), getRSI(ndf['close'], 12)))
-        direction = monitor.getDirection(code, price*1.05, price, price, price, price, volume)
+        highest_close = numpy.max(df['close'][1:25])
+        direction = monitor.getDirection(code, highest_close*0.92, highest_close*0.98, price, price, price, volume*2)
         logger.info("code=%s, direction=%s" % (code, direction))
         # 测试低抛
         monitor.avg1[code] = price
-        direction = monitor.getDirection(code, price, price, price, price, price*1.09, volume)
-        logger.info("code=%s, direction=%s" % (code, direction))
-        monitor.avg1[code] = price
-        direction = monitor.getDirection(code, price*0.95, price, price, price, price*1.09, volume)
+        minest_close = numpy.min(df['close'][1:25])
+        direction = monitor.getDirection(code, minest_close*1.08, minest_close*1.02, price, price, price, volume*2)
         logger.info("code=%s, direction=%s" % (code, direction))
 
 
