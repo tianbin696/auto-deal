@@ -51,9 +51,9 @@ isBuyeds = {}
 isSelleds = {}
 buyedPrices = {}
 selledPrices = {}
-maxCodeSize = 6 # 最大持股数
+maxCodeSize = 10 # 最大持股数
 maxAmount = 20000
-minAmount = 0
+minAmount = 6000
 availableMoney = 12000
 minBuyAmount = 6000
 sleepTime = 0.5
@@ -63,7 +63,7 @@ cache = {}
 
 def readCodes():
     global new_codes
-    new_codes = ['600570', '000413', '600191', '600020', '603058', '000538']
+    # new_codes = ['600570', '000413', '600191', '600020', '603058', '000538']
     # for code in list(open("codes.txt")):
     #     new_codes.append(code.strip())
     logger.info("Monitor codes: %s" % new_codes)
@@ -375,8 +375,9 @@ class Monitor:
                         open_prices = []
                         highest_prices = []
                         lowest_price = []
-                        price = self.getRealTimeData(code, p_changes, open_prices, highest_prices, lowest_price)
-                        self.makeDecision(code, price, open_prices[0], p_changes[0], highest_prices[0], lowest_price[0])
+                        volumes = []
+                        price = self.getRealTimeData(code, p_changes, open_prices, highest_prices, lowest_price, volumes)
+                        self.makeDecision(code, price, open_prices[0], p_changes[0], highest_prices[0], lowest_price[0], volumes[0])
                     except Exception as e:
                         logger.error("Failed to monitor %s: %s" % (code, e))
 
@@ -397,11 +398,11 @@ class Monitor:
         targetTime = tz.localize(datetime.strptime(targetStr, "%Y-%m-%d %H:%M:%S"))
         return now > targetTime
 
-    def makeDecision(self, code, price, open_price, change_p, highest_price, lowest_price):
+    def makeDecision(self, code, price, open_price, change_p, highest_price, lowest_price, volume):
         chen_ben = 0
         if code in stock_chenbens:
             chen_ben = stock_chenbens[code]
-        direction = self.getDirection(code, price, open_price, highest_price, lowest_price, chen_ben)
+        direction = self.getDirection(code, price, open_price, highest_price, lowest_price, chen_ben, volume)
         logger.info("Direction for %s: %s" % (code, direction))
         global availableMoney
         if direction == 'B':
@@ -447,13 +448,14 @@ class Monitor:
                 selledPrices[code] = price
                 availableMoney += sellAmount*price
 
-    def getRealTimeData(self, code, p_changes=[], open_prices=[], highest_prices=[], lowest_prices=[]):
+    def getRealTimeData(self, code, p_changes=[], open_prices=[], highest_prices=[], lowest_prices=[], volumes=[]):
         df = ts.get_realtime_quotes(code)
         price = df['price'][0]
         changePercentage = (float(df['price'][0]) - float(df['pre_close'][0])) / float(df['pre_close'][0])  * 100
         open_prices.append(float(df['open'][0]))
         highest_prices.append(float(df['high'][0]))
         lowest_prices.append(float(df['low'][0]))
+        volumes.append(int(df['volume'][0]))
         p_changes.append(self.formatFloat(changePercentage))
         logger.debug("Realtime data of %s: %s" %(code, price))
         return float(price)
@@ -478,12 +480,12 @@ class Monitor:
                     logger.error("Failed to get history data: %s" % e)
                     time.sleep(60)
                     retry -= 1
-            d = {'close':df['close'][0:52].astype('float')}
+            d = {'close':df['close'][0:52].astype('float'), 'high':df['high'][0:52].astype('float'), 'low':df['low'][0:52].astype('float'), 'volume':df['volume'][0:52].astype('int')}
             ndf = pd.DataFrame(d)
 
             # Extend df
             rtDF = ts.get_realtime_quotes(code)
-            nd2 = {'close':rtDF['price'][0:1].astype('float')}
+            nd2 = {'close':rtDF['price'][0:1].astype('float'), 'high':rtDF['high'][0:1].astype('float'), 'low':rtDF['low'][0:1].astype('float'), 'volume':rtDF['volume'][0:1].astype('float')}
             ndf2 = pd.DataFrame(nd2)
 
             df = pd.concat([ndf2, ndf]).reset_index()
@@ -506,7 +508,7 @@ class Monitor:
         cache[code] = get_MACD(cache[code],12,26,9)
         return cache[code]['macd']
 
-    def getDirection(self, code, price, open_price, highest_price, lowest_price, chen_ben=0):
+    def getDirection(self, code, price, open_price, highest_price, lowest_price, chen_ben=0, volume=0):
         # 理论基础：趋势一旦形成，短期不会改变
         avg1 = float(self.avg1[code])
         avg10 = float(self.avg10[code])
@@ -520,31 +522,14 @@ class Monitor:
         # 针对精选个股，做高抛低吸
         if code not in isSelleds or not isSelleds[code]:
             try:
-                macd = self.getRealTimeMACD(code, price)
-                # logger.info("MACD of %s: %.2f" % (code, macd[0]))
-                # if macd[0] < 0 and price < open_price and price < avg1*0.98:
-                #     return 'FS'
-                #
-                # rsi6 = getRSI(cache[code]['close'], 6)
-                # rsi12 = getRSI(cache[code]['close'], 12)
-                # logger.info("RSI of %s: rsi6=%d, rsi12=%d" % (code, rsi6, rsi12))
-                # if 75 < rsi6 and rsi6 < rsi12 and price < open_price and price < avg1*0.98:
-                #     return 'FS'
-                # if rsi12 > 75 and price < highest_price*0.98:
-                #     return 'FS'
-
-                # if chen_ben > 0 and price > chen_ben*1.08 and price < highest_price*0.98:
-                #     return 'FS'
-                # if chen_ben > 0 and price < chen_ben*0.92 and price < avg1*0.98:
-                #     return 'FS'
-
-                if price < min(avg1*0.96, open_price):
+                self.getRealTimeMACD(code, price)
+                if price < open_price*0.96 and price > numpy.max(df['high'][1:25])*0.9 and volume > numpy.mean(df['volume'][1:6]):
                     return 'S'
             except Exception as e:
                 logger.error("Failed to calculate realtime macd of %s: %s" % (code, e))
 
         if code not in isBuyeds or not isBuyeds[code]:
-            if code in new_codes and price > max(avg1*1.04, open_price):
+            if price > open_price*1.04 and price < numpy.min(df['low'][1:25])*1.1 and volume > numpy.mean(df['volume'][1:6]):
                 return 'B'
 
         return 'N'
@@ -586,22 +571,25 @@ def test():
     new_codes.append('600570')
     for code in new_codes:
         price = monitor.getHistoryDayKAvgData(code, 1)
+        real_volume = []
+        price = monitor.getRealTimeData(code, volumes=real_volume)
+        volume = cache[code]['volume'][0]
         monitor.avg1[code] = price
         monitor.avg10[code] = price
         monitor.avg20[code] = price
         #  测试高抛
-        direction = monitor.getDirection(code, price, price, price, price, price)
+        direction = monitor.getDirection(code, price, price, price, price, price, volume)
         ndf = cache[code]['close'][0:20]
         ndf = ndf.reset_index()
         logger.info("Code=%s, direction=%s, macd=%.2f, rsi6=%d, rsi12=%d" % (code, direction, cache[code]['macd'][0], getRSI(ndf['close'], 6), getRSI(ndf['close'], 12)))
-        direction = monitor.getDirection(code, price*1.05, price, price, price, price)
+        direction = monitor.getDirection(code, price*1.05, price, price, price, price, volume)
         logger.info("code=%s, direction=%s" % (code, direction))
         # 测试低抛
         monitor.avg1[code] = price
-        direction = monitor.getDirection(code, price, price, price, price, price*1.09)
+        direction = monitor.getDirection(code, price, price, price, price, price*1.09, volume)
         logger.info("code=%s, direction=%s" % (code, direction))
         monitor.avg1[code] = price
-        direction = monitor.getDirection(code, price*0.95, price, price, price, price*1.09)
+        direction = monitor.getDirection(code, price*0.95, price, price, price, price*1.09, volume)
         logger.info("code=%s, direction=%s" % (code, direction))
 
 
