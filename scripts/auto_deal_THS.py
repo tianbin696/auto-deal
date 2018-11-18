@@ -358,7 +358,8 @@ class Monitor:
 
                 time.sleep(monitorInterval)
                 totalSleep += monitorInterval
-                if totalSleep % 3600 == 0:
+                if totalSleep > 3600:
+                    totalSleep = 0
                     self.operation.saveScreenshot("状态更新", '状态更新')
 
                 if not isStarted:
