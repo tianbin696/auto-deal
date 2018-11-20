@@ -63,6 +63,7 @@ cache = {}
 
 def readCodes():
     global new_codes
+    new_codes = []
     # new_codes = ['600570', '000413', '600191', '600020', '603058', '000538']
     # for code in list(open("codes.txt")):
     #     new_codes.append(code.strip())
