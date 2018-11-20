@@ -51,11 +51,11 @@ isBuyeds = {}
 isSelleds = {}
 buyedPrices = {}
 selledPrices = {}
-maxCodeSize = 10 # 最大持股数
-maxAmount = 20000
+maxCodeSize = 3 # 最大持股数
+maxAmount = 50000
 minAmount = 0
-availableMoney = 12000
-minBuyAmount = 6000
+availableMoney = 20000
+minBuyAmount = 10000
 sleepTime = 0.5
 monitorInterval = 10
 avg10Days = 10 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
@@ -533,7 +533,7 @@ class Monitor:
         if code not in isBuyeds or not isBuyeds[code]:
             if price > open_price*1.04 and price < numpy.min(df['close'][1:13])*1.1 and volume > numpy.mean(df['volume'][1:6]):
                 # 低位放量长阳线，买入
-                return 'B'
+                return 'N'
 
         return 'N'
 
