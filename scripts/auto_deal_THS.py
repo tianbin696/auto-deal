@@ -361,7 +361,7 @@ class Monitor:
                 totalSleep += monitorInterval
                 if totalSleep > 3600:
                     totalSleep = 0
-                    self.operation.saveScreenshot("状态更新", '状态更新')
+                    # self.operation.saveScreenshot("状态更新", '状态更新')
 
                 if not isStarted:
                     continue
@@ -525,14 +525,14 @@ class Monitor:
         if code not in isSelleds or not isSelleds[code]:
             try:
                 self.getRealTimeMACD(code, price)
-                if price < open_price*0.96 and price > numpy.max(df['close'][1:13])*0.9 and volume > numpy.mean(df['volume'][1:6]):
+                if price < open_price*0.96 and price > numpy.max(df['close'][1:13])*0.9 and volume > min(numpy.mean(df['volume'][1:6]), numpy.mean(df['volume'][1:11])):
                     # 高位放量长阴线，卖出
                     return 'S'
             except Exception as e:
                 logger.error("Failed to calculate realtime macd of %s: %s" % (code, e))
 
         if code not in isBuyeds or not isBuyeds[code]:
-            if price > open_price*1.04 and price < numpy.min(df['close'][1:13])*1.1 and volume > numpy.mean(df['volume'][1:6]):
+            if price > open_price*1.04 and price < numpy.min(df['close'][1:13])*1.1 and volume > min(numpy.mean(df['volume'][1:6]), numpy.mean(df['volume'][1:11])):
                 # 低位放量长阳线，买入
                 return 'B'
 
