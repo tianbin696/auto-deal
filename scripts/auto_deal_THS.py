@@ -55,7 +55,7 @@ maxCodeSize = 3 # 最大持股数
 maxAmount = 50000
 minAmount = 0
 availableMoney = 20000
-minBuyAmount = 10000
+minBuyAmount = 6000
 sleepTime = 0.5
 monitorInterval = 10
 avg10Days = 10 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
@@ -534,7 +534,7 @@ class Monitor:
         if code not in isBuyeds or not isBuyeds[code]:
             if price > open_price and price > min(open_price, avg1)*1.03 and price < numpy.min(df['low'][1:25])*1.2 and volume > min(numpy.mean(df['volume'][1:6]), numpy.mean(df['volume'][1:11])):
                 # 低位放量长阳线，买入
-                return 'N'
+                return 'B'
 
         return 'N'
 
@@ -548,7 +548,7 @@ class Monitor:
         return int(minBuyAmount/100/price)*100
 
     def getSellAmount(self, code, price):
-        return max(int(stock_positions[code]/200)*100, 100)
+        return max(int(stock_positions[code]/300)*100, 100)
 
 
 def getRSI(prices, days=8):
