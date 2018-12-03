@@ -534,7 +534,7 @@ class Monitor:
         if code not in isBuyeds or not isBuyeds[code]:
             if price > open_price and price > min(open_price, avg1)*1.03 and price < numpy.min(df['low'][1:25])*1.2 and volume > min(numpy.mean(df['volume'][1:6]), numpy.mean(df['volume'][1:11])):
                 # 低位放量长阳线，买入
-                return 'B'
+                return 'N'
 
         return 'N'
 
