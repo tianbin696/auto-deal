@@ -525,7 +525,7 @@ class Monitor:
         if code not in isSelleds or not isSelleds[code]:
             try:
                 self.getRealTimeMACD(code, price)
-                if price < open_price and price < max(open_price, avg1)*0.97 and price > numpy.max(df['high'][1:25])*0.8 and volume > min(numpy.mean(df['volume'][1:6]), numpy.mean(df['volume'][1:11])):
+                if price < open_price and price < max(open_price, avg1)*0.96 and price > numpy.max(df['high'][1:25])*0.8 and volume > min(numpy.mean(df['volume'][1:6]), numpy.mean(df['volume'][1:11])):
                     # 高位放量长阴线，卖出
                     return 'S'
             except Exception as e:
