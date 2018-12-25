@@ -369,7 +369,8 @@ class Monitor:
                 print()
                 logger.debug("looping monitor stocks")
 
-                stock_codes = ['002797']
+                stock_codes.clear()
+                stock_codes.append('002797')
                 for code in stock_codes:
                     try:
                         if code in ignore_codes or self.avg10[code] <= 0:
