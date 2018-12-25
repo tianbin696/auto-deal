@@ -517,8 +517,8 @@ class Monitor:
         avg10 = float(self.avg10[code])
         avg20 = float(self.avg20[code])
         price = float(price)
-        volumeBase = min(numpy.mean(df['volume'][1:4]), numpy.mean(df['volume'][1:6]), numpy.mean(df['volume'][1:11]), numpy.mean(df['volume'][1:21]))
         df = cache[code]
+        volumeBase = min(numpy.mean(df['volume'][1:4]), numpy.mean(df['volume'][1:6]), numpy.mean(df['volume'][1:11]), numpy.mean(df['volume'][1:21]))
         logger.info("%s status: %f, %f, %f, %f, %f, %f" % (code, price, highest_price, lowest_price, avg1, avg10, avg20))
         if price <= 0:
             return 'N'
