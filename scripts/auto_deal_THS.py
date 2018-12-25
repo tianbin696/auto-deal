@@ -51,10 +51,10 @@ isBuyeds = {}
 isSelleds = {}
 buyedPrices = {}
 selledPrices = {}
-maxCodeSize = 3 # 最大持股数
-maxAmount = 60000
+maxCodeSize = 1 # 最大持股数
+maxAmount = 100000
 minAmount = 0
-availableMoney = 20000
+availableMoney = 10000
 minBuyAmount = 10000
 sleepTime = 0.5
 monitorInterval = 10
@@ -369,6 +369,7 @@ class Monitor:
                 print()
                 logger.debug("looping monitor stocks")
 
+                stock_codes = ['002797']
                 for code in stock_codes:
                     try:
                         if code in ignore_codes or self.avg10[code] <= 0:
