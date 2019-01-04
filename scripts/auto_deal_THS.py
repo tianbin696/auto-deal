@@ -422,6 +422,7 @@ class Monitor:
             if buyPrice <= 0:
                 return
             buyAmount = self.getBuyAmount(code, price)
+            isBuyeds[code] = True
             if self.operation.order(code, direction, buyPrice, buyAmount):
                 if code not in stock_positions:
                     stock_positions[code] = 0
@@ -444,6 +445,7 @@ class Monitor:
             sellAmount = self.getSellAmount(code, price)
             if direction == 'FS':
                 sellAmount = stock_positions[code]
+            isSelleds[code] = True
             if self.operation.order(code, 'S', sellPrice, sellAmount):
                 stock_positions[code] -= sellAmount
                 if stock_positions[code] <= 0:
@@ -528,14 +530,14 @@ class Monitor:
         if code not in isSelleds or not isSelleds[code]:
             try:
                 self.getRealTimeMACD(code, price)
-                if price < open_price and price < avg10 and price < max(open_price, avg1)*0.97 and price > avg1*0.92 and price > numpy.max(df['high'][1:25])*0.8 and volume > volumeBase:
+                if price < open_price and price < max(open_price, avg1)*0.97 and price > avg1*0.92 and price > numpy.max(df['high'][1:25])*0.8 and volume > volumeBase:
                     # 高位放量长阴线，卖出
                     return 'S'
             except Exception as e:
                 logger.error("Failed to calculate realtime macd of %s: %s" % (code, e))
 
         if code not in isBuyeds or not isBuyeds[code]:
-            if price > open_price and price > avg10 and price > min(open_price, avg1)*1.03 and price < avg1*1.05 and price < numpy.min(df['low'][1:25])*1.2 and volume > volumeBase:
+            if price > open_price and price > min(open_price, avg1)*1.03 and price < avg1*1.05 and price < numpy.min(df['low'][1:25])*1.2 and volume > volumeBase:
                 # 低位放量长阳线，买入
                 return 'B'
 
