@@ -533,11 +533,17 @@ class Monitor:
                 if price < open_price and price < max(open_price, avg1)*0.97 and price > avg1*0.92 and price > numpy.max(df['high'][1:25])*0.7 and volume > volumeBase:
                     # 高位放量长阴线，卖出
                     return 'N'
+                if price < open_price and price < highest_price*0.96 and price > avg1*0.92 and price > numpy.max(df['high'][1:25])*0.7 and volume > volumeBase:
+                    # 高位放量长阴线，卖出
+                    return 'N'
             except Exception as e:
                 logger.error("Failed to calculate realtime macd of %s: %s" % (code, e))
 
         if code not in isBuyeds or not isBuyeds[code]:
             if price > open_price and price > min(open_price, avg1)*1.03 and price < avg1*1.05 and price < numpy.min(df['low'][1:25])*1.3 and volume > volumeBase:
+                # 低位放量长阳线，买入
+                return 'B'
+            if price > open_price and price > lowest_price*1.04 and price < avg1*1.05 and price < numpy.min(df['low'][1:25])*1.3 and volume > volumeBase:
                 # 低位放量长阳线，买入
                 return 'B'
 
