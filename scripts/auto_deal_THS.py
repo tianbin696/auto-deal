@@ -532,7 +532,7 @@ class Monitor:
                 self.getRealTimeMACD(code, price)
                 if price < open_price and price < max(open_price, avg1)*0.97 and price > avg1*0.92 and price > numpy.max(df['high'][1:25])*0.7 and volume > volumeBase:
                     # 高位放量长阴线，卖出
-                    return 'S'
+                    return 'N'
             except Exception as e:
                 logger.error("Failed to calculate realtime macd of %s: %s" % (code, e))
 
