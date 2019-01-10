@@ -57,7 +57,7 @@ minAmount = 0
 availableMoney = 10000
 minBuyAmount = 10000
 sleepTime = 0.5
-monitorInterval = 60
+monitorInterval = 30
 avg10Days = 10 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
 cache = {}
 
@@ -530,18 +530,18 @@ class Monitor:
         if code not in isSelleds or not isSelleds[code]:
             try:
                 self.getRealTimeMACD(code, price)
-                # if price < open_price and price < max(open_price, avg1)*0.97 and price > avg1*0.92 and price > numpy.max(df['high'][1:25])*0.7 and volume > volumeBase:
-                # if price < open_price and price < highest_price*0.96 and price > avg1*0.92 and price > numpy.max(df['high'][1:25])*0.7 and volume > volumeBase:
-                if price > avg1*1.03:
-                    return 'S'
+                if price < open_price*0.98 and price < highest_price*0.97 and price > avg1*0.92 and price > numpy.max(df['high'][1:11])*0.8 and volume > volumeBase:
+                    # 高位放量长阴线，卖出
+                    if code not in isBuyeds or not isBuyeds[code]:
+                        return 'S'
             except Exception as e:
                 logger.error("Failed to calculate realtime macd of %s: %s" % (code, e))
 
         if code not in isBuyeds or not isBuyeds[code]:
-            # if price > open_price and price > min(open_price, avg1)*1.03 and price < avg1*1.05 and price < numpy.min(df['low'][1:25])*1.3 and volume > volumeBase:
-            # if price > open_price and price > lowest_price*1.04 and price < avg1*1.05 and price < numpy.min(df['low'][1:25])*1.3 and volume > volumeBase:
-            if price < avg1*0.97:
-                return 'B'
+            if price > open_price*1.01 and price > lowest_price*1.03 and price < avg1*1.05 and price < numpy.min(df['low'][1:11])*1.2 and volume > volumeBase:
+                # 低位放量长阳线，买入
+                if code not in isSelleds or not isSelleds[code]:
+                    return 'B'
 
         return 'N'
 
@@ -552,12 +552,10 @@ class Monitor:
         return price * 0.99
 
     def getBuyAmount(self, code, price):
-        # return int(minBuyAmount/100/price)*100
-        return 2000
+        return int(minBuyAmount/100/price)*100
 
     def getSellAmount(self, code, price):
-        # return max(int(stock_positions[code]/400)*100, 100)
-        return 2000
+        return max(int(stock_positions[code]/400)*100, 100)
 
 
 def getRSI(prices, days=8):
