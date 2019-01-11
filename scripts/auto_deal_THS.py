@@ -57,7 +57,7 @@ minAmount = 0
 availableMoney = 10000
 minBuyAmount = 10000
 sleepTime = 0.5
-monitorInterval = 30
+monitorInterval = 60
 avg10Days = 10 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
 cache = {}
 
