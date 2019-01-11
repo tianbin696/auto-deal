@@ -522,6 +522,8 @@ class Monitor:
         price = float(price)
         df = cache[code]
         volumeBase = min(numpy.mean(df['volume'][1:4]), numpy.mean(df['volume'][1:6]), numpy.mean(df['volume'][1:11]), numpy.mean(df['volume'][1:21]))
+        if not self.compare("13", "02"):
+            volumeBase = volumeBase*0.6
         logger.info("%s status: %f, %f, %f, %f, %f, %f" % (code, price, highest_price, lowest_price, avg1, avg10, avg20))
         if price <= 0:
             return 'N'
