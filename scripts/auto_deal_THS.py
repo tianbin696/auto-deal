@@ -581,7 +581,7 @@ def test():
     monitor = Monitor()
 
     # Test before start
-    new_codes.append('600621')
+    new_codes.append('002797')
     for code in new_codes:
         price = monitor.getHistoryDayKAvgData(code, 1)
         real_volume = []
@@ -593,12 +593,12 @@ def test():
         df = cache[code]
         #  测试高抛
         highest_close = numpy.max(df['close'][1:25])
-        direction = monitor.getDirection(code, highest_close*0.92, highest_close*0.98, price, price, price, volume*2)
+        direction = monitor.getDirection(code, price*0.98, price*1.01, price*1.03, price*0.98, price, volume*2)
         logger.info("code=%s, direction=%s" % (code, direction))
         # 测试低抛
         monitor.avg1[code] = price
         minest_close = numpy.min(df['close'][1:25])
-        direction = monitor.getDirection(code, minest_close*1.08, minest_close*1.02, price, price, price, volume*2)
+        direction = monitor.getDirection(code, price*1.02, price, price*1.03, price*0.98, price, volume*2)
         logger.info("code=%s, direction=%s" % (code, direction))
 
 
