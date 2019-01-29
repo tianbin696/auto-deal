@@ -52,7 +52,7 @@ isSelleds = {}
 buyedPrices = {}
 selledPrices = {}
 maxCodeSize = 1 # 最大持股数
-maxAmount = 100000
+maxAmount = 60000
 minAmount = 0
 availableMoney = 20000
 minBuyAmount = 10000
@@ -559,7 +559,7 @@ class Monitor:
         return int(minBuyAmount/100/price)*100
 
     def getSellAmount(self, code, price):
-        return max(int(stock_positions[code]/400)*100, 100)
+        return max(int(stock_positions[code]/300)*100, 100)
 
 
 def getRSI(prices, days=8):
