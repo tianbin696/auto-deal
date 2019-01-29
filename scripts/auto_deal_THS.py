@@ -343,7 +343,7 @@ class Monitor:
             try:
                 self.operation.moveMouse()
 
-                if (self.compare("09", "35") and not self.compare("11", "28")) or (self.compare("13", "02") and not self.compare("14", "45")):
+                if (self.compare("09", "35") and not self.compare("11", "28")) or (self.compare("13", "02") and not self.compare("14", "58")):
                     # 交易时间：[09:30 ~ 11:30, 13:00 ~ 15:00]
                     if not isStarted:
                         self.operation.saveScreenshot("开始交易", '开始交易')
@@ -524,6 +524,8 @@ class Monitor:
         volumeBase = min(numpy.mean(df['volume'][1:6]), numpy.mean(df['volume'][1:11]), numpy.mean(df['volume'][1:21]))
         if not self.compare("13", "02"):
             volumeBase = volumeBase*0.7
+        else:
+            volumeBase = volumeBase*1.2
         logger.info("%s status: %f, %f, %f, %f, %f, %f" % (code, price, highest_price, lowest_price, avg1, avg10, avg20))
         if price <= 0:
             return 'N'
