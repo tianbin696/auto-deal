@@ -47,14 +47,9 @@ new_codes = []
 ignore_codes = []
 stock_positions = {}
 stock_chenbens = {}
-isBuyeds = {}
-isSelleds = {}
-buyedPrices = {}
-selledPrices = {}
 maxCodeSize = 1 # 最大持股数
 maxAmount = 60000
 minAmount = 0
-availableMoney = 20000
 minBuyAmount = 10000
 sleepTime = 0.5
 monitorInterval = 60
@@ -276,6 +271,11 @@ class Monitor:
         self.avg20 = {}
         self.rsis = {}
         self.macds = {}
+        self.isBuyeds = {}
+        self.isSelleds = {}
+        self.buyedPrices = {}
+        self.selledPrices = {}
+        self.availableMoney = 20000
         self.operation = OperationOfThs()
 
     def testSellBeforeDeal(self):
@@ -408,9 +408,8 @@ class Monitor:
             chen_ben = stock_chenbens[code]
         direction = self.getDirection(code, price, open_price, highest_price, lowest_price, chen_ben, volume)
         logger.info("Direction for %s: %s" % (code, direction))
-        global availableMoney
         if direction == 'B':
-            if availableMoney < minBuyAmount:
+            if self.availableMoney < minBuyAmount:
                 return
             if code not in stock_positions and len(stock_positions) >= maxCodeSize:
                 return
@@ -422,13 +421,13 @@ class Monitor:
             if buyPrice <= 0:
                 return
             buyAmount = self.getBuyAmount(code, price)
-            isBuyeds[code] = True
+            self.isBuyeds[code] = True
             if self.operation.order(code, direction, buyPrice, buyAmount):
                 if code not in stock_positions:
                     stock_positions[code] = 0
-                isBuyeds[code] = True
-                buyedPrices[code] = price
-                availableMoney -= buyAmount*price
+                self.isBuyeds[code] = True
+                self.buyedPrices[code] = price
+                self.availableMoney -= buyAmount*price
         elif direction == 'S' or direction == 'FS':
             if code not in stock_positions or stock_positions[code]*price <= minAmount:
                 # 达到持仓下限，不再卖出
@@ -445,14 +444,14 @@ class Monitor:
             sellAmount = self.getSellAmount(code, price)
             if direction == 'FS':
                 sellAmount = stock_positions[code]
-            isSelleds[code] = True
+            self.isSelleds[code] = True
             if self.operation.order(code, 'S', sellPrice, sellAmount):
                 stock_positions[code] -= sellAmount
                 if stock_positions[code] <= 0:
                     del stock_positions[code]
-                isSelleds[code] = True
-                selledPrices[code] = price
-                availableMoney += sellAmount*price
+                self.isSelleds[code] = True
+                self.selledPrices[code] = price
+                self.availableMoney += sellAmount*price
 
     def getRealTimeData(self, code, p_changes=[], open_prices=[], highest_prices=[], lowest_prices=[], volumes=[]):
         df = ts.get_realtime_quotes(code)
@@ -531,20 +530,20 @@ class Monitor:
             return 'N'
 
         # 针对精选个股，做高抛低吸
-        if code not in isSelleds or not isSelleds[code]:
+        if code not in self.isSelleds or not self.isSelleds[code]:
             try:
                 self.getRealTimeMACD(code, price)
                 if price < open_price*0.98 and price < highest_price*0.97 and price > avg1*0.92 and price > numpy.max(df['high'][1:11])*0.8 and volume > volumeBase:
                     # 高位放量长阴线，卖出
-                    if code not in isBuyeds or not isBuyeds[code]:
+                    if code not in self.isBuyeds or not self.isBuyeds[code]:
                         return 'S'
             except Exception as e:
                 logger.error("Failed to calculate realtime macd of %s: %s" % (code, e))
 
-        if code not in isBuyeds or not isBuyeds[code]:
+        if code not in self.isBuyeds or not self.isBuyeds[code]:
             if price > open_price*1.01 and price > lowest_price*1.03 and price < avg1*1.05 and price < numpy.min(df['low'][1:11])*1.2 and volume > volumeBase:
                 # 低位放量长阳线，买入
-                if code not in isSelleds or not isSelleds[code]:
+                if code not in self.isSelleds or not self.isSelleds[code]:
                     return 'B'
 
         return 'N'
@@ -631,7 +630,7 @@ if __name__ == '__main__':
             stock_codes.clear()
             readCodes()
             ignore_codes.append("")
-
+            
             monitor = Monitor()
             logger.info("Testing ...")
             time.sleep(5)
