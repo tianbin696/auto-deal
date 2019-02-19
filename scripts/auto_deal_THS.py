@@ -537,6 +537,14 @@ class Monitor:
                     # 高位放量长阴线，卖出
                     if code not in self.isBuyeds or not self.isBuyeds[code]:
                         return 'S'
+                if price < open_price and price < highest_price*0.96 and price > avg1*0.92 and price > numpy.max(df['high'][1:11])*0.8 and volume > volumeBase:
+                    # 高位放量长上影线，卖出
+                    if code not in self.isBuyeds or not self.isBuyeds[code]:
+                        return 'S'
+                if price < highest_price*0.95 and price > avg1*0.92 and price > numpy.max(df['high'][1:11])*0.8 and volume > volumeBase:
+                    # 高位放量长上影线，卖出
+                    if code not in self.isBuyeds or not self.isBuyeds[code]:
+                        return 'S'
             except Exception as e:
                 logger.error("Failed to calculate realtime macd of %s: %s" % (code, e))
 
@@ -558,7 +566,7 @@ class Monitor:
         return int(minBuyAmount/100/price)*100
 
     def getSellAmount(self, code, price):
-        return max(int(stock_positions[code]/300)*100, 100)
+        return max(int(stock_positions[code]/200)*100, 100)
 
 
 def getRSI(prices, days=8):
