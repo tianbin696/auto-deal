@@ -49,7 +49,7 @@ stock_positions = {}
 stock_chenbens = {}
 maxCodeSize = 1 # 最大持股数
 maxAmount = 60000
-minAmount = 0
+minAmount = 100
 minBuyAmount = 10000
 sleepTime = 0.5
 monitorInterval = 60
@@ -275,7 +275,7 @@ class Monitor:
         self.isSelleds = {}
         self.buyedPrices = {}
         self.selledPrices = {}
-        self.availableMoney = 20000
+        self.availableMoney = 30000
         self.operation = OperationOfThs()
 
     def testSellBeforeDeal(self):
