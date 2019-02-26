@@ -550,7 +550,7 @@ class Monitor:
                 logger.error("Failed to calculate realtime macd of %s: %s" % (code, e))
 
         if code not in self.isBuyeds or not self.isBuyeds[code]:
-            if price > open_price*1.01 and price > lowest_price*1.03 and price < avg1*1.05 and price < numpy.min(df['low'][1:11])*1.2 and volume > volumeBase:
+            if price > open_price*1.01 and price > lowest_price*1.03 and price < avg1*1.04 and price < numpy.min(df['low'][1:11])*1.2 and volume > volumeBase:
                 # 低位放量长阳线，买入
                 if code not in self.isSelleds or not self.isSelleds[code]:
                     return 'B'
