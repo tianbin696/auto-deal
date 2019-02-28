@@ -523,9 +523,9 @@ class Monitor:
         df = cache[code]
         volumeBase = max(numpy.mean(df['volume'][1:6]), numpy.mean(df['volume'][1:11]), numpy.mean(df['volume'][1:21]))
         if not self.compare("13", "02"):
-            volumeBase = volumeBase*0.6
+            volumeBase = volumeBase*0.5
         else:
-            volumeBase = volumeBase*1.2
+            volumeBase = volumeBase*1.0
         logger.info("%s status: %f, %f, %f, %f, %f, %f" % (code, price, highest_price, lowest_price, avg1, avg10, avg20))
         if price <= 0:
             return 'N'
@@ -591,8 +591,9 @@ def test():
     monitor = Monitor()
 
     # Test before start
-    new_codes.append('002797')
-    for code in new_codes:
+    test_codes = ["002797", "002673", "601066", "600958", "601198", "000686", "002670", "600061", "600864", "601788"]
+    test_codes.extend(["002195", "600718", "600446", "600536", "600797", "002657", "600571", "600588", "600756", "002777"])
+    for code in test_codes:
         price = monitor.getHistoryDayKAvgData(code, 1)
         real_volume = []
         price = monitor.getRealTimeData(code, volumes=real_volume)
