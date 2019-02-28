@@ -602,14 +602,14 @@ def test():
         monitor.avg10[code] = price
         monitor.avg20[code] = price
         df = cache[code]
-        #  测试高抛
+        #  测试卖出
         highest_close = numpy.max(df['close'][1:25])
         direction = monitor.getDirection(code, price*0.98, price*1.01, price*1.03, price*0.98, price, volume*2)
         logger.info("code=%s, direction=%s" % (code, direction))
-        # 测试低抛
+        # 测试买入
         monitor.avg1[code] = price
         minest_close = numpy.min(df['close'][1:25])
-        direction = monitor.getDirection(code, price*1.02, price, price*1.03, price*0.98, price, volume*2)
+        direction = monitor.getDirection(code, price*1.03, price, price*1.04, price*0.98, price, volume*2)
         logger.info("code=%s, direction=%s" % (code, direction))
 
 
