@@ -521,7 +521,7 @@ class Monitor:
         avg20 = float(self.avg20[code])
         price = float(price)
         df = cache[code]
-        volumeBase = numpy.mean(numpy.mean(df['volume'][1:6]), numpy.mean(df['volume'][1:11]))
+        volumeBase = numpy.mean([numpy.mean(df['volume'][1:6]), numpy.mean(df['volume'][1:11])])
         if not self.compare("13", "02"):
             volumeBase = volumeBase*0.5
         else:
