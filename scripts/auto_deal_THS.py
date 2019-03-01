@@ -526,7 +526,7 @@ class Monitor:
             volumeBase = volumeBase*0.3
         elif not self.compare("13", "00"):
             volumeBase = volumeBase*0.5
-        elif if not self.compare("14", "00"):
+        elif not self.compare("14", "00"):
             volumeBase = volumeBase*0.8
         else:
             volumeBase = volumeBase*1.0
