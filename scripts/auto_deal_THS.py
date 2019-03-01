@@ -597,19 +597,20 @@ def test():
         price = monitor.getHistoryDayKAvgData(code, 1)
         real_volume = []
         price = monitor.getRealTimeData(code, volumes=real_volume)
-        volume = cache[code]['volume'][0]
+        df = cache[code]
+        volume = numpy.mean([numpy.mean(df['volume'][1:6]), numpy.mean(df['volume'][1:11])])
         monitor.avg1[code] = price
         monitor.avg10[code] = price
         monitor.avg20[code] = price
         df = cache[code]
         #  测试卖出
         highest_close = numpy.max(df['close'][1:25])
-        direction = monitor.getDirection(code, price*0.98, price*1.01, price*1.03, price*0.98, price, volume*2)
+        direction = monitor.getDirection(code, price*0.98, price*1.01, price*1.03, price*0.98, price, volume*1.01)
         logger.info("code=%s, direction=%s" % (code, direction))
         # 测试买入
         monitor.avg1[code] = price
         minest_close = numpy.min(df['close'][1:25])
-        direction = monitor.getDirection(code, price*1.03, price, price*1.04, price*0.98, price, volume*2)
+        direction = monitor.getDirection(code, price*1.03, price, price*1.04, price*0.98, price, volume*1.01)
         logger.info("code=%s, direction=%s" % (code, direction))
 
 
