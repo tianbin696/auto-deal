@@ -598,7 +598,10 @@ def test():
         real_volume = []
         price = monitor.getRealTimeData(code, volumes=real_volume)
         df = cache[code]
-        volume = numpy.mean([numpy.mean(df['volume'][1:6]), numpy.mean(df['volume'][1:11])])
+        v5 = numpy.mean(df['volume'][1:6])
+        v10 = numpy.mean(df['volume'][1:11])
+        volume = numpy.mean([v5, v10])
+        logger.info("code=%s, v5=%s, v10=%s, vm=%s" % (code, v5, v10, volume))
         monitor.avg1[code] = price
         monitor.avg10[code] = price
         monitor.avg20[code] = price
