@@ -50,7 +50,7 @@ stock_chenbens = {}
 maxCodeSize = 1 # 最大持股数
 maxAmount = 30000
 minAmount = 6000
-minBuyAmount = 8000
+minBuyAmount = 7000
 sleepTime = 0.5
 monitorInterval = 60
 avg10Days = 10 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
@@ -521,7 +521,7 @@ class Monitor:
         avg20 = float(self.avg20[code])
         price = float(price)
         df = cache[code]
-        volumeBase = numpy.mean([numpy.mean(df['volume'][1:6]), numpy.mean(df['volume'][1:11])])
+        volumeBase = numpy.min([numpy.mean(df['volume'][1:6]), numpy.mean(df['volume'][1:11])])
         if not self.compare("10", "30"):
             volumeBase = volumeBase*0.3
         elif not self.compare("13", "00"):
