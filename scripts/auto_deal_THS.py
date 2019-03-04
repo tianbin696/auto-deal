@@ -255,6 +255,8 @@ class OperationOfThs:
             time.sleep(2*sleepTime)
             keyboard.SendKeys("{F5}")
             time.sleep(2*sleepTime)
+            keyboard.SendKeys("{F5}")
+            time.sleep(2*sleepTime)
             self.__main_window.CaptureAsImage().save(picName)
             time.sleep(sleepTime)
             self.screenshotCount += 1
@@ -595,8 +597,9 @@ def test():
     monitor = Monitor()
 
     # Test before start
-    test_codes = ["002797", "002673", "601066", "600958", "601198", "000686", "002670", "600061", "600864", "601788"]
-    test_codes.extend(["002195", "600718", "600446", "600536", "600797", "002657", "600571", "600588", "600756", "002777"])
+    test_codes = ["002797"]
+    # test_codes.extend(["002797", "002673", "601066", "600958", "601198", "000686", "002670", "600061", "600864", "601788"])
+    # test_codes.extend(["002195", "600718", "600446", "600536", "600797", "002657", "600571", "600588", "600756", "002777"])
     for code in test_codes:
         price = monitor.getHistoryDayKAvgData(code, 1)
         real_volume = []
