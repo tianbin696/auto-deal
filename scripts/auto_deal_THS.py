@@ -48,7 +48,7 @@ ignore_codes = []
 stock_positions = {}
 stock_chenbens = {}
 maxCodeSize = 1 # 最大持股数
-maxAmount = 40000
+maxAmount = 30000
 minAmount = 6000
 minBuyAmount = 7000
 sleepTime = 0.5
@@ -614,7 +614,7 @@ def test():
         df = cache[code]
         #  测试卖出
         highest_close = numpy.max(df['close'][1:25])
-        direction = monitor.getDirection(code, price*0.98, price*1.01, price*1.03, price*0.98, price, volume*1.01)
+        direction = monitor.getDirection(code, price*0.97, price*1.01, price*1.03, price*0.98, price, volume*1.01)
         logger.info("code=%s, direction=%s" % (code, direction))
         # 测试买入
         monitor.avg1[code] = price
