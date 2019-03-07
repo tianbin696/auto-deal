@@ -48,7 +48,7 @@ ignore_codes = []
 stock_positions = {}
 stock_chenbens = {}
 maxCodeSize = 1 # 最大持股数
-maxAmount = 30000
+maxAmount = 40000
 minAmount = 6000
 minBuyAmount = 7000
 sleepTime = 0.5
@@ -454,7 +454,7 @@ class Monitor:
                     del stock_positions[code]
                 self.isSelleds[code] = True
                 self.selledPrices[code] = price
-                self.availableMoney += sellAmount*price
+                # self.availableMoney += sellAmount*price
 
     def getRealTimeData(self, code, p_changes=[], open_prices=[], highest_prices=[], lowest_prices=[], volumes=[]):
         df = ts.get_realtime_quotes(code)
