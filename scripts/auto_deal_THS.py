@@ -454,7 +454,6 @@ class Monitor:
                     del stock_positions[code]
                 self.isSelleds[code] = True
                 self.selledPrices[code] = price
-                # self.availableMoney += sellAmount*price
 
     def getRealTimeData(self, code, p_changes=[], open_prices=[], highest_prices=[], lowest_prices=[], volumes=[]):
         df = ts.get_realtime_quotes(code)
