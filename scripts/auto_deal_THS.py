@@ -48,7 +48,7 @@ ignore_codes = []
 stock_positions = {}
 stock_chenbens = {}
 maxCodeSize = 1 # 最大持股数
-maxAmount = 30000
+maxAmount = 20000
 minAmount = 6000
 minBuyAmount = 7000
 sleepTime = 0.5
@@ -548,6 +548,10 @@ class Monitor:
                     if code not in self.isBuyeds or not self.isBuyeds[code]:
                         return 'S'
                 if price < open_price*0.98 and price < highest_price*0.95 and price > avg1*0.92 and price > numpy.max(df['high'][1:11])*0.8 and volume > volumeBase:
+                    # 高位放量长上影线，卖出
+                    if code not in self.isBuyeds or not self.isBuyeds[code]:
+                        return 'S'
+                if price < open_price*0.98 and price < avg1*0.95 and price > numpy.max(df['high'][1:11])*0.8 and volume > volumeBase:
                     # 高位放量长上影线，卖出
                     if code not in self.isBuyeds or not self.isBuyeds[code]:
                         return 'S'
