@@ -48,7 +48,7 @@ ignore_codes = []
 stock_positions = {}
 stock_chenbens = {}
 maxCodeSize = 1 # 最大持股数
-maxAmount = 30000
+maxAmount = 20000
 minAmount = 6000
 minBuyAmount = 7000
 sleepTime = 0.5
@@ -454,7 +454,6 @@ class Monitor:
                     del stock_positions[code]
                 self.isSelleds[code] = True
                 self.selledPrices[code] = price
-                self.availableMoney += sellAmount*price
 
     def getRealTimeData(self, code, p_changes=[], open_prices=[], highest_prices=[], lowest_prices=[], volumes=[]):
         df = ts.get_realtime_quotes(code)
@@ -552,6 +551,10 @@ class Monitor:
                     # 高位放量长上影线，卖出
                     if code not in self.isBuyeds or not self.isBuyeds[code]:
                         return 'S'
+                if price < open_price*0.98 and price < avg1*0.95 and price > numpy.max(df['high'][1:11])*0.8 and volume > volumeBase:
+                    # 高位放量长上影线，卖出
+                    if code not in self.isBuyeds or not self.isBuyeds[code]:
+                        return 'S'
             except Exception as e:
                 logger.error("Failed to calculate realtime macd of %s: %s" % (code, e))
 
@@ -615,7 +618,7 @@ def test():
         df = cache[code]
         #  测试卖出
         highest_close = numpy.max(df['close'][1:25])
-        direction = monitor.getDirection(code, price*0.98, price*1.01, price*1.03, price*0.98, price, volume*1.01)
+        direction = monitor.getDirection(code, price*0.97, price*1.01, price*1.03, price*0.98, price, volume*1.01)
         logger.info("code=%s, direction=%s" % (code, direction))
         # 测试买入
         monitor.avg1[code] = price
