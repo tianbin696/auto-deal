@@ -539,11 +539,11 @@ class Monitor:
         if code not in self.isSelleds or not self.isSelleds[code]:
             try:
                 self.getRealTimeMACD(code, price)
-                if price < open_price*0.96 and price < highest_price*0.97 and price > avg1*0.92 and price > numpy.max(df['high'][1:11])*0.8 and volume > volumeBase:
+                if price < open_price*0.96 and price < highest_price*0.97 and price < avg10 and price > avg1*0.92 and price > numpy.max(df['high'][1:11])*0.8 and volume > volumeBase:
                     # 高位放量长阴线，卖出
                     if code not in self.isBuyeds or not self.isBuyeds[code]:
                         return 'S'
-                if price < open_price*0.97 and price < highest_price*0.96 and price > avg1*0.92 and price > numpy.max(df['high'][1:11])*0.8 and volume > volumeBase:
+                if price < open_price*0.97 and price < highest_price*0.96 and price < avg10 and price > avg1*0.92 and price > numpy.max(df['high'][1:11])*0.8 and volume > volumeBase:
                     # 高位放量长上影线，卖出
                     if code not in self.isBuyeds or not self.isBuyeds[code]:
                         return 'S'
@@ -559,7 +559,7 @@ class Monitor:
                 logger.error("Failed to calculate realtime macd of %s: %s" % (code, e))
 
         if code not in self.isBuyeds or not self.isBuyeds[code]:
-            if price > max(open_price, avg1)*1.01 and price > min(open_price, avg1)*1.02 and price > lowest_price*1.03 and price > highest_price*0.97 and price < avg1*1.04 and price < numpy.min(df['low'][1:6])*1.2 and volume > volumeBase:
+            if price > avg10 and price > max(open_price, avg1)*1.01 and price > min(open_price, avg1)*1.02 and price > lowest_price*1.03 and price > highest_price*0.97 and price < avg1*1.04 and price < numpy.min(df['low'][1:6])*1.2 and volume > volumeBase:
                 # 低位放量长阳线，买入
                 if code not in self.isSelleds or not self.isSelleds[code]:
                     return 'B'
@@ -600,8 +600,8 @@ def test():
     monitor = Monitor()
 
     # Test before start
-    test_codes = ["002797"]
-    # test_codes.extend(["002797", "002673", "601066", "600958", "601198", "000686", "002670", "600061", "600864", "601788"])
+    test_codes = []
+    test_codes.extend(["002797", "002673", "601066", "600958", "601198", "000686", "002670", "600061", "600864", "601788"])
     # test_codes.extend(["002195", "600718", "600446", "600536", "600797", "002657", "600571", "600588", "600756", "002777"])
     for code in test_codes:
         price = monitor.getHistoryDayKAvgData(code, 1)

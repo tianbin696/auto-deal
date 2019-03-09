@@ -8,7 +8,6 @@ import logging
 import time
 from datetime import datetime
 from datetime import timedelta
-from concurrent import futures
 from collections import OrderedDict
 from macd import get_MACD
 
