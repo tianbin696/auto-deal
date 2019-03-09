@@ -540,35 +540,25 @@ class Monitor:
         if code not in self.isSelleds or not self.isSelleds[code]:
             try:
                 self.getRealTimeMACD(code, price)
-                if numpy.max(df['high'][1:11])*0.8 < price < min(open_price*0.96, avg10) \
-                        and volume > volumeBase:
-                    # 高位放量长阴线，卖出
-                    if code not in self.isBuyeds or not self.isBuyeds[code]:
-                        return 'S'
-                if numpy.max(df['high'][1:11])*0.8 < price < min(open_price*0.97, highest_price*0.96, avg10) \
-                        and volume > volumeBase:
-                    # 高位放量长上影线，卖出
-                    if code not in self.isBuyeds or not self.isBuyeds[code]:
-                        return 'S'
-                if numpy.max(df['high'][1:11])*0.8 < price < min(open_price*0.98, highest_price*0.95) \
-                        and volume > volumeBase:
-                    # 高位放量长上影线，卖出
-                    if code not in self.isBuyeds or not self.isBuyeds[code]:
-                        return 'S'
-                if numpy.max(df['high'][1:11])*0.8 < price < min(open_price*0.98, avg1*0.95) \
-                        and volume > volumeBase:
-                    # 高位放量长上影线，卖出
-                    if code not in self.isBuyeds or not self.isBuyeds[code]:
-                        return 'S'
+                if price > numpy.max(df['high'][1:11])*0.8 and volume > volumeBase \
+                        and (code not in self.isBuyeds or not self.isBuyeds[code]):
+                    if price < min(open_price*0.96, avg10):
+                            return 'S'
+                    if price < min(open_price*0.97, highest_price*0.96, avg10):
+                            return 'S'
+                    if price < min(open_price*0.98, highest_price*0.95):
+                            return 'S'
+                    if price < min(open_price*0.98, avg1*0.95):
+                            return 'S'
             except Exception as e:
                 logger.error("Failed to calculate realtime macd of %s: %s" % (code, e))
 
         if code not in self.isBuyeds or not self.isBuyeds[code]:
-            if max(avg10, max(open_price, avg1)*1.01, min(open_price, avg1)*1.02, lowest_price*1.03,
-                   highest_price*0.97) < price < max(avg1*1.04, numpy.min(df['low'][1:6])*1.2) and volume > volumeBase:
-                # 低位放量长阳线，买入
-                if code not in self.isSelleds or not self.isSelleds[code]:
-                    return 'B'
+            if avg10 < price < numpy.min(df['low'][1:6])*1.2 and volume > volumeBase \
+                    and (code not in self.isSelleds or not self.isSelleds[code]):
+                if max(max(open_price, avg1)*1.01, min(open_price, avg1)*1.02, lowest_price*1.03, highest_price*0.97) \
+                        < price < avg1*1.04:
+                        return 'B'
 
         return 'N'
 
