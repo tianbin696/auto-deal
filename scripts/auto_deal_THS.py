@@ -610,8 +610,8 @@ def test():
         volume = numpy.mean([v5, v10])
         logger.info("code=%s, v5=%s, v10=%s, vm=%s" % (code, v5, v10, volume))
         monitor.avg1[code] = price
-        monitor.avg10[code] = price
-        monitor.avg20[code] = price
+        monitor.avg10[code] = numpy.mean(df['close'][1:11])
+        monitor.avg20[code] = numpy.mean(df['close'][1:21])
         df = cache[code]
         #  测试卖出
         highest_close = numpy.max(df['close'][1:25])
