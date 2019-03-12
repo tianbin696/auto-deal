@@ -542,24 +542,12 @@ class Monitor:
                 self.getRealTimeMACD(code, price)
                 if price > numpy.max(df['high'][1:11])*0.8 and volume > volumeBase \
                         and (code not in self.isBuyeds or not self.isBuyeds[code]):
-                    if price < min(open_price*0.97, highest_price*0.96, avg10):
+                    if price < min(avg10, open_price*0.96):
                         return 'S'
-                    if price < min(open_price*0.96, avg10):
+                    if price < min(avg10, avg1*0.95):
                         return 'S'
-                    if price < min(avg1*0.95, avg10):
+                    if price < min(avg10, highest_price*0.94):
                         return 'S'
-                    if price < min(highest_price*0.94, avg10):
-                        return 'S'
-                    # if avg10 < price < highest_price*0.94:
-                    #     return 'S'
-                    # if avg10 < price < open_price*0.95:
-                    #         return 'S'
-                    # if avg10 < price < min(open_price*0.96, avg1*0.96):
-                    #     return 'S'
-                    # if avg10 < price < min(open_price*0.97, avg1*0.95):
-                    #         return 'S'
-                    # if avg10 < price < min(open_price*0.98, avg1*0.94):
-                    #     return 'S'
             except Exception as e:
                 logger.error("Failed to calculate realtime macd of %s: %s" % (code, e))
 
@@ -607,7 +595,7 @@ def test():
     monitor = Monitor()
 
     # Test before start
-    test_codes = ["002797", "002673"]
+    test_codes = ["002797", "600864"]
     # test_codes.extend(["002797", "002673", "601066", "600958", "601198", "000686", "002670", "600061", "600864", "601788"])
     # test_codes.extend(["002195", "600718", "600446", "600536", "600797", "002657", "600571", "600588", "600756", "002777"])
     for code in test_codes:
