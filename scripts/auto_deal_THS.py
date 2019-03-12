@@ -81,7 +81,7 @@ class OperationOfThs:
                 exit()
 
             self.__main_window = self.__app.window_(handle=top_window)
-            self.__dialog_window = self.__app.window_(handle=top_window)
+            self.__dialog_window = self.__app.window_(handle=dialog_window)
         except Exception as e:
             logger.info("Error during init THS: %s" % e)
 
