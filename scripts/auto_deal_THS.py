@@ -542,20 +542,24 @@ class Monitor:
                 self.getRealTimeMACD(code, price)
                 if price > numpy.max(df['high'][1:11])*0.8 and volume > volumeBase \
                         and (code not in self.isBuyeds or not self.isBuyeds[code]):
-                    if price < min(open_price*0.96, avg10):
-                            return 'S'
                     if price < min(open_price*0.97, highest_price*0.96, avg10):
-                            return 'S'
-                    if avg10 < price < highest_price*0.94:
                         return 'S'
-                    if avg10 < price < open_price*0.95:
-                            return 'S'
-                    if avg10 < price < min(open_price*0.96, avg1*0.96):
+                    if price < min(open_price*0.96, avg10):
                         return 'S'
-                    if avg10 < price < min(open_price*0.97, avg1*0.95):
-                            return 'S'
-                    if avg10 < price < min(open_price*0.98, avg1*0.94):
+                    if price < min(avg1*0.95, avg10):
                         return 'S'
+                    if price < min(highest_price*0.94, avg10):
+                        return 'S'
+                    # if avg10 < price < highest_price*0.94:
+                    #     return 'S'
+                    # if avg10 < price < open_price*0.95:
+                    #         return 'S'
+                    # if avg10 < price < min(open_price*0.96, avg1*0.96):
+                    #     return 'S'
+                    # if avg10 < price < min(open_price*0.97, avg1*0.95):
+                    #         return 'S'
+                    # if avg10 < price < min(open_price*0.98, avg1*0.94):
+                    #     return 'S'
             except Exception as e:
                 logger.error("Failed to calculate realtime macd of %s: %s" % (code, e))
 
