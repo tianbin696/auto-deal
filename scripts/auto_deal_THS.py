@@ -524,7 +524,7 @@ class Monitor:
         df = cache[code]
         volumeBase = numpy.min([numpy.mean(df['volume'][1:6]), numpy.mean(df['volume'][1:11])])
         if not self.compare("10", "30"):
-            volumeBase = volumeBase*0.4
+            volumeBase = volumeBase*0.3
         elif not self.compare("13", "00"):
             volumeBase = volumeBase*0.6
         elif not self.compare("14", "00"):
@@ -546,10 +546,16 @@ class Monitor:
                             return 'S'
                     if price < min(open_price*0.97, highest_price*0.96, avg10):
                             return 'S'
-                    if price < min(open_price*0.98, highest_price*0.95):
+                    if avg10 < price < highest_price*0.94:
+                        return 'S'
+                    if avg10 < price < open_price*0.95:
                             return 'S'
-                    if price < min(open_price*0.98, avg1*0.95):
+                    if avg10 < price < min(open_price*0.96, avg1*0.96):
+                        return 'S'
+                    if avg10 < price < min(open_price*0.97, avg1*0.95):
                             return 'S'
+                    if avg10 < price < min(open_price*0.98, avg1*0.94):
+                        return 'S'
             except Exception as e:
                 logger.error("Failed to calculate realtime macd of %s: %s" % (code, e))
 
