@@ -542,9 +542,7 @@ class Monitor:
                 self.getRealTimeMACD(code, price)
                 if price > numpy.max(df['high'][1:11])*0.8 and volume > volumeBase \
                         and (code not in self.isBuyeds or not self.isBuyeds[code]):
-                    if price < open_price*0.95:
-                        return 'S'
-                    if price < avg1*0.94:
+                    if price < avg1*0.95:
                         return 'S'
                     if price < highest_price*0.93:
                         return 'S'
