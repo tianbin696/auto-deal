@@ -542,11 +542,11 @@ class Monitor:
                 self.getRealTimeMACD(code, price)
                 if price > numpy.max(df['high'][1:11])*0.8 and volume > volumeBase \
                         and (code not in self.isBuyeds or not self.isBuyeds[code]):
-                    if price < min(avg10, open_price*0.96):
+                    if price < open_price*0.95:
                         return 'S'
-                    if price < min(avg10, avg1*0.95):
+                    if price < avg1*0.94:
                         return 'S'
-                    if price < min(avg10, highest_price*0.94):
+                    if price < highest_price*0.93:
                         return 'S'
             except Exception as e:
                 logger.error("Failed to calculate realtime macd of %s: %s" % (code, e))
@@ -613,7 +613,11 @@ def test():
         df = cache[code]
         #  测试卖出
         highest_close = numpy.max(df['close'][1:25])
-        direction = monitor.getDirection(code, price*0.97, price*1.01, price*1.03, price*0.98, price, volume*1.01)
+        direction = monitor.getDirection(code, price*0.95, price*1.05, price*1.05, price*0.98, price, volume*1.01)
+        logger.info("code=%s, direction=%s" % (code, direction))
+        direction = monitor.getDirection(code, price*0.935, price*1.0, price*1.05, price*0.98, price, volume*1.01)
+        logger.info("code=%s, direction=%s" % (code, direction))
+        direction = monitor.getDirection(code, price*0.94, price*1.0, price*1.15, price*0.98, price, volume*1.01)
         logger.info("code=%s, direction=%s" % (code, direction))
         # 测试买入
         monitor.avg1[code] = price
