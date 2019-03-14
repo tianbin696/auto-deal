@@ -561,9 +561,8 @@ class Monitor:
             logger.info("code=%s, avg10=%s, price=%s, low*1.2=%s" % (code, avg10, price, numpy.min(df['low'][1:6])*1.2))
             if price < numpy.min(df['low'][1:11])*1.2 and volume > volumeBase \
                     and (code not in self.isSelleds or not self.isSelleds[code]):
-                if max(max(open_price, avg1)*1.02, min(open_price, avg1, lowest_price)*1.03, highest_price*0.97) \
-                        < price < avg1*1.05:
-                        return 'B'
+                if max(open_price*1.02, avg1*1.02, highest_price*0.97) < price < avg1*1.05:
+                        return 'N'
 
         return 'N'
 
