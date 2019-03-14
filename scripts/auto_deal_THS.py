@@ -548,7 +548,7 @@ class Monitor:
         if code not in self.isSelleds or not self.isSelleds[code]:
             try:
                 self.getRealTimeMACD(code, price)
-                if price > numpy.max(df['high'][1:11])*0.7 and volume > volumeBase \
+                if price > numpy.max(df['high'][1:11])*0.8 and volume > volumeBase \
                         and (code not in self.isBuyeds or not self.isBuyeds[code]):
                     if price < avg1*0.95:
                         return 'S'
@@ -600,7 +600,7 @@ def test():
     monitor = Monitor()
 
     # Test before start
-    test_codes = ["002797", "600864"]
+    test_codes = ["002797", "002673"]
     # test_codes.extend(["002797", "002673", "601066", "600958", "601198", "000686", "002670", "600061", "600864", "601788"])
     # test_codes.extend(["002195", "600718", "600446", "600536", "600797", "002657", "600571", "600588", "600756", "002777"])
     for code in test_codes:
