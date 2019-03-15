@@ -5,6 +5,7 @@ import logging
 import time
 import random
 import numpy
+import os
 from datetime import datetime
 from datetime import timedelta
 
@@ -50,7 +51,7 @@ stock_chenbens = {}
 maxCodeSize = 1 # 最大持股数
 maxAmount = 20000
 minAmount = 0
-minBuyAmount = 7000
+minBuyAmount = 10000
 sleepTime = 0.5
 monitorInterval = 60
 avg10Days = 10 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
@@ -58,10 +59,12 @@ cache = {}
 
 def readCodes():
     global new_codes
+    timeStr = time.strftime("%Y%m%d", time.localtime())
+    filePath = "../codes/codes_%s.txt" % timeStr
     new_codes = []
-    # new_codes = ['600570', '000413', '600191', '600020', '603058', '000538']
-    # for code in list(open("codes.txt")):
-    #     new_codes.append(code.strip())
+    if os.path.exists(filePath):
+        for code in list(open(filePath)):
+            new_codes.append(code.strip())
     logger.info("Monitor codes: %s" % new_codes)
 
 
@@ -560,9 +563,9 @@ class Monitor:
         if code not in self.isBuyeds or not self.isBuyeds[code]:
             logger.info("code=%s, avg10=%s, price=%s, low*1.2=%s" % (code, avg10, price, numpy.min(df['low'][1:6])*1.2))
             if price < numpy.min(df['low'][1:11])*1.2 and volume > volumeBase \
-                    and (code not in self.isSelleds or not self.isSelleds[code]):
+                    and (code not in self.isSelleds or not self.isSelleds[code]) and code in new_codes:
                 if max(open_price*1.02, avg1*1.02, highest_price*0.97) < price < avg1*1.05:
-                        return 'N'
+                        return 'B'
 
         return 'N'
 
@@ -625,13 +628,18 @@ def test():
         direction = monitor.getDirection(code, price*0.94, price*1.0, price*1.15, price*0.98, price, volume*1.01)
         logger.info("code=%s, direction=%s" % (code, direction))
         # 测试买入
+        global new_codes
         monitor.avg1[code] = price
         minest_close = numpy.min(df['close'][1:25])
+        direction = monitor.getDirection(code, price*1.03, price, price*1.04, price*0.98, price, volume*1.01)
+        logger.info("code=%s, direction=%s" % (code, direction))
+        new_codes.append(code)
         direction = monitor.getDirection(code, price*1.03, price, price*1.04, price*0.98, price, volume*1.01)
         logger.info("code=%s, direction=%s" % (code, direction))
 
 
 if __name__ == '__main__':
+    readCodes()
     test()
 
     while True:
@@ -657,7 +665,7 @@ if __name__ == '__main__':
             cache.clear()
             stock_codes.clear()
             readCodes()
-            ignore_codes.extend(["601390", "600809", "601015"])
+            ignore_codes.extend([])
             
             monitor = Monitor()
             logger.info("Testing ...")
