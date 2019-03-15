@@ -60,7 +60,7 @@ cache = {}
 def readCodes():
     global new_codes
     timeStr = time.strftime("%Y%m%d", time.localtime())
-    filePath = "../codes/codes_%s.txt" % timeStr
+    filePath = "../codes/candidates.txt"
     new_codes = []
     if os.path.exists(filePath):
         for code in list(open(filePath)):
@@ -272,6 +272,7 @@ class Monitor:
     def __init__(self):
         logger.info("Trying to Init monitor ...")
         self.avg1 = {}
+        self.avg5 = {}
         self.avg10 = {}
         self.avg20 = {}
         self.rsis = {}
@@ -312,6 +313,9 @@ class Monitor:
             avg = self.getHistoryDayKAvgData(code, 1, p_changes)
             self.avg1[code] = avg
 
+            avg = self.getHistoryDayKAvgData(code, int(avg10Days/2), p_changes)
+            self.avg5[code] = avg
+
             avg = self.getHistoryDayKAvgData(code, avg10Days)
             self.avg10[code] = avg
 
@@ -320,7 +324,7 @@ class Monitor:
 
         temp_arr = []
         for code in stock_codes:
-            if self.avg10[code] > 0:
+            if self.avg10[code][0] > 0:
                 temp_arr.append(code)
 
                 ndf = cache[code]['close'][0:20].reset_index()
@@ -379,7 +383,7 @@ class Monitor:
                 #stock_codes.append('002797')
                 for code in stock_codes:
                     try:
-                        if code in ignore_codes or self.avg10[code] <= 0:
+                        if code in ignore_codes or self.avg10[code][0] <= 0:
                             continue
                         p_changes = []
                         open_prices = []
@@ -416,8 +420,6 @@ class Monitor:
         logger.info("Direction for %s: %s" % (code, direction))
         if direction == 'B':
             if self.availableMoney < minBuyAmount:
-                return
-            if code not in stock_positions and len(stock_positions) >= maxCodeSize:
                 return
             if code in stock_positions and stock_positions[code]*price + minBuyAmount >= maxAmount:
                 # 达到持仓上限，不再买入
@@ -500,18 +502,20 @@ class Monitor:
 
             df = pd.concat([ndf2, ndf]).reset_index()
             cache[code] = df
-        avg = 0
+        avgs = []
         try:
             if 'close' in df:
-                avg = numpy.mean(df['close'][1:days+1])
-                avg = float("%.2f" % avg)
+                for i in range(days):
+                    avg = numpy.mean(df['close'][i+1:i+days+1])
+                    avg = float("%.2f" % avg)
+                    avgs.append(avg)
                 p_changes.append(0)
         except Exception as e:
             logger.error("Error while get code %s: %s" % (code, e))
             p_changes.append(0)
-        logger.debug("Historical %d avg data of %s: %.2f" % (days, code, avg))
-        print("Historical %d avg data of %s: %.2f" % (days, code, avg))
-        return avg
+        logger.debug("Historical %d avg data of %s: %s" % (days, code, avgs))
+        print("Historical %d avg data of %s: %s" % (days, code, avgs))
+        return avgs
 
     def getRealTimeMACD(self, code, price):
         cache[code].update(pd.DataFrame({'close':[price]}, index=[0]))
@@ -520,9 +524,10 @@ class Monitor:
 
     def getDirection(self, code, price, open_price, highest_price, lowest_price, chen_ben=0, volume=0):
         # 理论基础：趋势一旦形成，短期不会改变
-        avg1 = float(self.avg1[code])
-        avg10 = float(self.avg10[code])
-        avg20 = float(self.avg20[code])
+        avg1 = float(self.avg1[code][0])
+        avg5 = self.avg5[code]
+        avg10 = self.avg10[code]
+        avg20 = self.avg20[code]
         price = float(price)
         df = cache[code]
         volumeBase = numpy.min([numpy.mean(df['volume'][1:6]), numpy.mean(df['volume'][1:11])])
@@ -543,7 +548,7 @@ class Monitor:
         else:
             volumeBase = volumeBase*1.0
         logger.info("%s status: price=%f, highest_price=%f, lowest_price=%f, avg1=%f, avg10=%f, avg20=%f" %
-                    (code, price, highest_price, lowest_price, avg1, avg10, avg20))
+                    (code, price, highest_price, lowest_price, avg1, avg10[0], avg20[0]))
         if price <= 0:
             return 'N'
 
@@ -568,8 +573,10 @@ class Monitor:
 
         if code not in self.isBuyeds or not self.isBuyeds[code]:
             logger.info("code=%s, avg10=%s, price=%s, low*1.2=%s" % (code, avg10, price, numpy.min(df['low'][1:6])*1.2))
-            if price < numpy.min(df['low'][1:11])*1.2 and volume > volumeBase \
-                    and (code not in self.isSelleds or not self.isSelleds[code]) and code in new_codes:
+            if price < numpy.min(df['close'][1:11])*1.2 and volume > volumeBase \
+                    and (code not in self.isSelleds or not self.isSelleds[code]) \
+                    and code in new_codes\
+                    and avg5[0] > avg5[1] > avg5[2]:
                 if max(open_price*1.02, avg1*1.02, highest_price*0.97) < price < avg1*1.05:
                         return 'B'
 
@@ -609,7 +616,7 @@ def test():
     monitor = Monitor()
 
     # Test before start
-    test_codes = ["002797", "002673"]
+    test_codes = ["002797", "600689"]
     # test_codes.extend(["002797", "002673", "601066", "600958", "601198", "000686", "002670", "600061", "600864", "601788"])
     # test_codes.extend(["002195", "600718", "600446", "600536", "600797", "002657", "600571", "600588", "600756", "002777"])
     for code in test_codes:
@@ -621,9 +628,10 @@ def test():
         v10 = numpy.mean(df['volume'][1:11])
         volume = numpy.mean([v5, v10])
         logger.info("code=%s, v5=%s, v10=%s, vm=%s" % (code, v5, v10, volume))
-        monitor.avg1[code] = price
-        monitor.avg10[code] = numpy.mean(df['close'][1:11])
-        monitor.avg20[code] = numpy.mean(df['close'][1:21])
+        monitor.avg1[code] = monitor.getHistoryDayKAvgData(code, 1)
+        monitor.avg5[code] = monitor.getHistoryDayKAvgData(code, 5)
+        monitor.avg10[code] = monitor.getHistoryDayKAvgData(code, 10)
+        monitor.avg20[code] = monitor.getHistoryDayKAvgData(code, 20)
         df = cache[code]
         #  测试卖出
         highest_close = numpy.max(df['close'][1:25])
@@ -638,7 +646,6 @@ def test():
         stock_positions.clear()
         # 测试买入
         global new_codes
-        monitor.avg1[code] = price
         minest_close = numpy.min(df['close'][1:25])
         direction = monitor.getDirection(code, price*1.03, price, price*1.04, price*0.98, price, volume*1.01)
         logger.info("code=%s, direction=%s" % (code, direction))
@@ -646,6 +653,7 @@ def test():
         direction = monitor.getDirection(code, price*1.03, price, price*1.04, price*0.98, price, volume*1.01)
         logger.info("code=%s, direction=%s" % (code, direction))
         new_codes = []
+        cache.clear()
 
 
 if __name__ == '__main__':
