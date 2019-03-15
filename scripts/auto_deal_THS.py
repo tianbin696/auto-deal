@@ -629,6 +629,7 @@ def test():
         highest_close = numpy.max(df['close'][1:25])
         direction = monitor.getDirection(code, price*0.95, price*1.05, price*1.05, price*0.98, price, volume*1.01)
         logger.info("code=%s, direction=%s" % (code, direction))
+        stock_positions[code] = 5500/(price*0.94)
         direction = monitor.getDirection(code, price*0.935, price*1.0, price*1.05, price*0.98, price, volume*1.01)
         logger.info("code=%s, direction=%s" % (code, direction))
         stock_positions[code] = 4500/(price*0.94)
