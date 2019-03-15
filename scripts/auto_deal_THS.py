@@ -49,7 +49,7 @@ stock_positions = {}
 stock_chenbens = {}
 maxCodeSize = 1 # 最大持股数
 maxAmount = 20000
-minAmount = 6000
+minAmount = 0
 minBuyAmount = 7000
 sleepTime = 0.5
 monitorInterval = 60
@@ -548,7 +548,7 @@ class Monitor:
         if code not in self.isSelleds or not self.isSelleds[code]:
             try:
                 self.getRealTimeMACD(code, price)
-                if price > numpy.max(df['high'][1:11])*0.8 and volume > volumeBase \
+                if price > numpy.max(df['high'][1:11])*0.7 and volume > volumeBase \
                         and (code not in self.isBuyeds or not self.isBuyeds[code]):
                     if price < avg1*0.95:
                         return 'S'
