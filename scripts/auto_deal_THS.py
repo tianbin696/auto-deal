@@ -344,7 +344,7 @@ class Monitor:
         end_time = time.time()
         self.operation.saveScreenshot("均值更新完成，共耗时%d秒，排除异常，可监控%d支股票。"
                                       "avg1=%s, macd=%s, rsi=%s, new_codes=%s" % ((end_time - start_time), len(stock_codes),
-                                                                       self.avg1[0], self.macds, self.rsis, new_codes), u'交易前准备')
+                                                                       self.avg1, self.macds, self.rsis, new_codes), u'交易前准备')
         logger.info("Total monitor code size: %d. Codes=%s" % (len(stock_codes), stock_codes))
 
         isStarted = False
