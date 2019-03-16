@@ -573,7 +573,7 @@ class Monitor:
 
         if code not in self.isBuyeds or not self.isBuyeds[code]:
             logger.info("code=%s, avg10=%s, price=%s, low*1.2=%s" % (code, avg10, price, numpy.min(df['low'][1:6])*1.2))
-            if price < numpy.min(df['close'][1:11])*1.2 and volume > volumeBase \
+            if price < numpy.min(df['close'][1:11])*1.3 and volume > volumeBase \
                     and (code not in self.isSelleds or not self.isSelleds[code]) \
                     and code in new_codes\
                     and avg5[0] > avg5[1] > avg5[2]:
