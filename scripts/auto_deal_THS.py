@@ -49,7 +49,8 @@ ignore_codes = []
 stock_positions = {}
 stock_chenbens = {}
 maxCodeSize = 1 # 最大持股数
-maxAmount = 20000
+globalAvailableMoney = 20000
+maxAmount = 30000
 minAmount = 0
 minBuyAmount = 10000
 sleepTime = 0.5
@@ -281,7 +282,7 @@ class Monitor:
         self.isSelleds = {}
         self.buyedPrices = {}
         self.selledPrices = {}
-        self.availableMoney = 30000
+        self.availableMoney = globalAvailableMoney
         self.operation = OperationOfThs()
 
     def testSellBeforeDeal(self):
@@ -578,7 +579,7 @@ class Monitor:
                     and code in new_codes\
                     and avg5[0] > avg5[1]:
                 if max(open_price*1.02, avg1*1.02, highest_price*0.97) < price < avg1*1.05:
-                        return 'B'
+                        return 'N'
 
         return 'N'
 
