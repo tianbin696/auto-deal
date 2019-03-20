@@ -577,7 +577,7 @@ class Monitor:
             if price < numpy.min(df['close'][1:11])*1.3 and volume > volumeBase \
                     and (code not in self.isSelleds or not self.isSelleds[code]) \
                     and code in new_codes\
-                    and price > avg5[0] > avg5[1] > avg5[2]:
+                    and price > avg5[0] > numpy.mean([avg5[0], avg5[1], avg5[2]]):
                 if max(open_price*1.01, avg1*1.01, highest_price*0.98) < price < avg1*1.03:
                         return 'B'
 
