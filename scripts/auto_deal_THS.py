@@ -52,7 +52,7 @@ maxCodeSize = 1 # 最大持股数
 globalAvailableMoney = 20000
 maxAmount = 30000
 minAmount = 0
-minBuyAmount = 10000
+minBuyAmount = 6000
 sleepTime = 0.5
 monitorInterval = 60
 avg10Days = 10 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
@@ -577,9 +577,9 @@ class Monitor:
             if price < numpy.min(df['close'][1:11])*1.3 and volume > volumeBase \
                     and (code not in self.isSelleds or not self.isSelleds[code]) \
                     and code in new_codes\
-                    and avg5[0] > avg5[1]:
-                if max(open_price*1.02, avg1*1.02, highest_price*0.97) < price < avg1*1.05:
-                        return 'N'
+                    and price > avg5[0] > avg5[1] > avg5[2]:
+                if max(open_price*1.01, avg1*1.01, highest_price*0.98) < price < avg1*1.03:
+                        return 'B'
 
         return 'N'
 
