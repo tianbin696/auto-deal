@@ -648,10 +648,10 @@ def test():
         # 测试买入
         global new_codes
         minest_close = numpy.min(df['close'][1:25])
-        direction = monitor.getDirection(code, price*1.25, price, price*1.04, price*0.98, price, volume*1.01)
+        direction = monitor.getDirection(code, price*1.025, price, price*1.04, price*0.98, price, volume*1.01)
         logger.info("code=%s, direction=%s" % (code, direction))
         new_codes.append(code)
-        direction = monitor.getDirection(code, price*1.25, price, price*1.04, price*0.98, price, volume*1.01)
+        direction = monitor.getDirection(code, price*1.025, price, price*1.04, price*0.98, price, volume*1.01)
         logger.info("code=%s, direction=%s" % (code, direction))
         new_codes = []
         cache.clear()
