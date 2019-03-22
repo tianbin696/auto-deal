@@ -560,9 +560,9 @@ class Monitor:
                 if price > numpy.max(df['high'][1:11])*0.7 and volume > volumeBase \
                         and (code not in self.isBuyeds or not self.isBuyeds[code]):
                     result = 'N'
-                    if price < avg1*0.95:
+                    if price < avg1*0.94:
                         result = 'S'
-                    if price < highest_price*0.93:
+                    if price < highest_price*0.92:
                         result = 'S'
                     if result == 'S':
                         if code in stock_positions and stock_positions[code]*price < 5000:
@@ -636,13 +636,13 @@ def test():
         df = cache[code]
         #  测试卖出
         highest_close = numpy.max(df['close'][1:25])
-        direction = monitor.getDirection(code, price*0.95, price*1.05, price*1.05, price*0.98, price, volume*1.01)
+        direction = monitor.getDirection(code, price*0.94, price*1.05, price*1.05, price*0.98, price, volume*1.01)
         logger.info("code=%s, direction=%s" % (code, direction))
         stock_positions[code] = 5500/(price*0.94)
-        direction = monitor.getDirection(code, price*0.935, price*1.0, price*1.05, price*0.98, price, volume*1.01)
+        direction = monitor.getDirection(code, price*0.925, price*1.0, price*1.05, price*0.98, price, volume*1.01)
         logger.info("code=%s, direction=%s" % (code, direction))
         stock_positions[code] = 4500/(price*0.94)
-        direction = monitor.getDirection(code, price*0.94, price*1.0, price*1.15, price*0.98, price, volume*1.01)
+        direction = monitor.getDirection(code, price*0.93, price*1.0, price*1.15, price*0.98, price, volume*1.01)
         logger.info("code=%s, direction=%s" % (code, direction))
         stock_positions.clear()
         # 测试买入
