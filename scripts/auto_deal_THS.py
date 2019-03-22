@@ -567,7 +567,7 @@ class Monitor:
             if (code not in self.isBuyeds or not self.isBuyeds[code]) \
                     and price > numpy.max(df['close'][1:11])*0.7 \
                     and avg5[0] < min(avg5[1], avg5[2]):
-                if price < avg1*0.96:
+                if price < avg1*0.97:
                     if code in stock_positions and stock_positions[code]*price < 5000:
                         return 'FS'
                     return 'S'
