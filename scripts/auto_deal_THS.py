@@ -377,6 +377,9 @@ class Monitor:
                 if not isStarted:
                     continue
 
+                if not self.compare("14", "30"):
+                    continue
+
                 print()
                 logger.debug("looping monitor stocks")
 
@@ -531,28 +534,28 @@ class Monitor:
         avg20 = self.avg20[code]
         price = float(price)
         df = cache[code]
-        volumeBase = numpy.min([numpy.mean(df['volume'][1:6]), numpy.mean(df['volume'][1:11])])
-        if not self.compare("14", "30"):
-            return 'N'
         logger.info("%s status: price=%f, highest_price=%f, lowest_price=%f, avg1=%f, avg10=%f, avg20=%f" %
                     (code, price, highest_price, lowest_price, avg1, avg10[0], avg20[0]))
         if price <= 0:
             return 'N'
 
-        # 针对精选个股，做高抛低吸
+        # 顺势下跌，卖出
         if code not in self.isSelleds or not self.isSelleds[code]:
             if (code not in self.isBuyeds or not self.isBuyeds[code]) \
-                    and numpy.max(df['close'][1:11])*0.7 < price < avg5[0] < avg10[0]:
+                    and price > numpy.max(df['close'][1:11])*0.7 \
+                    and avg5[0] < avg5[1] < avg5[2]:
                 if price < avg1*0.96:
                     if code in stock_positions and stock_positions[code]*price < 5000:
                         return 'FS'
                     return 'S'
 
+        # 顺势上涨，买入
         if code not in self.isBuyeds or not self.isBuyeds[code]:
             if (code not in self.isSelleds or not self.isSelleds[code]) \
-                    and avg10[0] < avg5[0] < price < numpy.min(df['close'][1:11])*1.3 \
+                    and price < numpy.min(df['close'][1:11])*1.3 \
+                    and avg5[0] > avg5[1] > avg5[2] \
                     and code in new_codes:
-                if max(open_price*1.02, avg1*1.02, highest_price*0.96) < price < avg1*1.06:
+                if max(avg1*1.02, highest_price*0.96) < price < avg1*1.06:
                         return 'B'
 
         return 'N'
