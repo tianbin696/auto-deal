@@ -549,7 +549,6 @@ class Monitor:
                     return 'S'
 
         if code not in self.isBuyeds or not self.isBuyeds[code]:
-            logger.info("code=%s, avg10=%s, price=%s, low*1.2=%s" % (code, avg10, price, numpy.min(df['low'][1:6])*1.2))
             if (code not in self.isSelleds or not self.isSelleds[code]) \
                     and avg10[0] < avg5[0] < price < numpy.min(df['close'][1:11])*1.3 \
                     and code in new_codes:
@@ -592,7 +591,7 @@ def test():
     monitor = Monitor()
 
     # Test before start
-    test_codes = ["002797", "600061"]
+    test_codes = ["601788", "601198"]
     # test_codes.extend(["002797", "002673", "601066", "600958", "601198", "000686", "002670", "600061", "600864", "601788"])
     # test_codes.extend(["002195", "600718", "600446", "600536", "600797", "002657", "600571", "600588", "600756", "002777"])
     for code in test_codes:
