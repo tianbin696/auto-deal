@@ -276,6 +276,8 @@ class Monitor:
         self.avg5 = {}
         self.avg10 = {}
         self.avg20 = {}
+        self.liangBi5 = {}
+        self.volumeAvg5 = {}
         self.rsis = {}
         self.macds = {}
         self.isBuyeds = {}
@@ -322,6 +324,9 @@ class Monitor:
 
             avg = self.getHistoryDayKAvgData(code, 2 * avg10Days)
             self.avg20[code] = avg
+
+            self.liangBi5[code] = self.getLiangBi(code, int(avg10Days/2))
+            self.volumeAvg5[code] = self.getVolumeAvg(code, int(avg10Days/2))
 
         temp_arr = []
         for code in stock_codes:
@@ -521,6 +526,22 @@ class Monitor:
         print("Historical %d avg data of %s: %s" % (days, code, avgs))
         return avgs
 
+    def getLiangBi(self, code, days=5):
+        result = []
+        df = cache[code]
+        for i in range(days):
+            result.append(float("%.2f" % (df['volume'][i+1]/numpy.mean(df['volume'][i+1:i+1+days]))))
+        logger.info("%s days LiangBi of %s: %s" % (days, code, result))
+        return result
+
+    def getVolumeAvg(self, code, days=5):
+        result = []
+        df = cache[code]
+        for i in range(days):
+            result.append(int(numpy.mean(df['volume'][i+1:i+1+days])))
+        logger.info("%s days Volume avg of %s: %s" % (days, code, result))
+        return result
+
     def getRealTimeMACD(self, code, price):
         cache[code].update(pd.DataFrame({'close':[price]}, index=[0]))
         cache[code] = get_MACD(cache[code],12,26,9)
@@ -533,6 +554,8 @@ class Monitor:
         avg10 = self.avg10[code]
         avg20 = self.avg20[code]
         price = float(price)
+        volumeAvg5 = self.volumeAvg5[code]
+        liangBi5 = self.liangBi5[code]
         df = cache[code]
         logger.info("%s status: price=%f, highest_price=%f, lowest_price=%f, avg1=%f, avg10=%f, avg20=%f" %
                     (code, price, highest_price, lowest_price, avg1, avg10[0], avg20[0]))
@@ -610,6 +633,8 @@ def test():
         monitor.avg5[code] = monitor.getHistoryDayKAvgData(code, 5)
         monitor.avg10[code] = monitor.getHistoryDayKAvgData(code, 10)
         monitor.avg20[code] = monitor.getHistoryDayKAvgData(code, 20)
+        monitor.liangBi5[code] = monitor.getLiangBi(code, 5)
+        monitor.volumeAvg5[code] = monitor.getVolumeAvg(code, 5)
         df = cache[code]
         #  测试卖出
         highest_close = numpy.max(df['close'][1:25])
