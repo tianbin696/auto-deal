@@ -532,22 +532,8 @@ class Monitor:
         price = float(price)
         df = cache[code]
         volumeBase = numpy.min([numpy.mean(df['volume'][1:6]), numpy.mean(df['volume'][1:11])])
-        if not self.compare("10", "00"):
-            volumeBase = volumeBase*0.3
-        elif not self.compare("10", "30"):
-            volumeBase = volumeBase*0.4
-        elif not self.compare("11", "00"):
-            volumeBase = volumeBase*0.5
-        elif not self.compare("13", "00"):
-            volumeBase = volumeBase*0.6
-        elif not self.compare("13", "30"):
-            volumeBase = volumeBase*0.7
-        elif not self.compare("14", "00"):
-            volumeBase = volumeBase*0.8
-        elif not self.compare("14", "30"):
-            volumeBase = volumeBase*0.9
-        else:
-            volumeBase = volumeBase*1.0
+        if not self.compare("14", "30"):
+            return 'N'
         logger.info("%s status: price=%f, highest_price=%f, lowest_price=%f, avg1=%f, avg10=%f, avg20=%f" %
                     (code, price, highest_price, lowest_price, avg1, avg10[0], avg20[0]))
         if price <= 0:
@@ -560,9 +546,9 @@ class Monitor:
                 if price > numpy.max(df['high'][1:11])*0.7 and volume > volumeBase \
                         and (code not in self.isBuyeds or not self.isBuyeds[code]):
                     result = 'N'
-                    if price < avg1*0.94:
+                    if price < avg1*0.96:
                         result = 'S'
-                    if price < highest_price*0.92:
+                    if price < highest_price*0.94:
                         result = 'S'
                     if result == 'S':
                         if code in stock_positions and stock_positions[code]*price < 5000:
@@ -578,7 +564,7 @@ class Monitor:
                     and (code not in self.isSelleds or not self.isSelleds[code]) \
                     and code in new_codes\
                     and price > avg5[0] > numpy.mean([avg5[0], avg5[1], avg5[2]]):
-                if max(open_price, avg1*0.98, highest_price*0.98) < price < avg1*1.03:
+                if max(open_price*1.02, avg1*1.02, highest_price*0.96) < price < avg1*1.06:
                         return 'B'
 
         return 'N'
