@@ -511,6 +511,8 @@ class Monitor:
 
             df = pd.concat([ndf2, ndf]).reset_index()
             cache[code] = df
+
+            logger.info("Price of %s: %s" % (code, df[0:6]))
         avgs = []
         try:
             if 'close' in df:
