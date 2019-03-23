@@ -30,6 +30,8 @@ from stats import sort_codes
 from macd import get_MACD
 
 from tushare_api import TushareAPI
+token = "546aae3c5aca9eb09c9181e04974ae3cf910ce6c0d8092dde678d1cd"
+pro = ts.pro_api(token)
 local_ts = TushareAPI()
 
 logging.basicConfig(level=logging.DEBUG,
@@ -495,13 +497,18 @@ class Monitor:
                 try:
                     yesterday = (datetime.now() - timedelta(days = 1))
                     timeStr = yesterday.strftime("%Y%m%d")
-                    df = ts.get_h_data(code, pause=10)
+                    # df = ts.get_h_data(code, pause=10)
+                    if int(code) < 600000:
+                        code_str = "%s.SZ" % code
+                    else:
+                        code_str = "%s.SH" % code
+                    df = ts.pro_bar(pro_api=pro, ts_code=code_str, adj='qfq')
                     break
                 except Exception as e:
                     logger.error("Failed to get history data: %s" % e)
                     time.sleep(60)
                     retry -= 1
-            d = {'close':df['close'][0:52].astype('float'), 'high':df['high'][0:52].astype('float'), 'low':df['low'][0:52].astype('float'), 'volume':df['volume'][0:52].astype('int')}
+            d = {'close':df['close'][0:52].astype('float'), 'high':df['high'][0:52].astype('float'), 'low':df['low'][0:52].astype('float'), 'volume':df['vol'][0:52].astype('int')}
             ndf = pd.DataFrame(d)
 
             # Extend df
