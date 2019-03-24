@@ -508,7 +508,7 @@ class Monitor:
                     logger.error("Failed to get history data: %s" % e)
                     time.sleep(60)
                     retry -= 1
-            d = {'close':df['close'][0:52].astype('float'), 'high':df['high'][0:52].astype('float'), 'low':df['low'][0:52].astype('float'), 'volume':df['vol'][0:52].astype('int')}
+            d = {'close':df['close'][0:52].astype('float'), 'high':df['high'][0:52].astype('float'), 'low':df['low'][0:52].astype('float'), 'volume':df['vol'][0:52].astype('int')*100}
             ndf = pd.DataFrame(d)
 
             # Extend df
