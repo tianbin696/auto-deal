@@ -570,9 +570,13 @@ class Monitor:
         volumeAvg5 = self.volumeAvg5[code]
         liangBi5 = self.liangBi5[code]
         df = cache[code]
+        updated_prices = [price]
+        updated_prices.extend(df['close'][1:5])
+        logger.info("updated prices: %s" % updated_prices)
+        updated_avg5 = numpy.mean(updated_prices)
         liangBi = float("%.2f" % (volume/volumeAvg5[0]))
-        logger.info("%s status: price=%f, highest_price=%f, lowest_price=%f, avg1=%f, avg10=%f, avg20=%f, liangBi=%s" %
-                    (code, price, highest_price, lowest_price, avg1, avg10[0], avg20[0], liangBi))
+        logger.info("%s status: price=%f, highest_price=%f, lowest_price=%f, avg1=%f, avg10=%f, avg20=%f, liangBi=%s, updatedAvg5=%.2f" %
+                    (code, price, highest_price, lowest_price, avg1, avg10[0], avg20[0], liangBi, updated_avg5))
         if price <= 0:
             return 'N'
 
@@ -580,8 +584,8 @@ class Monitor:
         if code not in self.isSelleds or not self.isSelleds[code]:
             if (code not in self.isBuyeds or not self.isBuyeds[code]) \
                     and price > numpy.max(df['close'][1:11])*0.7 \
-                    and avg5[0] < min(avg5[1], avg5[2]):
-                if price < avg1*0.96:
+                    and updated_avg5 < min(avg5[0], avg5[1]):
+                if price < avg1*0.97:
                     if code in stock_positions and stock_positions[code]*price < 5000:
                         return 'FS'
                     return 'S'
@@ -590,7 +594,7 @@ class Monitor:
         if code not in self.isBuyeds or not self.isBuyeds[code]:
             if (code not in self.isSelleds or not self.isSelleds[code]) \
                     and price < numpy.min(df['close'][1:11])*1.3 \
-                    and avg5[0] > max(avg5[1], avg5[2]) \
+                    and updated_avg5 > max(avg5[0], avg5[1]) \
                     and code in new_codes:
                 if max(avg1*1.02, highest_price*0.96) < price < avg1*1.06:
                         return 'B'
@@ -652,22 +656,22 @@ def test():
         df = cache[code]
         #  测试卖出
         highest_close = numpy.max(df['close'][1:25])
-        direction = monitor.getDirection(code, price*0.94, price*1.05, price*1.05, price*0.98, price, volume*1.01)
+        direction = monitor.getDirection(code, price*0.85, price*1.05, price*1.05, price*0.98, price, volume*1.01)
         logger.info("code=%s, direction=%s" % (code, direction))
         stock_positions[code] = 5500/(price*0.94)
-        direction = monitor.getDirection(code, price*0.925, price*1.0, price*1.05, price*0.98, price, volume*1.01)
+        direction = monitor.getDirection(code, price*0.90, price*1.0, price*1.05, price*0.98, price, volume*1.01)
         logger.info("code=%s, direction=%s" % (code, direction))
         stock_positions[code] = 4500/(price*0.94)
-        direction = monitor.getDirection(code, price*0.93, price*1.0, price*1.15, price*0.98, price, volume*1.01)
+        direction = monitor.getDirection(code, price*0.92, price*1.0, price*1.15, price*0.98, price, volume*1.01)
         logger.info("code=%s, direction=%s" % (code, direction))
         stock_positions.clear()
         # 测试买入
         global new_codes
         minest_close = numpy.min(df['close'][1:25])
-        direction = monitor.getDirection(code, price*1.025, price, price*1.04, price*0.98, price, volume*1.01)
+        direction = monitor.getDirection(code, price*1.06, price, price*1.04, price*0.98, price, volume*1.01)
         logger.info("code=%s, direction=%s" % (code, direction))
         new_codes.append(code)
-        direction = monitor.getDirection(code, price*1.025, price, price*1.04, price*0.98, price, volume*1.01)
+        direction = monitor.getDirection(code, price*1.05, price, price*1.04, price*0.98, price, volume*1.01)
         logger.info("code=%s, direction=%s" % (code, direction))
         new_codes = []
         cache.clear()
