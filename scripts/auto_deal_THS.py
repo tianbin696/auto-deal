@@ -384,8 +384,9 @@ class Monitor:
                 if not isStarted:
                     continue
 
-                if not self.compare("14", "30"):
+                if not self.compare("14", "45"):
                     continue
+                self.operation.saveScreenshot("开始交易", '开始交易')
 
                 print()
                 logger.debug("looping monitor stocks")
