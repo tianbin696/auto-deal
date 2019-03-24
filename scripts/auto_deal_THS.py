@@ -356,6 +356,7 @@ class Monitor:
         logger.info("Total monitor code size: %d. Codes=%s" % (len(stock_codes), stock_codes))
 
         isStarted = False
+        deal_started = False
         totalSleep = 0
         while True:
             try:
@@ -386,7 +387,9 @@ class Monitor:
 
                 if not self.compare("14", "45"):
                     continue
-                self.operation.saveScreenshot("开始交易", '开始交易')
+                if not deal_started:
+                    self.operation.saveScreenshot("开始交易", '闭市前15分钟开始交易')
+                    deal_started = True
 
                 print()
                 logger.debug("looping monitor stocks")
