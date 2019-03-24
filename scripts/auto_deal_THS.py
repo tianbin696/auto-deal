@@ -611,7 +611,10 @@ class Monitor:
         return int(minBuyAmount/100/price)*100
 
     def getSellAmount(self, code, price):
-        return max(int(stock_positions[code]/300)*100, 100)
+        if stock_positions[code] * price > 10000:
+            return max(int(stock_positions[code]/300)*100, 100)
+        else:
+            return max(int(stock_positions[code]/200)*100, 100)
 
 
 def getRSI(prices, days=8):
