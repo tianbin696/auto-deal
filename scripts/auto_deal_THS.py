@@ -596,7 +596,7 @@ class Monitor:
                     and price < numpy.min(df['close'][1:11])*1.3 \
                     and updated_avg5 > max(avg5[0], avg5[1]) \
                     and code in new_codes:
-                if max(avg1*1.02, highest_price*0.96) < price < avg1*1.06:
+                if max(open_price, avg1*1.02, highest_price*0.96) < price < avg1*1.06:
                         return 'B'
 
         return 'N'
