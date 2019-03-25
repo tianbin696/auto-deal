@@ -650,7 +650,7 @@ def test():
         df = cache[code]
         v5 = numpy.mean(df['volume'][1:6])
         v10 = numpy.mean(df['volume'][1:11])
-        volume = numpy.mean([v5, v10])
+        volume = real_volume[0]
         logger.info("code=%s, v5=%s, v10=%s, vm=%s" % (code, v5, v10, volume))
         monitor.avg1[code] = monitor.getHistoryDayKAvgData(code, 1)
         monitor.avg5[code] = monitor.getHistoryDayKAvgData(code, 5)
@@ -661,22 +661,22 @@ def test():
         df = cache[code]
         #  测试卖出
         highest_close = numpy.max(df['close'][1:25])
-        direction = monitor.getDirection(code, price*0.85, price*1.05, price*1.05, price*0.98, price, volume*1.01)
+        direction = monitor.getDirection(code, price*0.85, price*1.05, price*1.05, price*0.98, price, volume*1.02)
         logger.info("code=%s, direction=%s" % (code, direction))
         stock_positions[code] = 5500/(price*0.94)
-        direction = monitor.getDirection(code, price*0.90, price*1.0, price*1.05, price*0.98, price, volume*1.01)
+        direction = monitor.getDirection(code, price*0.90, price*1.0, price*1.05, price*0.98, price, volume*1.02)
         logger.info("code=%s, direction=%s" % (code, direction))
         stock_positions[code] = 4500/(price*0.94)
-        direction = monitor.getDirection(code, price*0.92, price*1.0, price*1.15, price*0.98, price, volume*1.01)
+        direction = monitor.getDirection(code, price*0.92, price*1.0, price*1.15, price*0.98, price, volume*1.02)
         logger.info("code=%s, direction=%s" % (code, direction))
         stock_positions.clear()
         # 测试买入
         global new_codes
         minest_close = numpy.min(df['close'][1:25])
-        direction = monitor.getDirection(code, price*1.06, price, price*1.04, price*0.98, price, volume*1.01)
+        direction = monitor.getDirection(code, price*1.06, price, price*1.04, price*0.98, price, volume*1.02)
         logger.info("code=%s, direction=%s" % (code, direction))
         new_codes.append(code)
-        direction = monitor.getDirection(code, price*1.05, price, price*1.04, price*0.98, price, volume*1.01)
+        direction = monitor.getDirection(code, price*1.05, price, price*1.04, price*0.98, price, volume*1.02)
         logger.info("code=%s, direction=%s" % (code, direction))
         new_codes = []
         cache.clear()
