@@ -385,10 +385,10 @@ class Monitor:
                 if not isStarted:
                     continue
 
-                if not self.compare("14", "50"):
+                if not self.compare("14", "45"):
                     continue
                 if not deal_started:
-                    self.operation.saveScreenshot("开始交易", '闭市前10分钟开始交易')
+                    self.operation.saveScreenshot("开始交易", '闭市前15分钟开始交易')
                     deal_started = True
 
                 print()
