@@ -586,7 +586,8 @@ class Monitor:
         if code not in self.isSelleds or not self.isSelleds[code]:
             if (code not in self.isBuyeds or not self.isBuyeds[code]) \
                     and price > numpy.max(df['close'][1:11])*0.7 \
-                    and updated_avg5 < min(avg5[0], avg5[1]):
+                    and updated_avg5 < min(avg5[0], avg5[1])\
+                    and liangBi > 0.7:
                 if price < avg1*0.97:
                     if code in stock_positions and stock_positions[code]*price < 5000:
                         return 'FS'
@@ -597,6 +598,7 @@ class Monitor:
             if (code not in self.isSelleds or not self.isSelleds[code]) \
                     and price < numpy.min(df['close'][1:11])*1.3 \
                     and updated_avg5 > max(avg5[0], avg5[1]) \
+                    and liangBi > 1 \
                     and code in new_codes:
                 if max(open_price, avg1*1.02, highest_price*0.97) < price < avg1*1.06:
                         return 'B'
@@ -640,7 +642,7 @@ def test():
     monitor = Monitor()
 
     # Test before start
-    test_codes = ["601788", "002673"]
+    test_codes = ["601788", "002777"]
     # test_codes.extend(["002797", "002673", "601066", "600958", "601198", "000686", "002670", "600061", "600864", "601788"])
     # test_codes.extend(["002195", "600718", "600446", "600536", "600797", "002657", "600571", "600588", "600756", "002777"])
     for code in test_codes:
