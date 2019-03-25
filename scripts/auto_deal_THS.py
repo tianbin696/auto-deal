@@ -389,8 +389,6 @@ class Monitor:
                     continue
                 if not deal_started:
                     self.operation.saveScreenshot("开始交易", '闭市前10分钟开始交易')
-                    time.sleep(monitorInterval)
-                    totalSleep += monitorInterval
                     deal_started = True
 
                 print()
