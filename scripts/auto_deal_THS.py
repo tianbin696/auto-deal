@@ -65,9 +65,9 @@ def readCodes():
     timeStr = time.strftime("%Y%m%d", time.localtime())
     filePath = "../codes/candidates.txt"
     new_codes = []
-    if os.path.exists(filePath):
-        for code in list(open(filePath)):
-            new_codes.append(code.strip())
+    # if os.path.exists(filePath):
+    #     for code in list(open(filePath)):
+    #         new_codes.append(code.strip())
     logger.info("Monitor codes: %s" % new_codes)
 
 
