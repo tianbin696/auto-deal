@@ -55,6 +55,7 @@ globalAvailableMoney = 20000
 maxAmount = 30000
 minAmount = 0
 minBuyAmount = 5000
+fullSellAmount = 6000
 sleepTime = 0.5
 monitorInterval = 30
 avg10Days = 10 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
@@ -587,7 +588,7 @@ class Monitor:
                     and updated_avg5 < min(avg5[0], avg5[1])\
                     and liangBi > 0.7:
                 if price < avg1*0.97:
-                    if code in stock_positions and stock_positions[code]*price < 6000:
+                    if code in stock_positions and stock_positions[code]*price < fullSellAmount:
                         return 'FS'
                     return 'S'
 
@@ -612,7 +613,7 @@ class Monitor:
         return int(minBuyAmount/100/price)*100
 
     def getSellAmount(self, code, price):
-        if stock_positions[code] * price > 10000:
+        if stock_positions[code] * price > 2*fullSellAmount:
             return max(int(stock_positions[code]/300)*100, 100)
         else:
             return max(int(stock_positions[code]/200)*100, 100)
@@ -639,7 +640,7 @@ def test():
     monitor = Monitor()
 
     # Test before start
-    test_codes = ["601788", "002777"]
+    test_codes = ["002670", "601066"]
     # test_codes.extend(["002797", "002673", "601066", "600958", "601198", "000686", "002670", "600061", "600864", "601788"])
     # test_codes.extend(["002195", "600718", "600446", "600536", "600797", "002657", "600571", "600588", "600756", "002777"])
     for code in test_codes:
@@ -662,11 +663,11 @@ def test():
         highest_close = numpy.max(df['close'][1:25])
         direction = monitor.getDirection(code, price*0.85, price*1.05, price*1.05, price*0.98, price, volume*1.02)
         logger.info("code=%s, direction=%s" % (code, direction))
-        stock_positions[code] = 5500/(price*0.94)
-        direction = monitor.getDirection(code, price*0.90, price*1.0, price*1.05, price*0.98, price, volume*1.02)
+        stock_positions[code] = 6500/(price*0.94)
+        direction = monitor.getDirection(code, price*0.85, price*1.0, price*1.05, price*0.98, price, volume*1.02)
         logger.info("code=%s, direction=%s" % (code, direction))
         stock_positions[code] = 4500/(price*0.94)
-        direction = monitor.getDirection(code, price*0.92, price*1.0, price*1.15, price*0.98, price, volume*1.02)
+        direction = monitor.getDirection(code, price*0.85, price*1.0, price*1.15, price*0.98, price, volume*1.02)
         logger.info("code=%s, direction=%s" % (code, direction))
         stock_positions.clear()
         # 测试买入
