@@ -597,7 +597,7 @@ class Monitor:
                     and price < numpy.min(df['close'][1:11])*1.3 \
                     and updated_avg5 > max(avg5[0], avg5[1]) \
                     and liangBi > 1:
-                if max(open_price, avg1*1.02, highest_price*0.97) < price < avg1*1.04:
+                if max(open_price, avg1*1.02, highest_price*0.97) < price < avg1*1.06:
                         return 'B'
 
         return 'N'
