@@ -587,7 +587,7 @@ class Monitor:
                     and updated_avg5 < min(avg5[0], avg5[1])\
                     and liangBi > 0.7:
                 if price < avg1*0.97:
-                    if code in stock_positions and stock_positions[code]*price < 5000:
+                    if code in stock_positions and stock_positions[code]*price < 6000:
                         return 'FS'
                     return 'S'
 
