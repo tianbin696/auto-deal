@@ -56,7 +56,7 @@ maxAmount = 30000
 minAmount = 0
 minBuyAmount = 5000
 sleepTime = 0.5
-monitorInterval = 60
+monitorInterval = 30
 avg10Days = 10 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
 cache = {}
 
@@ -65,9 +65,9 @@ def readCodes():
     timeStr = time.strftime("%Y%m%d", time.localtime())
     filePath = "../codes/candidates.txt"
     new_codes = []
-    # if os.path.exists(filePath):
-    #     for code in list(open(filePath)):
-    #         new_codes.append(code.strip())
+    if os.path.exists(filePath):
+        for code in list(open(filePath)):
+            new_codes.append(code.strip())
     logger.info("Monitor codes: %s" % new_codes)
 
 
