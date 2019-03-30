@@ -619,7 +619,7 @@ def getRSI(prices, days=14):
     return int(result)
 
 
-def get_direction_by_rsi(code, prices, days=14):
+def get_direction_by_rsi(code, prices, days=14, logging=True):
     if prices[0] > numpy.mean(prices[1:21]):
         buy_value = 50
         sell_value = 80
@@ -634,10 +634,15 @@ def get_direction_by_rsi(code, prices, days=14):
         sell_value = 65
     rsi = getRSI(prices, days)
     rsi_1 = getRSI(prices[1:], days)
-    logger.info("code=%s, rsi=%.2f, rsi_1=%.2f" % (code, rsi, rsi_1))
+    if logging:
+        logger.info("code=%s, threshold=[%.2f, %.2f], rsi=%.2f, rsi_1=%.2f" % (code, buy_value, sell_value, rsi, rsi_1))
     if rsi < sell_value < rsi_1:
+        logger.info("code=%s, threshold=[%.2f, %.2f], rsi=%.2f, rsi_1=%.2f, price=%.2f, direction=%s" %
+                    (code, buy_value, sell_value, rsi, rsi_1, prices[0], "S"))
         return 'S'
     if rsi > buy_value > rsi_1:
+        logger.info("code=%s, threshold=[%.2f, %.2f], rsi=%.2f, rsi_1=%.2f, price=%.2f, direction=%s" %
+                    (code, buy_value, sell_value, rsi, rsi_1, prices[0], "B"))
         return 'B'
     return 'N'
 
