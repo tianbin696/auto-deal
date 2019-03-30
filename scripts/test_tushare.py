@@ -17,8 +17,14 @@ def test_api():
 
 def test_liang_bi(code):
     df = ts.pro_bar(pro_api=pro, ts_code=code, adj="qfq")
-    for i in range(200):
-        get_direction_by_rsi(code, df['close'][i:], 14, False)
+    for i in range(120):
+        price = df['close'][i]
+        direction = get_direction_by_rsi(code, df['close'][i:], 24, False)
+
+        if direction == 'S':
+            print "trade_date=%s: price=%.2f, sell" % (df['trade_date'][i], price)
+        if direction == 'B':
+            print "trade_date=%s: price = %.2f, buy" % (df['trade_date'][i], price)
 
 
-test_liang_bi("000799.SZ")
+test_liang_bi("600958.SH")
