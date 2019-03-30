@@ -15,7 +15,7 @@ def test_api():
     print df.head()
 
 
-def test_liang_bi(code):
+def test_action(code):
     df = ts.pro_bar(pro_api=pro, ts_code=code, adj="qfq")
     for i in range(120):
         price = df['close'][i]
@@ -27,4 +27,4 @@ def test_liang_bi(code):
             print "trade_date=%s: price = %.2f, buy" % (df['trade_date'][i], price)
 
 
-test_liang_bi("600958.SH")
+test_action("600958.SH")
