@@ -633,6 +633,7 @@ def get_direction_by_rsi(code, prices, days=14):
         return 'S'
     if rsi > buy_value > rsi_1:
         return 'B'
+    return 'N'
 
 
 def test():
