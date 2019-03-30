@@ -59,6 +59,7 @@ fullSellAmount = 6000
 sleepTime = 0.5
 monitorInterval = 30
 avg10Days = 10 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
+rsi_days=24
 cache = {}
 
 def readCodes():
@@ -337,14 +338,14 @@ class Monitor:
                 temp_arr.append(code)
 
                 ndf = cache[code]['close'][0:20].reset_index()
-                rsi12 = getRSI(ndf['close'], 14)
+                rsi12 = getRSI(ndf['close'], rsi_days)
                 self.rsis[code] = "%d" % (rsi12)
                 logger.info("RSI of %s: %d" % (code, rsi12))
 
                 macd = self.getRealTimeMACD(code, self.avg1[code][0])
                 self.macds[code] = float("%.2f" % macd[0])
                 logger.info("macd of %s: %.2f" % (code, macd[0]))
-        stock_codes.clear()
+        del stock_codes[:]
         yesterday = (datetime.now() - timedelta(days = 1))
         timeStr = yesterday.strftime("%Y%m%d")
         # stock_codes.extend(sort_codes(temp_arr, avg10Days, timeStr))
@@ -394,8 +395,6 @@ class Monitor:
                 print()
                 logger.debug("looping monitor stocks")
 
-                #stock_codes.clear()
-                #stock_codes.append('002797')
                 for code in stock_codes:
                     try:
                         if code in ignore_codes or self.avg10[code][0] <= 0:
@@ -567,7 +566,7 @@ class Monitor:
         if price <= 0:
             return 'N'
 
-        direction_by_rsi = get_direction_by_rsi(code, updated_prices, 24)
+        direction_by_rsi = get_direction_by_rsi(code, updated_prices, rsi_days)
 
         # 跌破RSI阈值，卖出
         if code not in self.isSelleds or not self.isSelleds[code]:
@@ -713,7 +712,7 @@ if __name__ == '__main__':
             ths_start()
 
             cache.clear()
-            stock_codes.clear()
+            del stock_codes[:]
             stock_positions.clear()
             readCodes()
             ignore_codes.extend([])
