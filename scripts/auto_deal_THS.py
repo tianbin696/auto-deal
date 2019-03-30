@@ -337,10 +337,9 @@ class Monitor:
                 temp_arr.append(code)
 
                 ndf = cache[code]['close'][0:20].reset_index()
-                rsi6 = getRSI(ndf['close'], 6)
-                rsi12 = getRSI(ndf['close'], 12)
-                self.rsis[code] = "%d-%d" % (rsi6, rsi12)
-                logger.info("RSI of %s: %d-%d" % (code, rsi6, rsi12))
+                rsi12 = getRSI(ndf['close'], 14)
+                self.rsis[code] = "%d" % (rsi12)
+                logger.info("RSI of %s: %d" % (code, rsi12))
 
                 macd = self.getRealTimeMACD(code, self.avg1[code][0])
                 self.macds[code] = float("%.2f" % macd[0])
@@ -562,43 +561,26 @@ class Monitor:
         return cache[code]['macd']
 
     def getDirection(self, code, price, open_price, highest_price, lowest_price, chen_ben=0, volume=0):
-        # 理论基础：趋势一旦形成，短期不会改变
-        avg1 = float(self.avg1[code][0])
-        avg5 = self.avg5[code]
-        avg10 = self.avg10[code]
-        avg20 = self.avg20[code]
-        price = float(price)
-        volumeAvg5 = self.volumeAvg5[code]
-        liangBi5 = self.liangBi5[code]
         df = cache[code]
         updated_prices = [price]
-        updated_prices.extend(df['close'][1:5])
-        logger.info("updated prices: %s" % updated_prices)
-        updated_avg5 = numpy.mean(updated_prices)
-        liangBi = float("%.2f" % (volume/volumeAvg5[0]))
-        logger.info("%s status: price=%f, highest_price=%f, lowest_price=%f, avg1=%f, avg10=%f, avg20=%f, liangBi=%s, updatedAvg5=%.2f" %
-                    (code, price, highest_price, lowest_price, avg1, avg10[0], avg20[0], liangBi, updated_avg5))
+        updated_prices.extend(df['close'][1:])
         if price <= 0:
             return 'N'
 
-        # 顺势下跌，卖出
+        direction_by_rsi = get_direction_by_rsi(code, updated_prices, 14)
+
+        # 跌破RSI阈值，卖出
         if code not in self.isSelleds or not self.isSelleds[code]:
-            if (code not in self.isBuyeds or not self.isBuyeds[code]) \
-                    and price > numpy.max(df['close'][1:11])*0.7 \
-                    and updated_avg5 < min(avg5[0], avg5[1])\
-                    and liangBi > 0.7:
-                if price < avg1*0.97:
+            if code not in self.isBuyeds or not self.isBuyeds[code]:
+                if direction_by_rsi == 'S':
                     if code in stock_positions and stock_positions[code]*price < fullSellAmount:
                         return 'FS'
                     return 'S'
 
-        # 顺势上涨，买入
+        # 涨破RSI与阈值，买入
         if code not in self.isBuyeds or not self.isBuyeds[code]:
-            if (code not in self.isSelleds or not self.isSelleds[code]) \
-                    and price < numpy.min(df['close'][1:11])*1.3 \
-                    and updated_avg5 > max(avg5[0], avg5[1]) \
-                    and 1 < liangBi < 1.5:
-                if max(open_price, avg1*1.02, highest_price*0.97) < price < avg1*1.06:
+            if code not in self.isSelleds or not self.isSelleds[code]:
+                if direction_by_rsi == 'B':
                         return 'B'
 
         return 'N'
@@ -619,7 +601,7 @@ class Monitor:
             return max(int(stock_positions[code]/200)*100, 100)
 
 
-def getRSI(prices, days=8):
+def getRSI(prices, days=14):
     positiveSum = 0
     positiveCount = 0
     negativeSum = 0
@@ -636,11 +618,28 @@ def getRSI(prices, days=8):
     result = ((positiveSum)*100) / ((positiveSum + abs(negativeSum)))
     return int(result)
 
+
+def get_direction_by_rsi(code, prices, days=14):
+    if prices[0] > numpy.mean(prices[1:31]):
+        buy_value = 50
+    elif prices[0] > numpy.mean(prices[1:61]):
+        buy_value = 40
+    else:
+        buy_value = 30
+    rsi = getRSI(prices, days)
+    rsi_1 = getRSI(prices[1:], days)
+    logger.info("code=%s, rsi=%.2f, rsi_1=%.2f" % (code, rsi, rsi_1))
+    if rsi < 75 < rsi_1:
+        return 'S'
+    if rsi > buy_value > rsi_1:
+        return 'B'
+
+
 def test():
     monitor = Monitor()
 
     # Test before start
-    test_codes = ["002670", "601066"]
+    test_codes = ["600197", "002389"]
     # test_codes.extend(["002797", "002673", "601066", "600958", "601198", "000686", "002670", "600061", "600864", "601788"])
     # test_codes.extend(["002195", "600718", "600446", "600536", "600797", "002657", "600571", "600588", "600756", "002777"])
     for code in test_codes:
@@ -676,7 +675,7 @@ def test():
         direction = monitor.getDirection(code, price*1.06, price, price*1.04, price*0.98, price, volume*1.02)
         logger.info("code=%s, direction=%s" % (code, direction))
         new_codes.append(code)
-        direction = monitor.getDirection(code, price*1.05, price, price*1.04, price*0.98, price, volume*1.02)
+        direction = monitor.getDirection(code, price*1.10, price, price*1.04, price*0.98, price, volume*1.02)
         logger.info("code=%s, direction=%s" % (code, direction))
         new_codes = []
         cache.clear()
