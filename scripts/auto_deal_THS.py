@@ -619,7 +619,7 @@ def getRSI(prices, days=14):
 
 
 def get_direction_by_rsi(code, prices, days=14, is_logging=True):
-    buy_value = 45
+    buy_value = 50
     sell_value = 75
 
     rsi0 = getRSI(prices, int(days/2))
