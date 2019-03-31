@@ -24,10 +24,10 @@ def test_action(code):
 
         if direction == 'S':
             print "code=%s, trade_date=%s: price=%.2f, sell" % (code, df['trade_date'][i], price)
-            result.append("S:%.2f" % price)
+            result.append("S:%s:%.2f" % (df['trade_date'][i], price))
         if direction == 'B':
             print "code=%s, trade_date=%s: price = %.2f, buy" % (code, df['trade_date'][i], price)
-            result.append("B:%.2f" % price)
+            result.append("B:%s:%.2f" % (df['trade_date'][i], price))
     return result
 
 
