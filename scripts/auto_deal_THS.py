@@ -338,9 +338,11 @@ class Monitor:
             if self.avg10[code][0] > 0:
                 temp_arr.append(code)
 
-                ndf = cache[code]['close'][0:rsi_days*2].reset_index()
-                rsi12 = getRSI(ndf['close'], rsi_days)
-                rsi12_1 = getRSI(ndf['close'][1:], rsi_days)
+                ndf = cache[code]['close']
+                rsi12 = getRSI(ndf, rsi_days)
+                n_array = []
+                n_array.extend(ndf[1:])
+                rsi12_1 = getRSI(n_array, rsi_days)
                 self.rsis[code] = "%d-%d" % (rsi12_1, rsi12)
                 logger.info("RSI of %s: %d-%d" % (code, rsi12_1, rsi12))
 
