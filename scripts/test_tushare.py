@@ -6,6 +6,7 @@ from auto_deal_THS import getRSI
 
 token = "546aae3c5aca9eb09c9181e04974ae3cf910ce6c0d8092dde678d1cd"
 pro = ts.pro_api(token)
+cache = {}
 
 
 def test_api():
@@ -18,6 +19,7 @@ def test_api():
 
 def test_action(code):
     df = ts.pro_bar(pro_api=pro, ts_code=code, adj="qfq")
+    cache[code] = df
     result = []
     result.append("%s:RSI:%.2f" % (df['trade_date'][0], getRSI(df['close'], 24)))
     for i in range(120):
@@ -35,16 +37,24 @@ def test_action(code):
 
 def test():
     result = {}
+    code_strs = []
     for code in list(open("../codes/candidates.txt")):
         code = code.strip()
         if int(code) < 600000:
             code_str = "%s.SZ" % code
         else:
             code_str = "%s.SH" % code
+        code_strs.append(code_str)
         result[code] = test_action(code_str)
 
     for code in result.keys():
         print "code=%s, result=%s" % (code, result[code])
+
+    rsis = []
+    for code in code_strs:
+        rsis.append(getRSI(cache[code]['close'], 24))
+    rsis.sort()
+    print "RSIs=%s" % rsis
 
 
 test()
