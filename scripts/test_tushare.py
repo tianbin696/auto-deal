@@ -17,14 +17,32 @@ def test_api():
 
 def test_action(code):
     df = ts.pro_bar(pro_api=pro, ts_code=code, adj="qfq")
+    result = []
     for i in range(120):
         price = df['close'][i]
         direction = get_direction_by_rsi(code, df['close'][i:], 24, False)
 
         if direction == 'S':
-            print "trade_date=%s: price=%.2f, sell" % (df['trade_date'][i], price)
+            print "code=%s, trade_date=%s: price=%.2f, sell" % (code, df['trade_date'][i], price)
+            result.append("S:%.2f" % price)
         if direction == 'B':
-            print "trade_date=%s: price = %.2f, buy" % (df['trade_date'][i], price)
+            print "code=%s, trade_date=%s: price = %.2f, buy" % (code, df['trade_date'][i], price)
+            result.append("B:%.2f" % price)
+    return result
 
 
-test_action("600958.SH")
+def test():
+    result = {}
+    for code in list(open("../codes/candidates.txt")):
+        code = code.strip()
+        if int(code) < 600000:
+            code_str = "%s.SZ" % code
+        else:
+            code_str = "%s.SH" % code
+        result[code] = test_action(code_str)
+
+    for code in result.keys():
+        print "code=%s, result=%s" % (code, result[code])
+
+
+test()
