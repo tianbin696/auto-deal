@@ -2,6 +2,7 @@ import tushare as ts
 import numpy
 from macd import get_MACD
 from auto_deal_THS import get_direction_by_rsi
+from auto_deal_THS import getRSI
 
 token = "546aae3c5aca9eb09c9181e04974ae3cf910ce6c0d8092dde678d1cd"
 pro = ts.pro_api(token)
@@ -18,6 +19,7 @@ def test_api():
 def test_action(code):
     df = ts.pro_bar(pro_api=pro, ts_code=code, adj="qfq")
     result = []
+    result.append("%s:RSI:%.2f" % (df['trade_date'][0], getRSI(df['close'], 24)))
     for i in range(120):
         price = df['close'][i]
         direction = get_direction_by_rsi(code, df['close'][i:], 24, False)
