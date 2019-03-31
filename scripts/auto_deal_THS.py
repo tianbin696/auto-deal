@@ -340,8 +340,9 @@ class Monitor:
 
                 ndf = cache[code]['close'][0:rsi_days*2].reset_index()
                 rsi12 = getRSI(ndf['close'], rsi_days)
-                self.rsis[code] = "%d" % (rsi12)
-                logger.info("RSI of %s: %d" % (code, rsi12))
+                rsi12_1 = getRSI(ndf['close'][1:], rsi_days)
+                self.rsis[code] = "%d-%d" % (rsi12_1, rsi12)
+                logger.info("RSI of %s: %d-%d" % (code, rsi12_1, rsi12))
 
                 macd = self.getRealTimeMACD(code, self.avg1[code][0])
                 self.macds[code] = float("%.2f" % macd[0])
