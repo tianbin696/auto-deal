@@ -140,7 +140,8 @@ class OperationOfThs:
         self.__dialog_window.Edit3.SetEditText(quantity)
         time.sleep(sleepTime)
 
-        self.__dialog_window.child_window(title=u"卖出", class_name="Button").Click()
+        self.__dialog_window[u'卖出Button'].Click()
+        # self.__dialog_window.child_window(title=u"卖出", class_name="Button").Click()
         time.sleep(sleepTime)
 
     def __closePopupWindows(self):
