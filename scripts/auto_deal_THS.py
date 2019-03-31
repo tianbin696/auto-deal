@@ -694,7 +694,7 @@ if __name__ == '__main__':
     while True:
         try:
             wday = time.localtime().tm_wday
-            if wday > 4:
+            if wday == 5:
                 logger.info("Sleep before monitor, current_wday=%d" % wday)
                 time.sleep(3600)
                 continue
