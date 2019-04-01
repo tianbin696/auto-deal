@@ -35,6 +35,14 @@ def test_action(code):
     return result
 
 
+def sort_by_rsi(codes, days_ago=0):
+    rsis = []
+    for code in codes:
+        rsis.append(getRSI(cache[code]['close'][days_ago:], 24))
+    rsis.sort()
+    print "RSIs=%s" % rsis
+
+
 def test():
     result = {}
     code_strs = []
@@ -50,11 +58,8 @@ def test():
     for code in result.keys():
         print "code=%s, result=%s" % (code, result[code])
 
-    rsis = []
-    for code in code_strs:
-        rsis.append(getRSI(cache[code]['close'], 24))
-    rsis.sort()
-    print "RSIs=%s" % rsis
+    for i in range(2, -1, -1):
+        sort_by_rsi(code_strs, i)
 
 
 test()
