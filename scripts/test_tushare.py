@@ -24,13 +24,15 @@ def test_action(code, is_logging=False):
     result.append("%s:RSI:%.2f" % (df['trade_date'][0], getRSI(df['close'], 24)))
     for i in range(120):
         price = df['close'][i]
+        rsi = getRSI(df['close'][i:], 24)
+        rsi_1 = getRSI(df['close'][i+1:], 24)
         direction = get_direction_by_rsi(code, df['close'][i:], 24, is_logging)
 
         if direction == 'S':
-            print "code=%s, trade_date=%s: price=%.2f, sell" % (code, df['trade_date'][i], price)
+            print "code=%s, trade_date=%s: price=%.2f, rsi=%.2f, rsi_1=%.2f, sell" % (code, df['trade_date'][i], price, rsi, rsi_1)
             result.append("S:%s:%.2f" % (df['trade_date'][i], price))
         if direction == 'B':
-            print "code=%s, trade_date=%s: price = %.2f, buy" % (code, df['trade_date'][i], price)
+            print "code=%s, trade_date=%s: price=%.2f, rsi=%.2f, rsi_1=%.2f, buy" % (code, df['trade_date'][i], price, rsi, rsi_1)
             result.append("B:%s:%.2f" % (df['trade_date'][i], price))
     return result
 
