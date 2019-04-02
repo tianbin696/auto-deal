@@ -17,14 +17,14 @@ def test_api():
     print df.head()
 
 
-def test_action(code):
+def test_action(code, is_logging=False):
     df = ts.pro_bar(pro_api=pro, ts_code=code, adj="qfq")
     cache[code] = df
     result = []
     result.append("%s:RSI:%.2f" % (df['trade_date'][0], getRSI(df['close'], 24)))
     for i in range(120):
         price = df['close'][i]
-        direction = get_direction_by_rsi(code, df['close'][i:], 24, False)
+        direction = get_direction_by_rsi(code, df['close'][i:], 24, is_logging)
 
         if direction == 'S':
             print "code=%s, trade_date=%s: price=%.2f, sell" % (code, df['trade_date'][i], price)
@@ -67,4 +67,7 @@ def test():
             print "code=%s, result:%s" % (code, result[code])
 
 
-test()
+# test()
+
+code = "600061.SH"
+print "%s:%s" % (code, test_action(code, False))
