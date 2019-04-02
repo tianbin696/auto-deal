@@ -61,5 +61,10 @@ def test():
     for i in range(2, -1, -1):
         sort_by_rsi(code_strs, i)
 
+    for code in result.keys():
+        rsi = float(result[code][0].split(":")[2])
+        if 50 < rsi < 55:
+            print "code=%s, result:%s" % (code, result[code])
+
 
 test()
