@@ -69,7 +69,7 @@ def test():
             print "code=%s, result:%s" % (code, result[code])
 
 
-# test()
+test()
 
-code = "600061.SH"
+code = "601718.SH"
 print "%s:%s" % (code, test_action(code, False))
