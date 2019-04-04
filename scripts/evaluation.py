@@ -35,6 +35,9 @@ class Stock:
             self.deal(df['close'][i:], df['trade_date'][i])
 
     def print_as_csv(self, file):
+        last_index = len(self.returns)-1
+        if self.returns[last_index] - self.increases[last_index] < 1 or self.returns[last_index] < 1.5:
+            return
         writer = open(file, "w")
         writer.write(",price,action,amount,value,price_increase,value_return\n")
         for i in range(len(self.returns)):
@@ -83,9 +86,16 @@ class Stock:
 def test(code):
     stock = Stock(code)
     stock.test()
-    stock.print_as_csv("../analyze/returns_%s.csv" % code)
+    stock.print_as_csv("../analyze/filter/returns_%s.csv" % code)
 
 
-codes = ["600061.SH", "600756.SH", "600797.SH", "601198.SH", "600718.SH", "600602.SH", "002673.SZ", "002777.SZ", "002670.SZ"]
-for code in codes:
-    test(code)
+for code in list(open("../analyze/filter/codes.txt")):
+    code = code.strip()
+    if int(code) < 600000:
+        code = "%s.SZ" % code
+    else:
+        code = "%s.SH" % code
+    try:
+        test(code)
+    except Exception as e:
+        print "%s" % e
