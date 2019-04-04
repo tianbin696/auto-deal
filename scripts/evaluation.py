@@ -2,6 +2,7 @@ import tushare as ts
 import numpy
 from auto_deal_THS import get_direction_by_rsi
 from auto_deal_THS import getRSI
+from tushare_api import TushareAPI
 
 token = "546aae3c5aca9eb09c9181e04974ae3cf910ce6c0d8092dde678d1cd"
 pro = ts.pro_api(token)
@@ -55,14 +56,14 @@ class Stock:
                 self.total_position -= sell_amount
                 self.free_money += sell_amount * prices[0]
                 amount = sell_amount
-                print "trade_date=%s, price=%.2f, direction=%s, amount=%d" % (trade_date, prices[0], direction, sell_amount)
+                print "code=%s, trade_date=%s, price=%.2f, direction=%s, amount=%d" % (self.code, trade_date, prices[0], direction, sell_amount)
         if direction == "B":
             buy_amount = self.get_buy_amount(prices[0])
             if self.free_money >= buy_amount * prices[0]:
                 self.total_position += buy_amount
                 self.free_money -= buy_amount * prices[0]
                 amount = buy_amount
-                print "trade_date=%s, price=%.2f, direction=%s, amount=%d" % (trade_date, prices[0], direction, buy_amount)
+                print "code=%s, trade_date=%s, price=%.2f, direction=%s, amount=%d" % (self.code, trade_date, prices[0], direction, buy_amount)
         value = self.total_position * prices[0] + self.free_money
         self.values.append(value)
         self.prices.append(prices[0])
@@ -89,7 +90,8 @@ def test(code):
     stock.print_as_csv("../analyze/filter/returns_%s.csv" % code)
 
 
-for code in list(open("../analyze/filter/codes.txt")):
+ts_local = TushareAPI()
+for code in ts_local.get_code_list():
     code = code.strip()
     if int(code) < 600000:
         code = "%s.SZ" % code
