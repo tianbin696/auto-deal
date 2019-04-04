@@ -37,7 +37,7 @@ class Stock:
 
     def print_as_csv(self, file):
         last_index = len(self.returns)-1
-        if self.returns[last_index] - self.increases[last_index] < 1 or self.returns[last_index] < 1.5:
+        if self.returns[last_index] - self.increases[last_index] < 1 or self.returns[last_index] < 2:
             return
         writer = open(file, "w")
         writer.write(",price,action,amount,value,price_increase,value_return\n")
