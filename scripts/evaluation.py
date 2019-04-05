@@ -12,7 +12,7 @@ max_buy_money = 5000
 full_sell_money = 6000
 
 class Stock:
-    def __init__(self, code):
+    def __init__(self, code, expect_diff=1, expect_return=1.5):
         self.code = code
         self.positions = []
         self.prices = []
@@ -22,22 +22,25 @@ class Stock:
         self.increases = []
         self.dates = []
         self.returns = []
+        self.expect_diff = expect_diff
+        self.expect_return = expect_return
         self.initial_price = 0
         self.total_position = 0
         self.free_money = total_available_money
 
-    def test(self):
+    def test(self, start_date=20100101):
         df = ts.pro_bar(pro_api=pro, ts_code=self.code, adj="qfq")
-        start_index = 1800
-        if len(df['close'])-26 < start_index:
-            start_index = len(df['close'])-26
-        self.initial_price = df['close'][start_index]
+        start_index = len(df['close'])-26
+        self.initial_price = 0
         for i in range(start_index, -1, -1):
-            self.deal(df['close'][i:], df['trade_date'][i])
+            if int(df['trade_date'][i]) >= start_date:
+                if self.initial_price == 0:
+                    self.initial_price = df['close'][i]
+                self.deal(df['close'][i:], df['trade_date'][i])
 
     def print_as_csv(self, file):
         last_index = len(self.returns)-1
-        if self.returns[last_index] - self.increases[last_index] < 1 or self.returns[last_index] < 2:
+        if self.returns[last_index] - self.increases[last_index] < self.expect_diff or self.returns[last_index] < self.expect_return:
             return
         writer = open(file, "w")
         writer.write(",price,action,amount,value,price_increase,value_return\n")
@@ -84,20 +87,30 @@ class Stock:
             return max(int(self.total_position/200)*100, 100)
 
 
-def test(code):
-    stock = Stock(code)
-    stock.test()
+def test(code, start_date=20100101, expect_diff=1, expect_return=1.5):
+    stock = Stock(code, expect_diff, expect_return)
+    stock.test(start_date)
     stock.print_as_csv("../analyze/filter/returns_%s.csv" % code)
 
 
-ts_local = TushareAPI()
-for code in ts_local.get_code_list():
-    code = code.strip()
-    if int(code) < 600000:
-        code = "%s.SZ" % code
-    else:
-        code = "%s.SH" % code
-    try:
-        test(code)
-    except Exception as e:
-        print "%s" % e
+def scan_all():
+    ts_local = TushareAPI()
+    for code in ts_local.get_code_list():
+        code = code.strip()
+        if int(code) < 600000:
+            code = "%s.SZ" % code
+        else:
+            code = "%s.SH" % code
+        try:
+            test(code, 20120101, 0.2, 0.2)
+        except Exception as e:
+            print "%s" % e
+
+
+def scan_filtered():
+    for code in list(open("../analyze/filter/codes.txt")):
+        test(code.strip(), 20160101, 0.2, 0.2)
+
+
+scan_all()
+# scan_filtered()
