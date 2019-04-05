@@ -12,7 +12,7 @@ max_buy_money = 5000
 full_sell_money = 6000
 
 class Stock:
-    def __init__(self, code, expect_diff=1, expect_return=1.5):
+    def __init__(self, code, expect_diff=1.0, expect_return=1.5, start_date=20100101):
         self.code = code
         self.positions = []
         self.prices = []
@@ -27,12 +27,15 @@ class Stock:
         self.initial_price = 0
         self.total_position = 0
         self.free_money = total_available_money
+        self.start_date = start_date
 
-    def test(self, start_date=20100101):
+    def test(self, start_date=20100101, end_date=20200101):
         df = ts.pro_bar(pro_api=pro, ts_code=self.code, adj="qfq")
         start_index = len(df['close'])-26
         self.initial_price = 0
         for i in range(start_index, -1, -1):
+            if int(df['trade_date'][i]) >= end_date:
+                break
             if int(df['trade_date'][i]) >= start_date:
                 if self.initial_price == 0:
                     self.initial_price = df['close'][i]
@@ -87,10 +90,34 @@ class Stock:
             return max(int(self.total_position/200)*100, 100)
 
 
-def test(code, start_date=20100101, expect_diff=1, expect_return=1.5):
-    stock = Stock(code, expect_diff, expect_return)
-    stock.test(start_date)
-    stock.print_as_csv("../analyze/filter/returns_%s.csv" % code)
+def test(code, start_date=20100101, end_date=20200101, expect_diff=1.0, expect_return=1.5):
+    stocks = []
+    found = True
+    for date in range(start_date, end_date, 10000):
+        stock = Stock(code, expect_diff, expect_return, date)
+        stock.test(date, date + 10000)
+        last_index = len(stock.returns)-1
+        if last_index > 60:
+            if stock.returns[last_index] - stock.increases[last_index] < stock.expect_diff or stock.returns[last_index] < stock.expect_return:
+                found = False
+                break
+            stocks.append(stock)
+    if found:
+        for stock in stocks:
+            stock.print_as_csv("../analyze/filter/%s_%s.csv" % (code, stock.start_date))
+
+
+def get_all_codes():
+    writer = open('../analyze/all_codes.txt', 'w')
+    ts_local = TushareAPI()
+    for code in ts_local.get_code_list():
+        code = code.strip()
+        if int(code) < 600000:
+            code = "%s.SZ" % code
+        else:
+            code = "%s.SH" % code
+        writer.write("%s\n" % code)
+    writer.close()
 
 
 def scan_all():
@@ -109,8 +136,7 @@ def scan_all():
 
 def scan_filtered():
     for code in list(open("../analyze/filter/codes.txt")):
-        test(code.strip(), 20160101, 0.2, 0.2)
+        test(code.strip(), 20130101, 20190101, 0.1, 0.1)
 
 
-scan_all()
-# scan_filtered()
+scan_filtered()
