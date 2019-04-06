@@ -44,9 +44,9 @@ class Stock:
                 self.deal(df['close'][i:], df['trade_date'][i])
 
     def print_as_csv(self, file):
-        last_index = len(self.returns)-1
-        if self.returns[last_index] - self.increases[last_index] < self.expect_diff or self.returns[last_index] < self.expect_return:
-            return
+        # last_index = len(self.returns)-1
+        # if self.returns[last_index] - self.increases[last_index] < self.expect_diff or self.returns[last_index] < self.expect_return:
+        #     return
         writer = open(file, "w")
         writer.write(",price,action,amount,value,price_increase,value_return\n")
         for i in range(len(self.returns)):
@@ -100,11 +100,11 @@ def test(code, start_date=20100101, end_date=20200101, expect_diff=1.0, expect_r
         stock.test(date, end_date)
         last_index = len(stock.returns)-1
         if last_index > 60:
-            if stock.returns[last_index] - stock.increases[last_index] < stock.expect_diff \
-                    or stock.returns[last_index] < stock.expect_return \
-                    or numpy.max(stock.increases) - numpy.max(stock.returns) > 2*stock.expect_diff:
-                found = False
-                break
+            # if stock.returns[last_index] - stock.increases[last_index] < stock.expect_diff \
+            #         or stock.returns[last_index] < stock.expect_return \
+            #         or numpy.max(stock.increases) - numpy.max(stock.returns) > 2*stock.expect_diff:
+            #     found = False
+            #     break
             stocks.append(stock)
     if found:
         for stock in stocks:
