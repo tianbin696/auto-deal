@@ -3,6 +3,7 @@ import numpy
 import time
 
 from auto_deal_THS import get_direction_by_rsi
+from auto_deal_THS import get_direction_by_avg
 from auto_deal_THS import getRSI
 from tushare_api import TushareAPI
 
@@ -56,7 +57,8 @@ class Stock:
         writer.close()
 
     def deal(self, prices, trade_date):
-        direction = get_direction_by_rsi(self.code, prices, 24, False)
+        # direction = get_direction_by_rsi(self.code, prices, 24, False)
+        direction = get_direction_by_avg(self.code, prices, 5, False)
         amount = 0
         if direction == "S":
             sell_amount = self.get_sell_amount(prices[0])
