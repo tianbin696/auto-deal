@@ -625,24 +625,24 @@ def getRSI(prices, days=14):
 
 def get_direction_by_rsi(code, prices, days=14, is_logging=True):
     buy_value = 50
-    sell_value = 75
+    sell_value = 80
 
     rsi0 = getRSI(prices, int(days/2))
-    rsi = getRSI(prices, days)
+    rsi1 = getRSI(prices, days)
     rsi0_1 = getRSI(prices[1:], int(days/2))
-    rsi_1 = getRSI(prices[1:], days)
+    rsi1_1 = getRSI(prices[1:], days)
     direction = 'N'
-    if rsi < sell_value < rsi_1:
+    if rsi1 < sell_value < rsi1_1:
         direction = 'S'
-    if rsi > buy_value > rsi_1:
+    if rsi1 > buy_value > rsi1_1:
         direction = 'B'
-    if rsi0_1 > rsi_1 > 50 and rsi_1 > rsi > rsi0:
+    if rsi0_1 > rsi1_1 > 20 and 20 < rsi0 < min(rsi0_1, rsi1):
         direction = 'S'
-    if rsi0_1 < rsi_1 < 50 and rsi_1 < rsi < rsi0:
+    if rsi0_1 < rsi1_1 < 80 and 80 > rsi0 > max(rsi0_1, rsi1):
         direction = 'B'
     if is_logging:
         logger.info("code=%s, threshold=[%.2f, %.2f], price=%.2f, rsi0_1=%.2f, rsi_1=%.2f, rsi0=%.2f, rsi=%.2f, direction=%s" %
-                    (code, buy_value, sell_value, prices[0], rsi0_1, rsi_1, rsi0, rsi, direction))
+                    (code, buy_value, sell_value, prices[0], rsi0_1, rsi1_1, rsi0, rsi1, direction))
     return direction
 
 
