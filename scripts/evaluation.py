@@ -106,7 +106,7 @@ def test(code, start_date=20100101, end_date=20200101, expect_diff=1.0, expect_r
             stocks.append(stock)
     if found:
         for stock in stocks:
-            stock.print_as_csv("../analyze/filter/%s_%s.csv" % (code, stock.start_date))
+            stock.print_as_csv("../analyze/%s_%s.csv" % (code, stock.start_date))
 
 
 def get_all_codes():
@@ -137,7 +137,7 @@ def scan_all():
 
 
 def scan_filtered():
-    for code in list(open("../analyze/filter/codes.txt")):
+    for code in list(open("../analyze/all_codes.txt")):
         test(code.strip(), 20130101, 20200101, 1.0, 1.5)
         time.sleep(5)
 
