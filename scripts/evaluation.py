@@ -138,7 +138,7 @@ def scan_all():
 
 def scan_filtered():
     for code in list(open("../analyze/all_codes.txt")):
-        test(code.strip(), 20140101, 20200101, 1.0, 1.5)
+        test(code.strip(), 20140101, 20190101, 1.0, 1.5)
         # time.sleep(10)
 
 
