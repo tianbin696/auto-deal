@@ -42,7 +42,7 @@ class Stock:
             if int(df['trade_date'][i]) >= start_date:
                 if self.initial_price == 0:
                     self.initial_price = df['close'][i]
-                self.deal(df['close'][i:], df['trade_date'][i])
+                self.deal(df['close'][i:], df['vol'][i:], df['trade_date'][i])
 
     def print_as_csv(self, file):
         # last_index = len(self.returns)-1
@@ -56,9 +56,9 @@ class Stock:
                           self.increases[i], self.returns[i]))
         writer.close()
 
-    def deal(self, prices, trade_date):
+    def deal(self, prices, vols, trade_date):
         # direction = get_direction_by_rsi(self.code, prices, False)
-        direction = get_direction_by_avg(self.code, prices, False)
+        direction = get_direction_by_avg(self.code, prices, vols, False)
         amount = 0
         if direction == "S":
             sell_amount = self.get_sell_amount(prices[0])
