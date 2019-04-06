@@ -648,9 +648,9 @@ def get_direction_by_avg(code, prices, vols, is_logging=True):
     avg_2 = numpy.mean(prices[2:days+2])
     liang_bi = vols[0]/numpy.mean(vols[1:days+1])
     direction = 'N'
-    if prices[0] > prices[1] and avg_0 > max(avg_1, avg_2):
+    if liang_bi < 0.6:
         direction = 'B'
-    if prices[0] < prices[1] and avg_0 < min(avg_1, avg_2):
+    if liang_bi > 2:
         direction = 'S'
     if is_logging:
         logger.info("code=%s, avg_0=%.2f, avg_1=%.2f, avg_2=%.2f, price=%.2f, direction=%s" %
