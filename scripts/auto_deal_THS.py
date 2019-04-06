@@ -646,14 +646,15 @@ def get_direction_by_rsi(code, prices, days=14, is_logging=True):
     return direction
 
 
-def get_direction_by_avg(code, prices, days=5, is_logging=True):
+def get_direction_by_avg(code, prices, is_logging=True):
+    days = 13
     avg_0 = numpy.mean(prices[0:days])
     avg_1 = numpy.mean(prices[1:days+1])
     avg_2 = numpy.mean(prices[2:days+2])
     direction = 'N'
-    if avg_0 > max(avg_1, avg_2) and prices[1]*0.98 < prices[0] < prices[1]*1.06:
+    if prices[0] > avg_0 and prices[1]*1.02 < prices[0] < prices[1]*1.09:
         direction = 'B'
-    if avg_0 < min(avg_1, avg_2) and prices[0] < prices[1]*0.98:
+    if prices[0] < avg_0 and prices[0] < prices[1]*0.96:
         direction = 'S'
     if is_logging:
         logger.info("code=%s, avg_0=%.2f, avg_1=%.2f, avg_2=%.2f, direction=%s" % (code, avg_0, avg_1, avg_2, direction))

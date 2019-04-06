@@ -58,7 +58,7 @@ class Stock:
 
     def deal(self, prices, trade_date):
         # direction = get_direction_by_rsi(self.code, prices, 24, False)
-        direction = get_direction_by_avg(self.code, prices, 5, False)
+        direction = get_direction_by_avg(self.code, prices, False)
         amount = 0
         if direction == "S":
             sell_amount = self.get_sell_amount(prices[0])
