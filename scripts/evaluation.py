@@ -100,7 +100,9 @@ def test(code, start_date=20100101, end_date=20200101, expect_diff=1.0, expect_r
         stock.test(date, end_date)
         last_index = len(stock.returns)-1
         if last_index > 60:
-            if stock.returns[last_index] - stock.increases[last_index] < stock.expect_diff or stock.returns[last_index] < stock.expect_return:
+            if stock.returns[last_index] - stock.increases[last_index] < stock.expect_diff \
+                    or stock.returns[last_index] < stock.expect_return \
+                    or numpy.max(stock.increases) - numpy.max(stock.returns) > 2*stock.expect_diff:
                 found = False
                 break
             stocks.append(stock)
@@ -136,10 +138,20 @@ def scan_all():
             print "%s" % e
 
 
+def append_loc(code):
+    if code.find("SH") >= 0 or code.find("SZ") >= 0:
+        return code
+    if int(code) < 600000:
+        code = "%s.SZ" % code
+    else:
+        code = "%s.SH" % code
+    return code
+
+
 def scan_filtered():
     for code in list(open("../analyze/all_codes.txt")):
-        test(code.strip(), 20140101, 20190101, 0.5, 0.5)
-        # time.sleep(10)
+        code = append_loc(code.strip())
+        test(code, 20140101, 20190101, 0.5, 0.5)
 
 
 scan_filtered()
