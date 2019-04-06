@@ -95,9 +95,9 @@ class Stock:
 def test(code, start_date=20100101, end_date=20200101, expect_diff=1.0, expect_return=1.5):
     stocks = []
     found = True
-    for date in range(start_date, end_date, 10000):
+    for date in range(start_date, end_date, end_date):
         stock = Stock(code, expect_diff, expect_return, date)
-        stock.test(date, date + 10000)
+        stock.test(date, end_date)
         last_index = len(stock.returns)-1
         if last_index > 60:
             if stock.returns[last_index] - stock.increases[last_index] < stock.expect_diff or stock.returns[last_index] < stock.expect_return:
@@ -138,7 +138,7 @@ def scan_all():
 
 def scan_filtered():
     for code in list(open("../analyze/filter/codes.txt")):
-        test(code.strip(), 20130101, 20190101, 0.0, 0.0)
+        test(code.strip(), 20130101, 20200101, 1.0, 1.5)
         time.sleep(5)
 
 
