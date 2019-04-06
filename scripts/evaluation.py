@@ -57,7 +57,7 @@ class Stock:
         writer.close()
 
     def deal(self, prices, trade_date):
-        # direction = get_direction_by_rsi(self.code, prices, 24, False)
+        # direction = get_direction_by_rsi(self.code, prices, False)
         direction = get_direction_by_avg(self.code, prices, False)
         amount = 0
         if direction == "S":

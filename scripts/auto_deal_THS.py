@@ -640,12 +640,12 @@ def get_direction_by_rsi(code, prices, is_logging=True):
 
 
 def get_direction_by_avg(code, prices, is_logging=True):
-    days = 13
+    days = 20
     avg_0 = numpy.mean(prices[0:days])
     avg_1 = numpy.mean(prices[1:days+1])
     avg_2 = numpy.mean(prices[2:days+2])
     direction = 'N'
-    if prices[0] > avg_0 and prices[1]*1.02 < prices[0] < prices[1]*1.09:
+    if prices[0] > avg_0 and prices[1]*1.01 < prices[0] < prices[1]*1.09:
         direction = 'B'
     if prices[0] < avg_0 and prices[0] < prices[1]*0.96:
         direction = 'S'
