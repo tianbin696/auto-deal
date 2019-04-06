@@ -571,7 +571,7 @@ class Monitor:
         if price <= 0:
             return 'N'
 
-        direction_by_rsi = get_direction_by_rsi(code, updated_prices, rsi_days)
+        direction_by_rsi = get_direction_by_rsi(code, updated_prices)
 
         # 跌破RSI阈值，卖出
         if code not in self.isSelleds or not self.isSelleds[code]:
@@ -623,26 +623,19 @@ def getRSI(prices, days=14):
     return int(result)
 
 
-def get_direction_by_rsi(code, prices, days=14, is_logging=True):
-    buy_value = 50
-    sell_value = 80
+def get_direction_by_rsi(code, prices, is_logging=True):
+    days = 14
 
-    rsi0 = getRSI(prices, int(days/2))
-    rsi1 = getRSI(prices, days)
-    rsi0_1 = getRSI(prices[1:], int(days/2))
-    rsi1_1 = getRSI(prices[1:], days)
+    rsi = getRSI(prices, days)
+    rsi_1 = getRSI(prices[1:], days)
     direction = 'N'
-    if rsi1 < sell_value < rsi1_1:
-        direction = 'S'
-    if rsi1 > buy_value > rsi1_1:
+    if rsi > rsi_1:
         direction = 'B'
-    if rsi0_1 > rsi1_1 > 20 and 20 < rsi0 < min(rsi0_1, rsi1):
+    if rsi < rsi_1:
         direction = 'S'
-    if rsi0_1 < rsi1_1 < 80 and 80 > rsi0 > max(rsi0_1, rsi1):
-        direction = 'B'
     if is_logging:
-        logger.info("code=%s, threshold=[%.2f, %.2f], price=%.2f, rsi0_1=%.2f, rsi_1=%.2f, rsi0=%.2f, rsi=%.2f, direction=%s" %
-                    (code, buy_value, sell_value, prices[0], rsi0_1, rsi1_1, rsi0, rsi1, direction))
+        logger.info("code=%s, price=%.2f, rsi=%.2f, rsi_1=%.2f, direction=%s" %
+                    (code, prices[0], rsi, rsi_1, direction))
     return direction
 
 
