@@ -1,5 +1,7 @@
 import tushare as ts
 import numpy
+import time
+
 from auto_deal_THS import get_direction_by_rsi
 from auto_deal_THS import getRSI
 from tushare_api import TushareAPI
@@ -136,7 +138,8 @@ def scan_all():
 
 def scan_filtered():
     for code in list(open("../analyze/filter/codes.txt")):
-        test(code.strip(), 20130101, 20190101, 0.1, 0.1)
+        test(code.strip(), 20130101, 20190101, 0.0, 0.0)
+        time.sleep(5)
 
 
 scan_filtered()
