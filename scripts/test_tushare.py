@@ -70,6 +70,3 @@ def test():
 
 
 test()
-
-code = "601718.SH"
-print "%s:%s" % (code, test_action(code, False))
