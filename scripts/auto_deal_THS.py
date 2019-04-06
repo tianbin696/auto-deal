@@ -624,14 +624,16 @@ def getRSI(prices, days=14):
 
 
 def get_direction_by_rsi(code, prices, is_logging=True):
-    days = 14
+    days = 12
 
     rsi = getRSI(prices, days)
     rsi_1 = getRSI(prices[1:], days)
+    rsi2 = getRSI(prices, 2*days)
+    rsi2_1 = getRSI(prices[1:], 2*days)
     direction = 'N'
-    if rsi > rsi_1:
+    if rsi_1 < rsi2_1 and rsi > max(rsi2, rsi_1):
         direction = 'B'
-    if rsi < rsi_1:
+    if rsi_1 > rsi2_1 and rsi < min(rsi2, rsi_1):
         direction = 'S'
     if is_logging:
         logger.info("code=%s, price=%.2f, rsi=%.2f, rsi_1=%.2f, direction=%s" %
