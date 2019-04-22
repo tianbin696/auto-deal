@@ -576,7 +576,8 @@ class Monitor:
             return 'N'
 
         # direction = get_direction_by_rsi(code, updated_prices)
-        direction = self.get_direction_by_macd(code, price)
+        # direction = self.get_direction_by_macd(code, price)
+        direction = get_direction_by_avg(code, updated_prices, None)
 
         # 跌破RSI阈值，卖出
         if code not in self.isSelleds or not self.isSelleds[code]:
@@ -655,19 +656,16 @@ def get_direction_by_rsi(code, prices, is_logging=True):
 
 
 def get_direction_by_avg(code, prices, vols, is_logging=True):
-    days = 10
-    avg0_1 = numpy.mean(prices[0:days])
-    avg0_2 = numpy.mean(prices[0:2*days])
-    avg0_diff = avg0_1 - avg0_2
-
-    avg1_1 = numpy.mean(prices[1:days+1])
-    avg1_2 = numpy.mean(prices[1:2*days+1])
-    avg1_diff = avg1_1 - avg1_2
+    days = 6
+    avg = numpy.mean(prices[0:days])
+    avgs = []
+    for i in range(1, 7, 1):
+        avgs.append(numpy.mean(prices[i:i+days]))
 
     direction = 'N'
-    if avg0_diff > 0 > avg1_diff :
+    if avg > numpy.max(avgs):
         direction = 'B'
-    if avg0_diff < 0 < avg1_diff:
+    if avg < numpy.min(avgs):
         direction = 'S'
     return direction
 
