@@ -34,7 +34,7 @@ class Stock:
 
     def test(self, start_date=20100101, end_date=20200101):
         df = ts.pro_bar(pro_api=pro, ts_code=self.code, adj="qfq")
-        start_index = len(df['close'])-26
+        start_index = len(df['close'])-60
         self.initial_price = 0
         for i in range(start_index, -1, -1):
             if int(df['trade_date'][i]) >= end_date:
@@ -57,8 +57,8 @@ class Stock:
         writer.close()
 
     def deal(self, prices, vols, trade_date):
-        # direction = get_direction_by_rsi(self.code, prices, False)
-        direction = get_direction_by_avg(self.code, prices, vols, False)
+        direction = get_direction_by_rsi(self.code, prices, False)
+        # direction = get_direction_by_avg(self.code, prices, vols, False)
         amount = 0
         if direction == "S":
             sell_amount = self.get_sell_amount(prices[0])
@@ -85,13 +85,10 @@ class Stock:
         self.returns.append(float("%.2f" % ((value - total_available_money)/total_available_money)))
 
     def get_buy_amount(self, price):
-        return int(max_buy_money/100/price)*100
+        return int(self.free_money/200/price)*100
 
     def get_sell_amount(self, price):
-        if self.total_position * price > 2 * full_sell_money:
-            return max(int(self.total_position/300)*100, 100)
-        else:
-            return max(int(self.total_position/200)*100, 100)
+        return max(int(self.total_position/200)*100, 100)
 
 
 def test(code, start_date=20100101, end_date=20200101, expect_diff=1.0, expect_return=1.5):
@@ -153,7 +150,7 @@ def append_loc(code):
 def scan_filtered():
     for code in list(open("../codes/candidates.txt")):
         code = append_loc(code.strip())
-        test(code, 20140101, 20190101, 0.5, 0.5)
+        test(code, 20140101, 20200101, 0.5, 0.5)
 
 
 scan_filtered()
