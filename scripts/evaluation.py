@@ -61,9 +61,9 @@ class Stock:
         writer.close()
 
     def deal(self, prices, vols, trade_date, df):
-        direction = get_direction_by_macd(self.code, df)
+        # direction = get_direction_by_macd(self.code, df)
         # direction = get_direction_by_rsi(self.code, prices, False)
-        # direction = get_direction_by_avg(self.code, prices, vols, False)
+        direction = get_direction_by_avg(self.code, prices, vols, False)
         amount = 0
         if direction == "S":
             sell_amount = self.get_sell_amount(prices[0])

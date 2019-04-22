@@ -604,7 +604,7 @@ class Monitor:
         return int(minBuyAmount/100/price)*100
 
     def getSellAmount(self, code, price):
-        return stock_positions[code]
+        return max(int(stock_positions[code]/200)*100, 100)
 
 
 def getRSI(prices, days=14):
@@ -655,19 +655,20 @@ def get_direction_by_rsi(code, prices, is_logging=True):
 
 
 def get_direction_by_avg(code, prices, vols, is_logging=True):
-    days = 5
-    avg_0 = numpy.mean(prices[0:days])
-    avg_1 = numpy.mean(prices[1:days+1])
-    avg_2 = numpy.mean(prices[2:days+2])
-    liang_bi = vols[0]/numpy.mean(vols[1:days+1])
+    days = 10
+    avg0_1 = numpy.mean(prices[0:days])
+    avg0_2 = numpy.mean(prices[0:2*days])
+    avg0_diff = avg0_1 - avg0_2
+
+    avg1_1 = numpy.mean(prices[1:days+1])
+    avg1_2 = numpy.mean(prices[1:2*days+1])
+    avg1_diff = avg1_1 - avg1_2
+
     direction = 'N'
-    if liang_bi < 0.6:
+    if avg0_diff > 0 > avg1_diff :
         direction = 'B'
-    if liang_bi > 2:
+    if avg0_diff < 0 < avg1_diff:
         direction = 'S'
-    if is_logging:
-        logger.info("code=%s, avg_0=%.2f, avg_1=%.2f, avg_2=%.2f, price=%.2f, direction=%s" %
-                    (code, avg_0, avg_1, avg_2, prices[0], direction))
     return direction
 
 
