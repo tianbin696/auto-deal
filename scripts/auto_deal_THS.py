@@ -54,7 +54,7 @@ maxCodeSize = 1 # 最大持股数
 globalAvailableMoney = 20000
 maxAmount = 30000
 minAmount = 0
-minBuyAmount = 5000
+minBuyAmount = 10000
 fullSellAmount = 6000
 sleepTime = 0.5
 monitorInterval = 30
@@ -564,6 +564,10 @@ class Monitor:
         cache[code] = get_MACD(cache[code],12,26,9)
         return cache[code]['macd']
 
+    def get_direction_by_macd(self, code, price):
+        cache[code].update(pd.DataFrame({'close':[price]}, index=[0]))
+        return get_direction_by_macd(code, cache[code])
+
     def getDirection(self, code, price, open_price, highest_price, lowest_price, chen_ben=0, volume=0):
         df = cache[code]
         updated_prices = [price]
@@ -571,12 +575,13 @@ class Monitor:
         if price <= 0:
             return 'N'
 
-        direction_by_rsi = get_direction_by_rsi(code, updated_prices)
+        # direction = get_direction_by_rsi(code, updated_prices)
+        direction = self.get_direction_by_macd(code, price)
 
         # 跌破RSI阈值，卖出
         if code not in self.isSelleds or not self.isSelleds[code]:
             if code not in self.isBuyeds or not self.isBuyeds[code]:
-                if direction_by_rsi == 'S':
+                if direction == 'S':
                     if code in stock_positions and stock_positions[code]*price < fullSellAmount:
                         return 'FS'
                     return 'S'
@@ -584,7 +589,7 @@ class Monitor:
         # 涨破RSI与阈值，买入
         if code not in self.isBuyeds or not self.isBuyeds[code]:
             if code not in self.isSelleds or not self.isSelleds[code]:
-                if direction_by_rsi == 'B':
+                if direction == 'B':
                         return 'B'
 
         return 'N'
@@ -599,10 +604,7 @@ class Monitor:
         return int(minBuyAmount/100/price)*100
 
     def getSellAmount(self, code, price):
-        if stock_positions[code] * price > 2*fullSellAmount:
-            return max(int(stock_positions[code]/300)*100, 100)
-        else:
-            return max(int(stock_positions[code]/200)*100, 100)
+        return stock_positions[code]
 
 
 def getRSI(prices, days=14):
@@ -621,6 +623,15 @@ def getRSI(prices, days=14):
             negativeCount += 1
     result = ((positiveSum)*100) / ((positiveSum + abs(negativeSum)))
     return int(result)
+
+
+def get_direction_by_macd(code, df):
+    df = get_MACD(df,12,26,9)
+    if df['macd'][0] > -1*df['macd'][1] > 0:
+        return 'B'
+    if df['macd'][0]< -1*df['macd'][1] < 0 :
+        return 'S'
+    return 'N'
 
 
 def get_direction_by_rsi(code, prices, is_logging=True):

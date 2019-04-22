@@ -1,9 +1,11 @@
 import tushare as ts
 import numpy
 import time
+import pandas as pd
 
 from auto_deal_THS import get_direction_by_rsi
 from auto_deal_THS import get_direction_by_avg
+from auto_deal_THS import get_direction_by_macd
 from auto_deal_THS import getRSI
 from tushare_api import TushareAPI
 
@@ -42,7 +44,9 @@ class Stock:
             if int(df['trade_date'][i]) >= start_date:
                 if self.initial_price == 0:
                     self.initial_price = df['close'][i]
-                self.deal(df['close'][i:], df['vol'][i:], df['trade_date'][i])
+                d = {'close':df['close'][i:i+52].astype('float')}
+                ndf = pd.DataFrame(d).reset_index()
+                self.deal(df['close'][i:], df['vol'][i:], df['trade_date'][i], ndf)
 
     def print_as_csv(self, file):
         # last_index = len(self.returns)-1
@@ -56,8 +60,9 @@ class Stock:
                           self.increases[i], self.returns[i]))
         writer.close()
 
-    def deal(self, prices, vols, trade_date):
-        direction = get_direction_by_rsi(self.code, prices, False)
+    def deal(self, prices, vols, trade_date, df):
+        direction = get_direction_by_macd(self.code, df)
+        # direction = get_direction_by_rsi(self.code, prices, False)
         # direction = get_direction_by_avg(self.code, prices, vols, False)
         amount = 0
         if direction == "S":
@@ -85,10 +90,10 @@ class Stock:
         self.returns.append(float("%.2f" % ((value - total_available_money)/total_available_money)))
 
     def get_buy_amount(self, price):
-        return int(self.free_money/200/price)*100
+        return int(self.free_money/100/price)*100
 
     def get_sell_amount(self, price):
-        return max(int(self.total_position/200)*100, 100)
+        return max(int(self.total_position/100)*100, 100)
 
 
 def test(code, start_date=20100101, end_date=20200101, expect_diff=1.0, expect_return=1.5):
