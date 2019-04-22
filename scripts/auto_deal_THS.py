@@ -656,13 +656,20 @@ def get_direction_by_rsi(code, prices, is_logging=True):
 
 
 def get_direction_by_avg(code, prices, vols, is_logging=True):
-    avg1 = numpy.mean(prices[0:3])
-    avg2 = numpy.mean(prices[0:24])
+    days1 = 3
+    days2 = 6
+    avg1 = numpy.mean(prices[0:days1])
+    avg2 = numpy.mean(prices[0:days2])
+    diff_1 = avg1 - avg2
+
+    avg1 = numpy.mean(prices[1:days1+1])
+    avg2 = numpy.mean(prices[1:days2+1])
+    diff_2 = avg1 - avg2
 
     direction = 'N'
-    if avg1 > avg2:
+    if diff_1 > 0 > diff_2:
         direction = 'B'
-    if avg1 < avg2:
+    if diff_1 < 0 < diff_2:
         direction = 'S'
     return direction
 
