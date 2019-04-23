@@ -307,7 +307,7 @@ class Monitor:
         self.operation.getChenben() # 开盘前获取成本情况
 
         for code in stock_positions.keys():
-            if code not in stock_codes:
+            if code not in stock_codes and (code.startswith('0') or code.startswith('6')):
                 stock_codes.append(code)
 
         for code in new_codes:
