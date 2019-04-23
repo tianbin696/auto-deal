@@ -50,7 +50,6 @@ new_codes = []
 ignore_codes = []
 stock_positions = {}
 stock_chenbens = {}
-maxCodeSize = 1 # 最大持股数
 globalAvailableMoney = 20000
 maxAmount = 30000
 minAmount = 0
@@ -572,20 +571,20 @@ class Monitor:
         df = cache[code]
         updated_prices = [price]
         updated_prices.extend(df['close'][1:])
+        updated_vols = [volume]
+        updated_vols.extend(df['volume'][1:])
         if price <= 0:
             return 'N'
 
         # direction = get_direction_by_rsi(code, updated_prices)
         # direction = self.get_direction_by_macd(code, price)
-        direction = get_direction_by_avg(code, updated_prices, None)
+        direction = get_direction_by_avg(code, updated_prices, updated_vols)
 
         # 跌破RSI阈值，卖出
         if code not in self.isSelleds or not self.isSelleds[code]:
             if code not in self.isBuyeds or not self.isBuyeds[code]:
                 if direction == 'S':
-                    if code in stock_positions and stock_positions[code]*price < fullSellAmount:
-                        return 'FS'
-                    return 'S'
+                    return 'FS'
 
         # 涨破RSI与阈值，买入
         if code not in self.isBuyeds or not self.isBuyeds[code]:
