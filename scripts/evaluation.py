@@ -87,7 +87,7 @@ class Stock:
         self.increases.append((prices[0]-self.initial_price)/self.initial_price)
         self.positions.append(self.total_position)
         self.dates.append(trade_date)
-        self.returns.append(float("%.2f" % ((value - total_available_money)/total_available_money)))
+        self.returns.append(float("%.2f" % (value/total_available_money)))
 
     def get_buy_amount(self, price):
         return int(self.free_money/100/price)*100
