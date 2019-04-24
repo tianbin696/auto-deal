@@ -104,11 +104,9 @@ def test(code, start_date=20100101, end_date=20200101, expect_diff=1.0, expect_r
         stock.test(date, end_date)
         last_index = len(stock.returns)-1
         if last_index > 60:
-            # if stock.returns[last_index] - stock.increases[last_index] < stock.expect_diff \
-            #         or stock.returns[last_index] < stock.expect_return \
-            #         or numpy.max(stock.increases) - numpy.max(stock.returns) > 2*stock.expect_diff:
-            #     found = False
-            #     break
+            if stock.returns[last_index] < stock.expect_return:
+                found = False
+                break
             stocks.append(stock)
     if found:
         for stock in stocks:
@@ -155,7 +153,7 @@ def append_loc(code):
 def scan_filtered():
     for code in list(open("../codes/candidates.txt")):
         code = append_loc(code.strip())
-        test(code, 20140101, 20200101, 0.5, 0.5)
+        test(code, 20140101, 20200101, 0.5, 2.0)
 
 
 scan_filtered()
