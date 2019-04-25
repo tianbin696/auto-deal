@@ -75,14 +75,14 @@ class Stock:
                 self.total_position -= sell_amount
                 self.free_money += sell_amount * prices[0]
                 amount = sell_amount
-                print "code=%s, trade_date=%s, price=%.2f, direction=%s, amount=%d" % (self.code, trade_date, prices[0], direction, sell_amount)
+                print("code=%s, trade_date=%s, price=%.2f, direction=%s, amount=%d" % (self.code, trade_date, prices[0], direction, sell_amount))
         if direction == "B":
             buy_amount = self.get_buy_amount(prices[0])
             if self.free_money >= buy_amount * prices[0]:
                 self.total_position += buy_amount
                 self.free_money -= buy_amount * prices[0]
                 amount = buy_amount
-                print "code=%s, trade_date=%s, price=%.2f, direction=%s, amount=%d" % (self.code, trade_date, prices[0], direction, buy_amount)
+                print("code=%s, trade_date=%s, price=%.2f, direction=%s, amount=%d" % (self.code, trade_date, prices[0], direction, buy_amount))
         value = self.total_position * prices[0] + self.free_money
         self.values.append(value)
         self.prices.append(prices[0])
@@ -152,7 +152,7 @@ def scan_all():
         try:
             test(code, startTimeStr, endTimeStr, 0.5, 0.5)
         except Exception as e:
-            print "%s" % e
+            print("%s" % e)
 
 
 def append_loc(code):
@@ -171,7 +171,7 @@ def scan_filtered():
         try:
             test(code, 20180101, 20200101, 0.5, 0.5)
         except Exception as e:
-            print "%s" % e
+            print("%s" % e)
 
 # get_all_codes()
 scan_all()
