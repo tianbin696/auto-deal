@@ -106,21 +106,14 @@ def save_2_candidates(code):
     writer.write("%s\n" % code[0:6])
     writer.close()
 
+
 def test(code, start_date=20100101, end_date=20200101, expect_diff=1.0, expect_return=1.5):
-    stocks = []
-    found = True
-    for date in range(start_date, end_date, end_date):
-        stock = Stock(code, expect_diff, expect_return, date)
-        stock.test(date, end_date)
-        last_index = len(stock.returns)-1
-        if last_index > 60:
-            if stock.returns[last_index] < stock.expect_return:
-                found = False
-                break
-            stocks.append(stock)
-    if found:
-        save_2_candidates(code)
-        for stock in stocks:
+    stock = Stock(code, expect_diff, expect_return, start_date)
+    stock.test(start_date, end_date)
+    last_index = len(stock.returns)-1
+    if last_index > 60:
+        if stock.returns[last_index] > stock.expect_return:
+            save_2_candidates(code)
             stock.print_as_csv("../analyze/%s_%s.csv" % (code, stock.start_date))
 
 
