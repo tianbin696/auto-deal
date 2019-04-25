@@ -2,6 +2,10 @@ import tushare as ts
 import numpy
 import time
 import pandas as pd
+import os
+
+from datetime import datetime
+from datetime import timedelta
 
 from auto_deal_THS import get_direction_by_rsi
 from auto_deal_THS import get_direction_by_avg
@@ -39,7 +43,7 @@ class Stock:
         start_index = len(df['close'])-60
         self.initial_price = 0
         for i in range(start_index, -1, -1):
-            if int(df['trade_date'][i]) >= end_date:
+            if int(df['trade_date'][i]) > end_date:
                 break
             if int(df['trade_date'][i]) >= start_date:
                 if self.initial_price == 0:
@@ -96,6 +100,12 @@ class Stock:
         return max(int(self.total_position/100)*100, 100)
 
 
+def save_2_candidates(code):
+    path = "../codes/candidates.txt"
+    writer = open(path, "a+")
+    writer.write("%s\n" % code[0:6])
+    writer.close()
+
 def test(code, start_date=20100101, end_date=20200101, expect_diff=1.0, expect_return=1.5):
     stocks = []
     found = True
@@ -109,6 +119,7 @@ def test(code, start_date=20100101, end_date=20200101, expect_diff=1.0, expect_r
                 break
             stocks.append(stock)
     if found:
+        save_2_candidates(code)
         for stock in stocks:
             stock.print_as_csv("../analyze/%s_%s.csv" % (code, stock.start_date))
 
@@ -127,7 +138,11 @@ def get_all_codes():
 
 
 def scan_all():
+    os.remove("../codes/candidates.txt")
     ts_local = TushareAPI()
+    endDate = (datetime.now() - timedelta(days = 0))
+    endTimeStr = int(endDate.strftime("%Y%m%d"))
+    startTimeStr = endTimeStr - 10000
     for code in ts_local.get_code_list():
         code = code.strip()
         if int(code) < 600000:
@@ -135,7 +150,7 @@ def scan_all():
         else:
             code = "%s.SH" % code
         try:
-            test(code, 20140101, 20200101, 0.5, 2.0)
+            test(code, startTimeStr, endTimeStr, 0.5, 0.5)
         except Exception as e:
             print "%s" % e
 
@@ -154,10 +169,10 @@ def scan_filtered():
     for code in list(open("../codes/candidates.txt")):
         code = append_loc(code.strip())
         try:
-            test(code, 20160101, 20200101, 0.5, 0.5)
+            test(code, 20180101, 20200101, 0.5, 0.5)
         except Exception as e:
             print "%s" % e
 
 # get_all_codes()
-# scan_all()
-scan_filtered()
+scan_all()
+# scan_filtered()
