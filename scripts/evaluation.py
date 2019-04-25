@@ -138,7 +138,7 @@ def get_all_codes():
 
 
 def scan_all():
-    if os.path.exists('../analyze/all_codes.txt'):
+    if os.path.exists('../codes/candidates.txt'):
         os.remove("../codes/candidates.txt")
     ts_local = TushareAPI()
     endDate = (datetime.now() - timedelta(days = 0))
