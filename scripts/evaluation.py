@@ -153,7 +153,7 @@ def append_loc(code):
 def scan_filtered():
     for code in list(open("../codes/candidates.txt")):
         code = append_loc(code.strip())
-        test(code, 20150101, 20200101, 0.5, 1.5)
+        test(code, 20160101, 20200101, 0.5, 1.0)
 
 # get_all_codes()
 # scan_all()
