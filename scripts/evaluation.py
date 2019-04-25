@@ -135,7 +135,7 @@ def scan_all():
         else:
             code = "%s.SH" % code
         try:
-            test(code, 20120101, 0.2, 0.2)
+            test(code, 20140101, 20200101, 0.5, 2.0)
         except Exception as e:
             print "%s" % e
 
@@ -155,5 +155,6 @@ def scan_filtered():
         code = append_loc(code.strip())
         test(code, 20140101, 20200101, 0.5, 2.0)
 
-
+# get_all_codes()
+# scan_all()
 scan_filtered()
