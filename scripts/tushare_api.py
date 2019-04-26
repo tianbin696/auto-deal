@@ -29,7 +29,6 @@ class TushareAPI:
         cacheFile = cacheFolder + "/" + timeStr + "/" + code + "_" + timeStr + ".csv"
         if not os.path.exists(cacheFolder + "/" + timeStr):
             os.mkdir(cacheFolder + "/" + timeStr)
-        logger.info("Getting historical data for code: %s" % code)
 
         if os.path.exists(cacheFile):
             df = pandas.read_csv(cacheFile)

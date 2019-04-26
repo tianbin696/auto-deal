@@ -54,7 +54,7 @@ class Stock:
                     self.initial_price = df['close'][i]
                 d = {'close':df['close'][i:i+52].astype('float')}
                 ndf = pd.DataFrame(d).reset_index()
-                self.deal(df['close'][i:], df['vol'][i:], df['trade_date'][i], ndf)
+                self.deal(df['close'][i:].values, df['vol'][i:].values, df['trade_date'][i], ndf)
 
     def print_as_csv(self, file):
         # last_index = len(self.returns)-1
