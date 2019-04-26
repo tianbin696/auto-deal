@@ -15,6 +15,7 @@ from tushare_api import TushareAPI
 
 token = "546aae3c5aca9eb09c9181e04974ae3cf910ce6c0d8092dde678d1cd"
 pro = ts.pro_api(token)
+ts_local = TushareAPI()
 
 total_available_money = 30000
 max_buy_money = 5000
@@ -42,7 +43,7 @@ class Stock:
         self.start_date = start_date
 
     def test(self, start_date=20100101, end_date=20200101):
-        df = ts.pro_bar(pro_api=pro, ts_code=self.code, adj="qfq")
+        df = ts_local.get_h_data(self.code)
         start_index = len(df['close'])-60
         self.initial_price = 0
         for i in range(start_index, -1, -1):
@@ -125,7 +126,6 @@ def test(code, start_date=20100101, end_date=20200101, expect_diff=1.0, expect_r
 
 def get_all_codes():
     writer = open('../analyze/all_codes.txt', 'w')
-    ts_local = TushareAPI()
     for code in ts_local.get_code_list():
         code = code.strip()
         if int(code) < 600000:

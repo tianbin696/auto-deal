@@ -9,8 +9,11 @@ import pandas
 from datetime import datetime
 from datetime import timedelta
 
+token = "546aae3c5aca9eb09c9181e04974ae3cf910ce6c0d8092dde678d1cd"
+pro = ts.pro_api(token)
+
 logger = logging.getLogger('TushareAPI')
-cacheFolder = "../../cache"
+cacheFolder = "../cache"
 
 class TushareAPI:
     def get_historic_price(self, code):
@@ -21,7 +24,6 @@ class TushareAPI:
         return []
 
     def get_h_data(self, code, timeStr = None, daysAgo = 0):
-        retry = 6
         if not timeStr:
             timeStr = time.strftime("%Y%m%d", time.localtime())
         cacheFile = cacheFolder + "/" + timeStr + "/" + code + "_" + timeStr + ".csv"
@@ -32,43 +34,12 @@ class TushareAPI:
         if os.path.exists(cacheFile):
             df = pandas.read_csv(cacheFile)
         else:
-            yesterday = (datetime.now() - timedelta(days = 1))
-            yesterdayTimeStr = yesterday.strftime("%Y%m%d")
-            yesterdayFilePath = cacheFolder + "/" + yesterdayTimeStr + "/" + code + "_" + yesterdayTimeStr + ".csv"
-            if os.path.exists(yesterdayFilePath):
-                df = pandas.read_csv(yesterdayFilePath)
-                df = pandas.DataFrame({'date':df['date'], 'open':df['open'], 'high':df['high'],
-                                       'close':df['close'], 'low':df['low'], 'volume':df['volume'],
-                                               'amount':df['amount']}, columns=['date', 'open', 'high', 'close', 'low', 'volume', 'amount'])
-                rtDF = ts.get_realtime_quotes(code)
-                if float(rtDF['price'][0]) <= 0:
-                    print("Invalid price for code = %s: %s" % (code, rtDF['price'][0]))
-                elif float(rtDF['price'][0]) > float(df['close'][0]) *1.2 or float(rtDF['price'][0]) < float(df['close'][0]) *0.8:
-                    print("Invalid price for code = %s: %s, %s" % (code, rtDF['price'][0], df['close'][0]))
-                    df = ts.get_h_data(code, start='2018-06-01', pause=8)
-                elif rtDF['date'][0] != df['date'][0]:
-                    df.loc[-1] = [rtDF['date'][0], rtDF['open'][0], rtDF['high'][0], rtDF['price'][0], rtDF['low'][0], rtDF['volume'][0], rtDF['amount'][0]]
-                    df.index = df.index+1
-                    df = df.sort_index()
-                if len(df) > 0:
-                    writer = open(cacheFile, "w")
-                    df.to_csv(writer)
-                    writer.close()
-                df = pandas.read_csv(cacheFile)
-            else:
-                df = pandas.DataFrame()
-                while retry > 0:
-                    try:
-                        df = ts.get_h_data(code, start='2018-06-01', pause=8)
-                        if len(df) > 0:
-                            writer = open(cacheFile, "w")
-                            df.to_csv(writer)
-                            writer.close()
-                        break
-                    except Exception as e:
-                        logger.error("Failed to get history data for code=%s" % code)
-                        time.sleep(10)
-                        retry -= 1
+            df = ts.pro_bar(pro_api=pro, ts_code=code, adj="qfq")
+            if len(df) > 0:
+                writer = open(cacheFile, "w")
+                df.to_csv(writer)
+                writer.close()
+            df = pandas.read_csv(cacheFile)
         return df[daysAgo:].reset_index()
 
 
