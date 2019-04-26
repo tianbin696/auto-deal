@@ -112,7 +112,8 @@ def test(code, start_date=20100101, end_date=20200101, expect_diff=1.0, expect_r
     stock.test(start_date, end_date)
     last_index = len(stock.returns)-1
     if last_index > 60:
-        if stock.returns[last_index] > stock.expect_return:
+        if stock.returns[last_index] > stock.expect_return \
+                and stock.returns[last_index] - stock.increases[last_index] > stock.expect_diff:
             save_2_candidates(code)
             stock.print_as_csv("../analyze/%s_%s.csv" % (code, stock.start_date))
 
@@ -144,7 +145,7 @@ def scan_all():
         else:
             code = "%s.SH" % code
         try:
-            test(code, startTimeStr, endTimeStr, 0.5, 0.5)
+            test(code, startTimeStr, endTimeStr, 0.2, 0.3)
         except Exception as e:
             print("%s" % e)
 
