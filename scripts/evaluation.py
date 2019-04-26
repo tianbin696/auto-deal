@@ -20,6 +20,9 @@ total_available_money = 30000
 max_buy_money = 5000
 full_sell_money = 6000
 
+all_returns = []
+all_increases = []
+
 class Stock:
     def __init__(self, code, expect_diff=1.0, expect_return=1.5, start_date=20100101):
         self.code = code
@@ -112,6 +115,8 @@ def test(code, start_date=20100101, end_date=20200101, expect_diff=1.0, expect_r
     stock.test(start_date, end_date)
     last_index = len(stock.returns)-1
     if last_index > 60:
+        all_returns.append(stock.returns[last_index])
+        all_increases.append(stock.increases[last_index])
         if stock.returns[last_index] > stock.expect_return \
                 and stock.returns[last_index] - stock.increases[last_index] > stock.expect_diff:
             save_2_candidates(code)
@@ -150,6 +155,22 @@ def scan_all():
             print("%s" % e)
 
 
+def stats(increases):
+    stats = {}
+    for value in increases:
+        idx = int(value*10)
+        if idx not in stats:
+            stats[idx] = 1
+        else:
+            stats[idx] += 1
+    for idx in sorted(stats.keys()):
+        print("%d," % idx),
+    print("\n")
+    for idx in sorted(stats.keys()):
+        print("%d," % stats[idx]),
+    print("\n")
+
+
 def append_loc(code):
     if code.find("SH") >= 0 or code.find("SZ") >= 0:
         return code
@@ -170,4 +191,6 @@ def scan_filtered():
 
 # get_all_codes()
 scan_all()
+stats(all_returns)
+stats(all_increases)
 # scan_filtered()
