@@ -150,7 +150,7 @@ def scan_all():
         else:
             code = "%s.SH" % code
         try:
-            test(code, startTimeStr, endTimeStr, 0.2, 0.3)
+            test(code, startTimeStr, endTimeStr, 0.3, 0.3)
         except Exception as e:
             print("%s" % e)
 
@@ -158,6 +158,8 @@ def scan_all():
 def stats(increases):
     stats = {}
     for value in increases:
+        if numpy.isnan(value):
+            continue
         idx = int(value*10)
         if idx not in stats:
             stats[idx] = 1
