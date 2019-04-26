@@ -158,13 +158,16 @@ def scan_all():
 def stats(increases):
     stats = {}
     for value in increases:
-        if numpy.isnan(value):
-            continue
-        idx = int(value*10)
-        if idx not in stats:
-            stats[idx] = 1
-        else:
-            stats[idx] += 1
+        try:
+            if numpy.isnan(value):
+                continue
+            idx = int(value*10)
+            if idx not in stats:
+                stats[idx] = 1
+            else:
+                stats[idx] += 1
+        except Exception as e:
+            print("exception: %s" % e)
     for idx in sorted(stats.keys()):
         print("%d," % idx),
     print("\n")
