@@ -138,23 +138,42 @@ def get_all_codes():
 
 
 def stats(increases):
-    stats = {}
+    stats = []
+    for i in range(0, 12, 1):
+        stats.append(0)
     for value in increases:
         try:
             if numpy.isnan(value):
                 continue
-            idx = int(value*10)
-            if idx not in stats:
-                stats[idx] = 1
+            if value <= -0.5:
+                idx = 0
+            elif value <= -0.4:
+                idx = 1
+            elif value <= -0.3:
+                idx = 2
+            elif value <= -0.2:
+                idx = 3
+            elif value <= -0.1:
+                idx = 4
+            elif value <= 0:
+                idx = 5
+            elif value <= 0.1:
+                idx = 6
+            elif value <= 0.2:
+                idx = 7
+            elif value <= 0.3:
+                idx = 8
+            elif value <= 0.4:
+                idx = 9
+            elif value <= 0.5:
+                idx = 10
             else:
-                stats[idx] += 1
+                idx = 11
+            stats[idx] += 1
         except Exception as e:
             print("exception: %s" % e)
-    for idx in sorted(stats.keys()):
-        print("%d," % idx),
-    print("\n"),
-    for idx in sorted(stats.keys()):
-        print("%d," % stats[idx]),
+    for count in stats:
+        print("%d," % count),
     print("\n"),
 
 
