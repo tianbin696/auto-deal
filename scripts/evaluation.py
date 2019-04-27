@@ -44,6 +44,7 @@ class Stock:
 
     def test(self, start_date=20100101, end_date=20200101):
         df = ts_local.get_h_data(self.code)
+        # df = ts.pro_bar(pro_api=pro, ts_code=self.code, adj="qfq")
         start_index = len(df['close'])-60
         self.initial_price = 0
         for i in range(start_index, -1, -1):
@@ -136,25 +137,6 @@ def get_all_codes():
     writer.close()
 
 
-def scan_all():
-    if os.path.exists('../codes/candidates.txt'):
-        os.remove("../codes/candidates.txt")
-    ts_local = TushareAPI()
-    endDate = (datetime.now() - timedelta(days = 0))
-    endTimeStr = int(endDate.strftime("%Y%m%d"))
-    startTimeStr = endTimeStr - 10000
-    for code in ts_local.get_code_list():
-        code = code.strip()
-        if int(code) < 600000:
-            code = "%s.SZ" % code
-        else:
-            code = "%s.SH" % code
-        try:
-            test(code, startTimeStr, endTimeStr, 0.3, 0.3)
-        except Exception as e:
-            print("%s" % e)
-
-
 def stats(increases):
     stats = {}
     for value in increases:
@@ -170,10 +152,10 @@ def stats(increases):
             print("exception: %s" % e)
     for idx in sorted(stats.keys()):
         print("%d," % idx),
-    print("\n")
+    print("\n"),
     for idx in sorted(stats.keys()):
         print("%d," % stats[idx]),
-    print("\n")
+    print("\n"),
 
 
 def append_loc(code):
@@ -186,6 +168,25 @@ def append_loc(code):
     return code
 
 
+def scan_all():
+    if os.path.exists('../codes/candidates.txt'):
+        os.remove("../codes/candidates.txt")
+    ts_local = TushareAPI()
+    endDate = (datetime.now() - timedelta(days = 0))
+    endTimeStr = int(endDate.strftime("%Y%m%d"))
+    startTimeStr = endTimeStr - 10000
+    for code in ts_local.get_code_list():
+        code = code.strip()
+        if int(code) < 600000:
+            code = "%s.SZ" % code
+        else:
+            code = "%s.SH" % code
+        try:
+            test(code, startTimeStr, endTimeStr, 0.5, 0.5)
+        except Exception as e:
+            print("%s" % e)
+
+
 def scan_filtered():
     for code in list(open("../codes/candidates.txt")):
         code = append_loc(code.strip())
@@ -196,6 +197,6 @@ def scan_filtered():
 
 # get_all_codes()
 scan_all()
-stats(all_returns)
-stats(all_increases)
 # scan_filtered()
+stats(all_increases)
+stats(all_returns)
