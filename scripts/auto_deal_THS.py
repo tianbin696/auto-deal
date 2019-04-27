@@ -51,7 +51,7 @@ ignore_codes = []
 stock_positions = {}
 stock_chenbens = {}
 globalAvailableMoney = 20000
-maxAmount = 30000
+maxAmount = 10000
 minAmount = 0
 minBuyAmount = 10000
 fullSellAmount = 6000
@@ -655,8 +655,8 @@ def get_direction_by_rsi(code, prices, is_logging=True):
 
 
 def get_direction_by_avg(code, prices, vols, is_logging=True):
-    days1 = 3
-    days2 = 6
+    days1 = 6
+    days2 = 12
     days3 = 12
     days4 = 24
     avg1_0 = numpy.mean(prices[0:days1])
@@ -671,9 +671,9 @@ def get_direction_by_avg(code, prices, vols, is_logging=True):
     vol2 = numpy.mean(vols[0:days2])
 
     direction = 'N'
-    if diff_1 > 0 > diff_2 and vol1 > vol2 and prices[0] > numpy.min(prices[1:days4]) and prices[0] > prices[1]*0.96:
+    if diff_1 > 0 > diff_2 and vol1 > vol2*0.6 and prices[0] > numpy.min(prices[1:days4]) and prices[0] > prices[1]*0.96:
         direction = 'B'
-    if diff_1 < 0 < diff_2 and vol1 > vol2*0.8:
+    if diff_1 < 0 < diff_2 and vol1 > vol2*0.6:
         direction = 'S'
     if prices[0] < numpy.min(prices[1:days4]):
         direction = 'S'
