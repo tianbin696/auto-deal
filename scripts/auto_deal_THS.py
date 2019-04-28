@@ -655,8 +655,8 @@ def get_direction_by_rsi(code, prices, is_logging=True):
 
 
 def get_direction_by_avg(code, prices, vols, is_logging=True):
-    days1 = 6
-    days2 = 12
+    days1 = 7
+    days2 = 14
     days3 = 12
     days4 = 24
     avg1_0 = numpy.mean(prices[0:days1])
