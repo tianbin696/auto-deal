@@ -674,9 +674,9 @@ def get_direction_by_avg(code, prices, vols, is_logging=True):
     vol2 = numpy.mean(vols[0:days2])
 
     direction = 'N'
-    if diff_1 > 0 > diff_2 and vol1 > vol2*0.6 and prices[0] > numpy.min(prices[1:days4]) and prices[0] > prices[1]*0.96:
+    if diff_1 > 0 > diff_2 and prices[0] > numpy.min(prices[1:days4]) and prices[0] > prices[1]*0.96:
         direction = 'B'
-    if diff_1 < 0 < diff_2 and vol1 > vol2*0.5:
+    if diff_1 < 0 < diff_2:
         direction = 'S'
     if prices[0] < prices[1]*0.92:
         direction = 'S'
