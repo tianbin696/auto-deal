@@ -55,7 +55,7 @@ class Stock:
                     self.initial_price = df['close'][i]
                 d = {'close':df['close'][i:i+52].astype('float')}
                 ndf = pd.DataFrame(d).reset_index()
-                self.deal(df['close'][i:].values, df['vol'][i:].values, df['trade_date'][i], ndf)
+                self.deal(df['close'][i:].values, df['vol'][i:].values, df['trade_date'][i], ndf, df['open'][i])
 
     def print_as_csv(self, file):
         # last_index = len(self.returns)-1
@@ -69,10 +69,10 @@ class Stock:
                           self.increases[i], self.returns[i]))
         writer.close()
 
-    def deal(self, prices, vols, trade_date, df):
+    def deal(self, prices, vols, trade_date, df, open_price=0):
         # direction = get_direction_by_macd(self.code, df)
         # direction = get_direction_by_rsi(self.code, prices, False)
-        direction = get_direction_by_avg(self.code, prices, vols, False)
+        direction = get_direction_by_avg(self.code, prices, vols, False, open_price)
         amount = 0
         if direction == "S":
             sell_amount = self.get_sell_amount(prices[0])
