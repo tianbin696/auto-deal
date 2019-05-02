@@ -201,7 +201,7 @@ def scan_all():
         else:
             code = "%s.SH" % code
         try:
-            test(code, startTimeStr, endTimeStr, 0.3, 0.2)
+            test(code, startTimeStr, endTimeStr, 0.3, 0.5)
         except Exception as e:
             print("%s" % e)
 
@@ -210,7 +210,7 @@ def scan_filtered():
     for code in list(open("../codes/candidates.txt")):
         code = append_loc(code.strip())
         try:
-            test(code, 20180101, 20200101, 0.3, 0.2)
+            test(code, 20190429, 20190430, 0.3, 0.5)
         except Exception as e:
             print("%s" % e)
 
