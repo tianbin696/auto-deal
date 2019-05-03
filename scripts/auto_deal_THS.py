@@ -413,6 +413,7 @@ class Monitor:
                         volumes = []
                         price = self.getRealTimeData(code, p_changes, open_prices, highest_prices, lowest_price, volumes)
                         self.makeDecision(code, price, open_prices[0], p_changes[0], highest_prices[0], lowest_price[0], volumes[0])
+                        time.sleep(0.5)
                     except Exception as e:
                         logger.error("Failed to monitor %s: %s" % (code, e))
 
