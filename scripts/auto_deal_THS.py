@@ -392,11 +392,11 @@ class Monitor:
                 if not isStarted:
                     continue
 
-                if not self.compare("14", "45"):
+                if not self.compare("14", "30"):
                     logger.info("Sleep before deal start")
                     continue
                 if not deal_started:
-                    self.operation.saveScreenshot("开始交易", '闭市前15分钟开始交易')
+                    self.operation.saveScreenshot("开始交易", '闭市前30分钟开始交易')
                     deal_started = True
 
                 print()
