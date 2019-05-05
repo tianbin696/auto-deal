@@ -213,13 +213,13 @@ def scan_filtered():
     for code in list(open("../codes/candidates.txt")):
         code = append_loc(code.strip())
         try:
-            test(code, 20190429, 20190430, 0.3, 0.3)
+            test(code, 20180501, 20190430, 0.3, 0.3)
         except Exception as e:
             print("%s" % e)
 
 # get_all_codes()
-scan_all()
-# scan_filtered()
+# scan_all()
+scan_filtered()
 stats(all_increases)
 stats(all_returns)
 print("increase avg: %.2f" % numpy.mean(all_increases))
