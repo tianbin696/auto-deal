@@ -119,6 +119,9 @@ def test(code, start_date=20100101, end_date=20200101, expect_diff=1.0, expect_r
     if last_index > 60:
         all_returns.append(stock.returns[last_index])
         all_increases.append(stock.increases[last_index])
+        if numpy.isnan(stock.increases[last_index]):
+            print("NaN of code: %s" % code)
+            exit(1)
         if stock.returns[last_index] > stock.expect_return \
                 and stock.returns[last_index] - stock.increases[last_index] > stock.expect_diff:
             save_2_candidates(code)
@@ -219,3 +222,5 @@ scan_all()
 # scan_filtered()
 stats(all_increases)
 stats(all_returns)
+print("increase avg: %.2f" % numpy.mean(all_increases))
+print("return avg: %.2f" % numpy.mean(all_returns))
