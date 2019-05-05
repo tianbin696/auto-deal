@@ -210,10 +210,13 @@ def scan_all():
 
 
 def scan_filtered():
+    endDate = (datetime.now() - timedelta(days = 0))
+    endTime = int(endDate.strftime("%Y%m%d"))
+    startTime = endTime - 10000
     for code in list(open("../codes/candidates.txt")):
         code = append_loc(code.strip())
         try:
-            test(code, 20180501, 20190430, 0.3, 0.3)
+            test(code, startTime, endTime, 0.3, 0.3)
         except Exception as e:
             print("%s" % e)
 
