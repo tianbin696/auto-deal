@@ -513,7 +513,7 @@ class Monitor:
                         code_str = "%s.SZ" % code
                     else:
                         code_str = "%s.SH" % code
-                    df = ts.pro_bar(pro_api=pro, ts_code=code_str, adj='qfq')
+                    df = ts.pro_bar(pro_api=pro, ts_code=code_str, adj='qfq', retry_count=9)
                     break
                 except Exception as e:
                     logger.error("Failed to get history data: %s" % e)
