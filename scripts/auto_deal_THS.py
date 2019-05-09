@@ -448,7 +448,7 @@ class Monitor:
                 logger.info("Reach max amount, cannot buy anymore")
                 return
             buyPrice = self.getBuyPrice(price)
-            if float(change_p) > 8.0:
+            if float(change_p) >= 9.0:
                 buyPrice = price
             if buyPrice <= 0:
                 return
