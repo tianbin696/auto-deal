@@ -24,6 +24,7 @@ full_sell_money = 6000
 all_returns = []
 all_increases = []
 
+
 class Stock:
     def __init__(self, code, expect_diff=1.0, expect_return=1.5, start_date=20100101):
         self.code = code
@@ -112,7 +113,7 @@ def save_2_candidates(code):
     writer.close()
 
 
-def test(code, start_date=20100101, end_date=20200101, expect_diff=1.0, expect_return=1.5):
+def test(code, start_date=20100101, end_date=20200101, expect_diff=1.0, expect_return=1.5, save_to_candidates=True):
     stock = Stock(code, expect_diff, expect_return, start_date)
     stock.test(start_date, end_date)
     last_index = len(stock.returns)-1
@@ -124,7 +125,8 @@ def test(code, start_date=20100101, end_date=20200101, expect_diff=1.0, expect_r
             exit(1)
         if stock.returns[last_index] > stock.expect_return \
                 and stock.returns[last_index] - stock.increases[last_index] > stock.expect_diff:
-            save_2_candidates(code)
+            if save_to_candidates:
+                save_2_candidates(code)
             stock.print_as_csv("../analyze/%s_%s.csv" % (code, stock.start_date))
 
 
@@ -190,9 +192,13 @@ def append_loc(code):
     return code
 
 
-def scan_all():
+def clear_candidates():
     if os.path.exists('../codes/candidates.txt'):
         os.remove("../codes/candidates.txt")
+
+
+def scan_all():
+    clear_candidates()
     ts_local = TushareAPI()
     endDate = (datetime.now() - timedelta(days = 0))
     endTimeStr = int(endDate.strftime("%Y%m%d"))
@@ -209,19 +215,24 @@ def scan_all():
             print("%s" % e)
 
 
-def scan_filtered():
+def scan_filtered(path="../codes/candidates.txt", save_candidates=False):
     endDate = (datetime.now() - timedelta(days = 0))
     endTime = int(endDate.strftime("%Y%m%d"))
     startTime = endTime - 10000
-    for code in list(open("../codes/candidates.txt")):
+    for code in list(open(path)):
         code = append_loc(code.strip())
         try:
-            test(code, startTime, endTime, 0.1, 0.2)
+            test(code, startTime, endTime, 0.1, 0.2, save_candidates)
         except Exception as e:
             print("%s" % e)
 
+
 # get_all_codes()
 # scan_all()
+clear_candidates()
+scan_filtered(path="../codes/code_50_300_500.txt", save_candidates=True)
+del all_increases[:]
+del all_returns[:]
 scan_filtered()
 stats(all_increases)
 stats(all_returns)
