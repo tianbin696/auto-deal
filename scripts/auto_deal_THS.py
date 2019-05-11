@@ -673,11 +673,23 @@ def get_direction_by_avg(code, prices, vols, is_logging=True, open_price=0, high
     avg2_1 = numpy.mean(prices[1:days2+1])
     diff_2 = avg1_1 - avg2_1
 
+    avg1_2 = numpy.mean(prices[2:days1+2])
+    avg2_2 = numpy.mean(prices[2:days2+2])
+    diff_3 = avg1_2 - avg2_2
+
+    avg1_3 = numpy.mean(prices[3:days1+3])
+    avg2_3 = numpy.mean(prices[3:days2+3])
+    diff_4 = avg1_3 - avg2_3
+
     vol1 = numpy.mean(vols[0:days1])
     vol2 = numpy.mean(vols[0:days2])
 
     direction = 'N'
     if diff_1 > 0 > diff_2 and prices[0] > numpy.min(prices[1:days4]) and prices[0] > prices[1]*0.95:
+        direction = 'B'
+    if diff_1 > diff_2 > 0 > diff_3 and prices[1]*1.04 > highest_price > prices[0] > prices[1]*0.96:
+        direction = 'B'
+    if diff_1 > diff_2 > diff_3 > 0 > diff_4 and prices[1]*1.04 > highest_price > prices[0] > prices[1]*0.96:
         direction = 'B'
     if diff_1 < 0 < diff_2:
         direction = 'S'
