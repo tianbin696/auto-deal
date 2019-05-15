@@ -131,13 +131,13 @@ def test(code, start_date=20100101, end_date=20200101, expect_diff=1.0, expect_r
 
 
 def get_all_codes():
-    writer = open('../analyze/all_codes.txt', 'w')
+    writer = open('../codes/all_codes.txt', 'w')
     for code in ts_local.get_code_list():
         code = code.strip()
-        if int(code) < 600000:
-            code = "%s.SZ" % code
-        else:
-            code = "%s.SH" % code
+        # if int(code) < 600000:
+        #     code = "%s.SZ" % code
+        # else:
+        #     code = "%s.SH" % code
         writer.write("%s\n" % code)
     writer.close()
 
@@ -222,17 +222,17 @@ def scan_filtered(path="../codes/candidates.txt", save_candidates=False):
     for code in list(open(path)):
         code = append_loc(code.strip())
         try:
-            test(code, startTime, endTime, 0.1, 0.2, save_candidates)
+            test(code, startTime, endTime, 0.2, 0.3, save_candidates)
         except Exception as e:
             print("%s" % e)
 
 
 # get_all_codes()
 # scan_all()
-# clear_candidates()
-# scan_filtered(path="../codes/code_50_300_500.txt", save_candidates=True)
-# del all_increases[:]
-# del all_returns[:]
+clear_candidates()
+scan_filtered(path="../codes/all_codes.txt", save_candidates=True)
+del all_increases[:]
+del all_returns[:]
 scan_filtered()
 stats(all_increases)
 stats(all_returns)
