@@ -124,7 +124,8 @@ def test(code, start_date=20100101, end_date=20200101, expect_diff=1.0, expect_r
             print("NaN of code: %s" % code)
             exit(1)
         if stock.returns[last_index] > stock.expect_return \
-                and stock.returns[last_index] - stock.increases[last_index] > stock.expect_diff:
+                and stock.returns[last_index] - stock.increases[last_index] > stock.expect_diff \
+                and numpy.max(stock.increases) < 0.4:
             if save_to_candidates:
                 save_2_candidates(code)
             stock.print_as_csv("../analyze/%s_%s.csv" % (code, stock.start_date))
@@ -231,9 +232,9 @@ def scan_filtered(path="../codes/candidates.txt", save_candidates=False):
 
 
 # get_all_codes()
-scan_all()
-# clear_candidates()
-# scan_filtered(path="../codes/all_codes.txt", save_candidates=True)
+# scan_all()
+clear_candidates()
+scan_filtered(path="../codes/all_codes.txt", save_candidates=True)
 del all_increases[:]
 del all_returns[:]
 scan_filtered()
