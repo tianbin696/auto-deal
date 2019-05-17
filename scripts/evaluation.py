@@ -219,20 +219,23 @@ def scan_filtered(path="../codes/candidates.txt", save_candidates=False):
     endDate = (datetime.now() - timedelta(days = 0))
     endTime = int(endDate.strftime("%Y%m%d"))
     startTime = endTime - 10000
+    st_codes = ts_local.get_st_list()
     for code in list(open(path)):
+        if code.strip() in st_codes:
+            continue
         code = append_loc(code.strip())
         try:
-            test(code, startTime, endTime, 0.2, 0.3, save_candidates)
+            test(code, startTime, endTime, 0.1, 0.2, save_candidates)
         except Exception as e:
             print("%s" % e)
 
 
 # get_all_codes()
 # scan_all()
-# clear_candidates()
-# scan_filtered(path="../codes/all_codes.txt", save_candidates=True)
-# del all_increases[:]
-# del all_returns[:]
+clear_candidates()
+scan_filtered(path="../codes/all_codes.txt", save_candidates=True)
+del all_increases[:]
+del all_returns[:]
 scan_filtered()
 stats(all_increases)
 stats(all_returns)
