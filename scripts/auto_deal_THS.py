@@ -596,7 +596,7 @@ class Monitor:
         if code not in self.isBuyeds or not self.isBuyeds[code]:
             if code not in self.isSelleds or not self.isSelleds[code]:
                 if direction == 'B':
-                        return 'N'
+                        return 'B'
 
         return 'N'
 

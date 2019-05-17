@@ -210,7 +210,7 @@ def scan_all():
         else:
             code = "%s.SH" % code
         try:
-            test(code, startTimeStr, endTimeStr, 0.3, 0.3)
+            test(code, startTimeStr, endTimeStr, 0.8, 0.5)
         except Exception as e:
             print("%s" % e)
 
@@ -231,11 +231,11 @@ def scan_filtered(path="../codes/candidates.txt", save_candidates=False):
 
 
 # get_all_codes()
-# scan_all()
+scan_all()
 # clear_candidates()
 # scan_filtered(path="../codes/all_codes.txt", save_candidates=True)
-# del all_increases[:]
-# del all_returns[:]
+del all_increases[:]
+del all_returns[:]
 scan_filtered()
 stats(all_increases)
 stats(all_returns)
