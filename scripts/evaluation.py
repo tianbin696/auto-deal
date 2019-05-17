@@ -113,7 +113,7 @@ def save_2_candidates(code):
     writer.close()
 
 
-def test(code, start_date=20100101, end_date=20200101, expect_diff=1.0, expect_return=1.5, save_to_candidates=True):
+def test(code, start_date=20100101, end_date=20200101, expect_return=0.8, expect_diff=0.6, save_to_candidates=True):
     stock = Stock(code, expect_diff, expect_return, start_date)
     stock.test(start_date, end_date)
     last_index = len(stock.returns)-1
@@ -123,9 +123,8 @@ def test(code, start_date=20100101, end_date=20200101, expect_diff=1.0, expect_r
         if numpy.isnan(stock.increases[last_index]):
             print("NaN of code: %s" % code)
             exit(1)
-        if stock.returns[last_index] > stock.expect_return \
-                and stock.returns[last_index] - stock.increases[last_index] > stock.expect_diff \
-                and numpy.max(stock.increases) - numpy.min(stock.increases) < 0.7:
+        if stock.returns[last_index] > expect_return \
+                and numpy.max(stock.increases) - numpy.min(stock.increases) < expect_diff:
             if save_to_candidates:
                 save_2_candidates(code)
             stock.print_as_csv("../analyze/%s_%s.csv" % (code, stock.start_date))
@@ -211,7 +210,7 @@ def scan_all():
         else:
             code = "%s.SH" % code
         try:
-            test(code, startTimeStr, endTimeStr, 0.8, 0.5)
+            test(code, startTimeStr, endTimeStr, 0.6, 0.7)
         except Exception as e:
             print("%s" % e)
 
@@ -226,7 +225,7 @@ def scan_filtered(path="../codes/candidates.txt", save_candidates=False):
             continue
         code = append_loc(code.strip())
         try:
-            test(code, startTime, endTime, 0.0, 0.2, save_candidates)
+            test(code, startTime, endTime, 0.6, 0.7, save_candidates)
         except Exception as e:
             print("%s" % e)
 
