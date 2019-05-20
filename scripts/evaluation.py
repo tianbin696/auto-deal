@@ -17,9 +17,7 @@ token = "546aae3c5aca9eb09c9181e04974ae3cf910ce6c0d8092dde678d1cd"
 pro = ts.pro_api(token)
 ts_local = TushareAPI()
 
-total_available_money = 30000
-max_buy_money = 5000
-full_sell_money = 6000
+total_available_money = 10000
 
 all_returns = []
 all_increases = []
