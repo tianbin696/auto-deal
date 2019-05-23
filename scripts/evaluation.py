@@ -208,7 +208,7 @@ def scan_all():
         else:
             code = "%s.SH" % code
         try:
-            test(code, startTimeStr, endTimeStr, 0.6, 0.9)
+            test(code, startTimeStr, endTimeStr, 0.5, 1.0)
         except Exception as e:
             print("%s" % e)
 
@@ -223,7 +223,7 @@ def scan_filtered(path="../codes/candidates.txt", save_candidates=False):
             continue
         code = append_loc(code.strip())
         try:
-            test(code, startTime, endTime, 0.6, 0.9, save_candidates)
+            test(code, startTime, endTime, 0.5, 1.0, save_candidates)
         except Exception as e:
             print("%s" % e)
 
