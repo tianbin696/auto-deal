@@ -50,11 +50,11 @@ new_codes = []
 ignore_codes = []
 stock_positions = {}
 stock_chenbens = {}
-globalAvailableMoney = 20000
-maxAmount = 200000
+maxAmount = 100000
+globalAvailableMoney = 2*maxAmount
 minAmount = 0
-minBuyAmount = 20000
-fullSellAmount = 6000
+minBuyAmount = 10000
+fullSellAmount = 10000
 sleepTime = 0.5
 monitorInterval = 30
 avg10Days = 10 #参考均线天数，默认为10，可以根据具体情况手动调整，一般为10到20
@@ -590,6 +590,8 @@ class Monitor:
         if code not in self.isSelleds or not self.isSelleds[code]:
             if code not in self.isBuyeds or not self.isBuyeds[code]:
                 if direction == 'S':
+                    if stock_positions[code]*price < fullSellAmount:
+                        return 'FS'
                     return 'S'
 
         # 涨破RSI与阈值，买入
@@ -607,10 +609,11 @@ class Monitor:
         return price * 0.99
 
     def getBuyAmount(self, code, price):
-        return int(minBuyAmount/100/price)*100
+        free_money = max(maxAmount - stock_positions[code]*price, 0)
+        return int(free_money/200/price)*100
 
     def getSellAmount(self, code, price):
-        return max(int(stock_positions[code]/500)*100, 100)
+        return max(int(stock_positions[code]/300)*100, 100)
 
 
 def getRSI(prices, days=14):

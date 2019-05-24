@@ -17,7 +17,7 @@ token = "546aae3c5aca9eb09c9181e04974ae3cf910ce6c0d8092dde678d1cd"
 pro = ts.pro_api(token)
 ts_local = TushareAPI()
 
-total_available_money = 200000
+total_available_money = 100000
 
 all_returns = []
 all_increases = []
@@ -101,7 +101,7 @@ class Stock:
         return int(self.free_money/200/price)*100
 
     def get_sell_amount(self, price):
-        return max(int(self.total_position/500)*100, 100)
+        return max(int(self.total_position/300)*100, 100)
 
 
 def save_2_candidates(code):
