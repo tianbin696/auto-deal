@@ -50,7 +50,7 @@ new_codes = []
 ignore_codes = []
 stock_positions = {}
 stock_chenbens = {}
-globalAvailableMoney = 30000
+globalAvailableMoney = 100000
 maxAmount = 10000
 minAmount = 0
 minBuyAmount = 10000
@@ -590,12 +590,12 @@ class Monitor:
         if code not in self.isSelleds or not self.isSelleds[code]:
             if code not in self.isBuyeds or not self.isBuyeds[code]:
                 if direction == 'S':
-                    return 'FS'
+                    return 'S'
 
         # 涨破RSI与阈值，买入
         if code not in self.isBuyeds or not self.isBuyeds[code]:
             if code not in self.isSelleds or not self.isSelleds[code]:
-                if direction == 'B':
+                if direction == 'B' and code in new_codes:
                         return 'B'
 
         return 'N'
@@ -607,7 +607,10 @@ class Monitor:
         return price * 0.99
 
     def getBuyAmount(self, code, price):
-        return int(minBuyAmount/100/price)*100
+        free_money = globalAvailableMoney - stock_positions[code]*price
+        if free_money < globalAvailableMoney / 3:
+            return int(free_money/100/price)*100
+        return int(free_money/200/price)*100
 
     def getSellAmount(self, code, price):
         return max(int(stock_positions[code]/200)*100, 100)
@@ -661,8 +664,8 @@ def get_direction_by_rsi(code, prices, is_logging=True):
 
 
 def get_direction_by_avg(code, prices, vols, is_logging=True, open_price=0, highest_price=0):
-    days1 = 7
-    days2 = 14
+    days1 = 10
+    days2 = 20
     days3 = 12
     days4 = 24
     avg1_0 = numpy.mean(prices[0:days1])
@@ -681,22 +684,26 @@ def get_direction_by_avg(code, prices, vols, is_logging=True, open_price=0, high
     avg2_3 = numpy.mean(prices[3:days2+3])
     diff_4 = avg1_3 - avg2_3
 
+    avg1_4 = numpy.mean(prices[4:days1+4])
+    avg2_4 = numpy.mean(prices[4:days2+4])
+    diff_5 = avg1_4 - avg2_4
+
     vol1 = numpy.mean(vols[0:days1])
     vol2 = numpy.mean(vols[0:days2])
 
     direction = 'N'
-    if prices[0] > numpy.min(prices[1:days4]) > 0 and prices[0] > highest_price*0.93:
-        if diff_1 > 0 > diff_2 and prices[0] > prices[1]*0.96:
+    if prices[0] > prices[1]*0.96 > 0:
+        if diff_1 > 0 > diff_2:
             direction = 'B'
-        if diff_1 > diff_2 > 0 > diff_3 and prices[0] > prices[1]*0.96:
+        if diff_1 > diff_2 > 0 > diff_3:
             direction = 'B'
-        if diff_1 > diff_2 > diff_3 > 0 > diff_4 and prices[0] > prices[1]*0.96:
+        if diff_1 > diff_2 > diff_3 > 0 > diff_4:
+            direction = 'B'
+        if diff_1 > diff_2 > diff_3 > diff_4 > 0 > diff_5:
             direction = 'B'
     if diff_1 < 0 < diff_2:
         direction = 'S'
-    if 0 < prices[0] < prices[1]*0.92 or 0 < prices[0] < open_price * 0.92 or 0 < prices[0] < highest_price*0.93:
-        direction = 'S'
-    if 0 < prices[0] < numpy.min(prices[1:days4]):
+    if 0 < prices[0] < prices[1]*0.92 or 0 < prices[0] < open_price * 0.94 or 0 < prices[0] < highest_price*0.94:
         direction = 'S'
     if is_logging:
         logger.info("code=%s, direction=%s, prices=%s, vols=%s" % (code, direction, prices[0: days2], vols[0: days2]))
