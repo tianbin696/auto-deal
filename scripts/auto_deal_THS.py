@@ -50,10 +50,10 @@ new_codes = []
 ignore_codes = []
 stock_positions = {}
 stock_chenbens = {}
-globalAvailableMoney = 30000
-maxAmount = 10000
+globalAvailableMoney = 20000
+maxAmount = 200000
 minAmount = 0
-minBuyAmount = 10000
+minBuyAmount = 20000
 fullSellAmount = 6000
 sleepTime = 0.5
 monitorInterval = 30
@@ -590,12 +590,12 @@ class Monitor:
         if code not in self.isSelleds or not self.isSelleds[code]:
             if code not in self.isBuyeds or not self.isBuyeds[code]:
                 if direction == 'S':
-                    return 'FS'
+                    return 'S'
 
         # 涨破RSI与阈值，买入
         if code not in self.isBuyeds or not self.isBuyeds[code]:
             if code not in self.isSelleds or not self.isSelleds[code]:
-                if direction == 'B':
+                if direction == 'B' and code in new_codes:
                         return 'B'
 
         return 'N'
@@ -610,7 +610,7 @@ class Monitor:
         return int(minBuyAmount/100/price)*100
 
     def getSellAmount(self, code, price):
-        return max(int(stock_positions[code]/200)*100, 100)
+        return max(int(stock_positions[code]/500)*100, 100)
 
 
 def getRSI(prices, days=14):
@@ -661,8 +661,8 @@ def get_direction_by_rsi(code, prices, is_logging=True):
 
 
 def get_direction_by_avg(code, prices, vols, is_logging=True, open_price=0, highest_price=0):
-    days1 = 7
-    days2 = 14
+    days1 = 10
+    days2 = 20
     days3 = 12
     days4 = 24
     avg1_0 = numpy.mean(prices[0:days1])
@@ -696,8 +696,8 @@ def get_direction_by_avg(code, prices, vols, is_logging=True, open_price=0, high
         direction = 'S'
     if 0 < prices[0] < prices[1]*0.92 or 0 < prices[0] < open_price * 0.92 or 0 < prices[0] < highest_price*0.93:
         direction = 'S'
-    if 0 < prices[0] < numpy.min(prices[1:days4]):
-        direction = 'S'
+    # if 0 < prices[0] < numpy.min(prices[1:days4]):
+    #     direction = 'S'
     if is_logging:
         logger.info("code=%s, direction=%s, prices=%s, vols=%s" % (code, direction, prices[0: days2], vols[0: days2]))
     return direction
