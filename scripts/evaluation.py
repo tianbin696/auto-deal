@@ -17,7 +17,7 @@ token = "546aae3c5aca9eb09c9181e04974ae3cf910ce6c0d8092dde678d1cd"
 pro = ts.pro_api(token)
 ts_local = TushareAPI()
 
-total_available_money = 100000
+total_available_money = 10000
 
 all_returns = []
 all_increases = []
@@ -98,12 +98,10 @@ class Stock:
         self.returns.append(float("%.2f" % ((value - total_available_money)/total_available_money)))
 
     def get_buy_amount(self, price):
-        if self.free_money < (self.free_money + self.total_position*price)/3:
-            return int(self.free_money/100/price)*100
-        return int(self.free_money/200/price)*100
+        return int(self.free_money/100/price)*100
 
     def get_sell_amount(self, price):
-        return max(int(self.total_position/200)*100, 100)
+        return max(int(self.total_position/100)*100, 100)
 
 
 def save_2_candidates(code):
@@ -225,17 +223,17 @@ def scan_filtered(path="../codes/candidates.txt", save_candidates=False):
             continue
         code = append_loc(code.strip())
         try:
-            test(code, startTime, endTime, 0.0, 2.0, save_candidates)
+            test(code, startTime, endTime, 0.5, 1.0, save_candidates)
         except Exception as e:
             print("%s" % e)
 
 
 # get_all_codes()
-# scan_all()
+scan_all()
 # clear_candidates()
 # scan_filtered(path="../codes/all_codes.txt", save_candidates=True)
-# del all_increases[:]
-# del all_returns[:]
+del all_increases[:]
+del all_returns[:]
 scan_filtered()
 stats(all_increases)
 stats(all_returns)
