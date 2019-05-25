@@ -590,7 +590,7 @@ class Monitor:
         if code not in self.isSelleds or not self.isSelleds[code]:
             if code not in self.isBuyeds or not self.isBuyeds[code]:
                 if direction == 'S':
-                    if stock_positions[code]*price < fullSellAmount:
+                    if code in stock_positions and stock_positions[code]*price < fullSellAmount:
                         return 'FS'
                     return 'S'
 
