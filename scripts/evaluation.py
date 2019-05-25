@@ -17,7 +17,7 @@ token = "546aae3c5aca9eb09c9181e04974ae3cf910ce6c0d8092dde678d1cd"
 pro = ts.pro_api(token)
 ts_local = TushareAPI()
 
-total_available_money = 100000
+total_available_money = 200000
 
 all_returns = []
 all_increases = []
@@ -216,14 +216,14 @@ def scan_all():
 def scan_filtered(path="../codes/candidates.txt", save_candidates=False):
     endDate = (datetime.now() - timedelta(days = 0))
     endTime = int(endDate.strftime("%Y%m%d"))
-    startTime = endTime - 10000
+    startTime = endTime - 60000
     st_codes = ts_local.get_st_list()
     for code in list(open(path)):
         if code.strip() in st_codes:
             continue
         code = append_loc(code.strip())
         try:
-            test(code, startTime, endTime, 0.2, 1.0, save_candidates)
+            test(code, startTime, endTime, 0.2, 10.0, save_candidates)
         except Exception as e:
             print("%s" % e)
 

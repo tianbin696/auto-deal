@@ -50,8 +50,8 @@ new_codes = []
 ignore_codes = []
 stock_positions = {}
 stock_chenbens = {}
-maxAmount = 100000
-globalAvailableMoney = 2*maxAmount
+maxAmount = 200000
+globalAvailableMoney = 1*maxAmount
 minAmount = 0
 minBuyAmount = 10000
 fullSellAmount = 10000
@@ -609,7 +609,9 @@ class Monitor:
         return price * 0.99
 
     def getBuyAmount(self, code, price):
-        free_money = max(maxAmount - stock_positions[code]*price, 0)
+        free_money = maxAmount
+        if code in stock_positions:
+            free_money = max(maxAmount - stock_positions[code]*price, 0)
         return int(free_money/200/price)*100
 
     def getSellAmount(self, code, price):
