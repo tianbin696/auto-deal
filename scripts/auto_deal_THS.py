@@ -392,7 +392,7 @@ class Monitor:
                 if not isStarted:
                     continue
 
-                if not self.compare("14", "30"):
+                if not self.compare("14", "45"):
                     logger.info("Sleep before deal start")
                     continue
                 if not deal_started:
