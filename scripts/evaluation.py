@@ -10,6 +10,7 @@ from datetime import timedelta
 from auto_deal_THS import get_direction_by_rsi
 from auto_deal_THS import get_direction_by_avg
 from auto_deal_THS import get_direction_by_macd
+from auto_deal_THS import get_direction_by_composite_ways
 from auto_deal_THS import getRSI
 from tushare_api import TushareAPI
 
@@ -71,7 +72,8 @@ class Stock:
     def deal(self, prices, vols, trade_date, df, open_price=0, highest_price=0):
         # direction = get_direction_by_macd(self.code, df)
         # direction = get_direction_by_rsi(self.code, prices, False)
-        direction = get_direction_by_avg(self.code, prices, vols, False, open_price, highest_price)
+        # direction = get_direction_by_avg(self.code, prices, vols, False, open_price, highest_price)
+        direction = get_direction_by_composite_ways(self.code, prices, vols, False, open_price, highest_price)
         amount = 0
         if direction == "S":
             sell_amount = self.get_sell_amount(prices[0])
@@ -216,7 +218,7 @@ def scan_all():
 def scan_filtered(path="../codes/candidates.txt", save_candidates=False):
     endDate = (datetime.now() - timedelta(days = 0))
     endTime = int(endDate.strftime("%Y%m%d"))
-    startTime = endTime - 60000
+    startTime = 20100525
     st_codes = ts_local.get_st_list()
     for code in list(open(path)):
         if code.strip() in st_codes:

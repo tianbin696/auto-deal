@@ -584,7 +584,8 @@ class Monitor:
 
         # direction = get_direction_by_rsi(code, updated_prices)
         # direction = self.get_direction_by_macd(code, price)
-        direction = get_direction_by_avg(code, updated_prices, updated_vols, True, open_price, highest_price)
+        # direction = get_direction_by_avg(code, updated_prices, updated_vols, True, open_price, highest_price)
+        direction = get_direction_by_composite_ways(code, updated_prices, updated_vols, True, open_price, highest_price)
 
         # 跌破RSI阈值，卖出
         if code not in self.isSelleds or not self.isSelleds[code]:
@@ -654,10 +655,10 @@ def get_direction_by_rsi(code, prices, is_logging=True):
     rsi_3 = getRSI(prices[3:], days)
     direction = 'N'
     if rsi > max(rsi_1, rsi_2, rsi_3):
-        if 50 < rsi < 70:
+        if 0 < rsi < 10:
             direction = 'B'
     if rsi < min(rsi_1, rsi_2, rsi_3):
-        if rsi > 80:
+        if rsi > 75:
             direction = 'S'
     if is_logging:
         logger.info("code=%s, price=%.2f, rsi=%.2f, rsi_1=%.2f, direction=%s" %
@@ -710,6 +711,16 @@ def get_direction_by_avg(code, prices, vols, is_logging=True, open_price=0, high
     if is_logging:
         logger.info("code=%s, direction=%s, prices=%s, vols=%s" % (code, direction, prices[0: days2], vols[0: days2]))
     return direction
+
+
+def get_direction_by_composite_ways(code, prices, vols, is_logging=True, open_price=0, highest_price=0):
+    direction = get_direction_by_avg(code, prices, vols, is_logging, open_price, highest_price)
+    if direction == 'S' or direction == 'B':
+        return direction
+    direction = get_direction_by_rsi(code, prices, is_logging)
+    if direction == 'S' or direction == 'B':
+        return direction
+    return 'N'
 
 
 def test():
