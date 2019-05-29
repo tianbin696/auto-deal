@@ -690,6 +690,7 @@ def get_direction_by_avg(code, prices, vols, is_logging=True, open_price=0, high
 
     vol1 = numpy.mean(vols[0:days1])
     vol2 = numpy.mean(vols[0:days2])
+    liang_bi = vols[0]/numpy.mean(vols[1:6])
 
     direction = 'N'
     if prices[0] > numpy.min(prices[1:days4]) > 0 and prices[1]*1.06 > prices[0] > highest_price*0.97:
@@ -699,15 +700,15 @@ def get_direction_by_avg(code, prices, vols, is_logging=True, open_price=0, high
             direction = 'B'
         if diff_1 > diff_2 > diff_3 > 0 > diff_4 and prices[0] > prices[1]*0.96:
             direction = 'B'
-        if numpy.max(prices[1:2*days4])*0.87 > prices[0] > prices[1]*0.96 and 0 < vols[0]/numpy.mean(vols[1:6]) < 0.6:
+        if numpy.max(prices[1:2*days4])*0.87 > prices[0] > prices[1]*0.96 and 0 < liang_bi < 0.6:
             direction = 'B'
     if diff_1 < 0 < diff_2:
         direction = 'S'
     if 0 < prices[0] < prices[1]*0.92 or 0 < prices[0] < open_price * 0.92 or 0 < prices[0] < highest_price*0.93:
         direction = 'S'
-    if 0 < prices[0] < numpy.min(prices[1:days4]) and vols[0]/numpy.mean(vols[1:6]) > 0.9:
+    if 0 < prices[0] < numpy.min(prices[1:days4]) and liang_bi > 0.9:
         direction = 'S'
-    if numpy.min(prices[1:2*days4])*1.19 < prices[0] < prices[1]*1.05 and vols[0]/numpy.mean(vols[1:6]) > 1.9:
+    if numpy.min(prices[1:2*days4])*1.19 < prices[0] < prices[1]*1.05 and liang_bi > 1.9:
         direction = 'S'
     if is_logging:
         logger.info("code=%s, direction=%s, prices=%s, vols=%s" % (code, direction, prices[0: days2], vols[0: days2]))
