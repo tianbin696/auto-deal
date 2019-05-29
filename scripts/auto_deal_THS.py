@@ -653,11 +653,12 @@ def get_direction_by_rsi(code, prices, is_logging=True):
     rsi_1 = getRSI(prices[1:], days)
     rsi_2 = getRSI(prices[2:], days)
     rsi_3 = getRSI(prices[3:], days)
+    rsi_4 = getRSI(prices[4:], days)
     direction = 'N'
-    if rsi > max(rsi_1, rsi_2, rsi_3):
-        if 0 < rsi < 16:
+    if rsi > max(rsi_1, rsi_2, rsi_3, rsi_4):
+        if 0 < rsi < 22:
             direction = 'B'
-    if rsi < min(rsi_1, rsi_2, rsi_3):
+    if rsi < min(rsi_1, rsi_2, rsi_3, rsi_4):
         if rsi > 75:
             direction = 'S'
     if is_logging:
