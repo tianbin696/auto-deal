@@ -707,7 +707,7 @@ def get_direction_by_avg(code, prices, vols, is_logging=True, open_price=0, high
         direction = 'S'
     if 0 < prices[0] < numpy.min(prices[1:days4]) and vol1 > vol2:
         direction = 'S'
-    if numpy.min(prices[1:2*days4])*1.2 < prices[0] < prices[1]*1.04 and vols[0]/numpy.mean(vols[1:6]) > 1.9:
+    if numpy.min(prices[1:2*days4])*1.19 < prices[0] < prices[1]*1.04 and vols[0]/numpy.mean(vols[1:6]) > 1.9:
         direction = 'S'
     if is_logging:
         logger.info("code=%s, direction=%s, prices=%s, vols=%s" % (code, direction, prices[0: days2], vols[0: days2]))
