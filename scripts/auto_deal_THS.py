@@ -716,6 +716,9 @@ def get_direction_by_avg(code, prices, vols, is_logging=True, open_price=0, high
 
 
 def get_direction_by_composite_ways(code, prices, vols, is_logging=True, open_price=0, highest_price=0):
+    # To skip exception value
+    if prices[0] <= 0 or prices[0] > prices[1]*1.11 > 0 or 0 < prices[0] < prices[1]*0.89:
+        return 'N'
     direction = get_direction_by_avg(code, prices, vols, is_logging, open_price, highest_price)
     if direction == 'S' or direction == 'B':
         return direction
