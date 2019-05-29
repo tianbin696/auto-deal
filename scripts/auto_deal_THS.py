@@ -647,7 +647,7 @@ def get_direction_by_macd(code, df):
 
 
 def get_direction_by_rsi(code, prices, is_logging=True):
-    days = 14
+    days = 15
 
     rsi = getRSI(prices, days)
     rsi_1 = getRSI(prices[1:], days)
@@ -655,7 +655,7 @@ def get_direction_by_rsi(code, prices, is_logging=True):
     rsi_3 = getRSI(prices[3:], days)
     direction = 'N'
     if rsi > max(rsi_1, rsi_2, rsi_3):
-        if 0 < rsi < 10:
+        if 0 < rsi < 16:
             direction = 'B'
     if rsi < min(rsi_1, rsi_2, rsi_3):
         if rsi > 75:
