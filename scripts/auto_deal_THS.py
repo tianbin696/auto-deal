@@ -613,7 +613,7 @@ class Monitor:
         free_money = maxAmount
         if code in stock_positions:
             free_money = max(maxAmount - stock_positions[code]*price, 0)
-        return int(free_money/200/price)*100
+        return int(free_money/100/price)*100
 
     def getSellAmount(self, code, price):
         return max(int(stock_positions[code]/200)*100, 100)
