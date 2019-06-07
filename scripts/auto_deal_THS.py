@@ -356,8 +356,8 @@ class Monitor:
         # stock_codes.extend(sort_codes(temp_arr, avg10Days, timeStr))
         stock_codes.extend(temp_arr)
         end_time = time.time()
-        self.operation.saveScreenshot("均值更新完成，共耗时%d秒，排除异常，可监控%d支股票。Position=%s" %
-                                      ((end_time - start_time), len(stock_codes), stock_positions), u'交易前准备')
+        self.operation.saveScreenshot("均值更新完成，共耗时%d秒，排除异常，可监控%d支股票。maxAmount=%d, Position=%s" %
+                                      ((end_time - start_time), len(stock_codes), maxAmount, stock_positions), u'交易前准备')
         # self.operation.saveScreenshot("均值更新完成，共耗时%d秒，排除异常，可监控%d支股票。"
         #                               "avg1=%s, macd=%s, rsi=%s, new_codes=%s" %
         #                               ((end_time - start_time), len(stock_codes), self.avg1, self.macds, self.rsis,
