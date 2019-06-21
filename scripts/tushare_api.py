@@ -9,7 +9,7 @@ import pandas
 from datetime import datetime
 from datetime import timedelta
 
-token = "546aae3c5aca9eb09c9181e04974ae3cf910ce6c0d8092dde678d1cd"
+token = "edb4af8baea44c2cd6e02d8e02e81682eb98928475b3f7f67d3ba5f2"
 pro = ts.pro_api(token)
 
 logger = logging.getLogger('TushareAPI')
