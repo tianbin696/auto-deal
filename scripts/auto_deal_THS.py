@@ -50,7 +50,7 @@ new_codes = []
 ignore_codes = []
 stock_positions = {}
 stock_chenbens = {}
-maxAmount = 252000
+maxAmount = 320000
 globalAvailableMoney = 1*maxAmount
 minAmount = 0
 minBuyAmount = 10000
@@ -615,10 +615,10 @@ class Monitor:
         free_money = maxAmount
         if code in stock_positions:
             free_money = max(maxAmount - stock_positions[code]*price, 0)
-        return int(free_money/100/price)*100
+        return int(free_money/200/price)*100
 
     def getSellAmount(self, code, price):
-        return max(int(stock_positions[code]/100)*100, 100) - 100
+        return max(int(stock_positions[code]/400)*100, 100) - 100
 
 
 def getRSI(prices, days=14):
