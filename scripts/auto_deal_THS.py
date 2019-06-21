@@ -517,7 +517,7 @@ class Monitor:
                         code_str = "%s.SZ" % code
                     else:
                         code_str = "%s.SH" % code
-                    df = pro.daily(ts_code=code_str, adj='qfq', retry_count=9)
+                    df = ts.pro_bar(pro_api=pro, ts_code=code_str, adj='qfq', retry_count=9)
                     d = {'close':df['close'][0:52].astype('float'), 'high':df['high'][0:52].astype('float'), 'low':df['low'][0:52].astype('float'), 'volume':df['vol'][0:52].astype('int')*100}
                     break
                 except Exception as e:
