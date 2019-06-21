@@ -31,7 +31,7 @@ from macd import get_MACD
 
 from tushare_api import TushareAPI
 token = "edb4af8baea44c2cd6e02d8e02e81682eb98928475b3f7f67d3ba5f2"
-pro = ts.pro_api(token)
+ts.set_token(token)
 local_ts = TushareAPI()
 
 logging.basicConfig(level=logging.DEBUG,

@@ -10,7 +10,7 @@ from datetime import datetime
 from datetime import timedelta
 
 token = "edb4af8baea44c2cd6e02d8e02e81682eb98928475b3f7f67d3ba5f2"
-pro = ts.pro_api(token)
+ts.set_token(token)
 
 logger = logging.getLogger('TushareAPI')
 cacheFolder = "../cache"
