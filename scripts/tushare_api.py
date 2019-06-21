@@ -33,7 +33,7 @@ class TushareAPI:
         if os.path.exists(cacheFile):
             df = pandas.read_csv(cacheFile)
         else:
-            df = ts.pro_bar(pro_api=pro, ts_code=code, adj="qfq")
+            df = ts.pro_bar(ts_code=code, adj="qfq")
             if len(df) > 0:
                 writer = open(cacheFile, "w")
                 df.to_csv(writer)
