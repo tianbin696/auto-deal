@@ -203,7 +203,7 @@ class OperationOfThs:
             time.sleep(sleepTime)
             popup_window.child_window(title=u"确定", class_name="Button").Click()
 
-        data = pywinauto.clipboard.get_data() # Copy from clipboard directly after manual copy
+        data = pywinauto.clipboard.GetData() # Copy from clipboard directly after manual copy
         lst = data.strip().split("\r\n")
         matrix = []
         for i in range(0, len(lst)):
@@ -267,7 +267,7 @@ class OperationOfThs:
             time.sleep(2*sleepTime)
             keyboard.send_keys("{F5}")
             time.sleep(2*sleepTime)
-            self.__main_window.CaptureAsImage().save(picName)
+            self.__main_window.capture_as_image().save(picName)
             time.sleep(sleepTime)
             self.screenshotCount += 1
             sendEmail([picName], status, title)
