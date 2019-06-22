@@ -87,59 +87,59 @@ class OperationOfThs:
                 tkinter.messagebox.showerror('错误', '无法获得“同花顺双向委托界面”的窗口句柄,请将同花顺交易系统切换到“双向委托界面”！')
                 exit()
 
-            self.__main_window = self.__app.window_(handle=top_window)
-            self.__dialog_window = self.__app.window_(handle=top_window)
+            self.__main_window = self.__app.window(handle=top_window)
+            self.__dialog_window = self.__app.window(handle=top_window)
         except Exception as e:
             logger.info("Error during init THS: %s" % e)
 
     def __buy(self, code, price, quantity):
-        keyboard.SendKeys("{F1}")
+        keyboard.send_keys("{F1}")
         time.sleep(sleepTime)
         self.__init__()
 
         # self.__dialog_window.print_control_identifiers()
 
-        self.__dialog_window.Edit0.SetFocus()
+        self.__dialog_window.Edit0.set_focus()
         time.sleep(sleepTime)
-        self.__dialog_window.Edit0.SetEditText(code)
-        time.sleep(sleepTime)
-
-        self.__dialog_window.Edit2.SetFocus()
-        time.sleep(sleepTime)
-        self.__dialog_window.Edit2.SetEditText(price)
+        self.__dialog_window.Edit0.set_edit_text(code)
         time.sleep(sleepTime)
 
-        self.__dialog_window.Edit3.SetFocus()
+        self.__dialog_window.Edit2.set_focus()
         time.sleep(sleepTime)
-        self.__dialog_window.Edit3.SetEditText(quantity)
+        self.__dialog_window.Edit2.set_edit_text(price)
         time.sleep(sleepTime)
 
-        self.__dialog_window[u'买入Button'].Click()
+        self.__dialog_window.Edit3.set_focus()
+        time.sleep(sleepTime)
+        self.__dialog_window.Edit3.set_edit_text(quantity)
+        time.sleep(sleepTime)
+
+        self.__dialog_window[u'买入Button'].click()
         time.sleep(sleepTime)
 
     def __sell(self, code, price, quantity):
-        keyboard.SendKeys("{F2}")
+        keyboard.send_keys("{F2}")
         time.sleep(sleepTime)
         self.__init__()
 
         # self.__dialog_window.print_control_identifiers()
 
-        self.__dialog_window.Edit0.SetFocus()
+        self.__dialog_window.Edit0.set_focus()
         time.sleep(sleepTime)
-        self.__dialog_window.Edit0.SetEditText(code)
-        time.sleep(sleepTime)
-
-        self.__dialog_window.Edit2.SetFocus()
-        time.sleep(sleepTime)
-        self.__dialog_window.Edit2.SetEditText(price)
+        self.__dialog_window.Edit0.set_edit_text(code)
         time.sleep(sleepTime)
 
-        self.__dialog_window.Edit3.SetFocus()
+        self.__dialog_window.Edit2.set_focus()
         time.sleep(sleepTime)
-        self.__dialog_window.Edit3.SetEditText(quantity)
+        self.__dialog_window.Edit2.set_edit_text(price)
         time.sleep(sleepTime)
 
-        self.__dialog_window[u'卖出Button'].Click()
+        self.__dialog_window.Edit3.set_focus()
+        time.sleep(sleepTime)
+        self.__dialog_window.Edit3.set_edit_text(quantity)
+        time.sleep(sleepTime)
+
+        self.__dialog_window[u'卖出Button'].click()
         # self.__dialog_window.child_window(title=u"卖出", class_name="Button").Click()
         time.sleep(sleepTime)
 
@@ -151,11 +151,11 @@ class OperationOfThs:
 
     def __closePopupWindow(self):
         # logger.info("Closing popup window")
-        popup_window = self.__main_window.PopupWindow()
+        popup_window = self.__main_window.popup_window()
         if popup_window:
-            popup_window = self.__app.window_(handle=popup_window)
-            popup_window.SetFocus()
-            popup_window.Button.Click()
+            popup_window = self.__app.window(handle=popup_window)
+            popup_window.set_focus()
+            popup_window.Button.click()
             return True
         return False
 
@@ -188,22 +188,22 @@ class OperationOfThs:
     def __getCleanedData(self, cols = 16):
         self.restoreWindow()
         self.__init__()
-        self.__dialog_window.CVirtualGridCtrl.RightClick(coords=(30, 30))
-        self.__main_window.TypeKeys('C')
+        self.__dialog_window.CVirtualGridCtrl.right_click(coords=(30, 30))
+        self.__main_window.type_keys('C')
         time.sleep(sleepTime)
-        popup_window = self.__main_window.PopupWindow()
+        popup_window = self.__main_window.popup_window()
         if popup_window:
             popup_window = self.__app.window_(handle=popup_window)
             popup_window.CaptureAsImage().save("v_code.png")
             vcode = get_vcode('v_code.png')
-            popup_window.SetFocus()
-            popup_window.Edit.SetFocus()
+            popup_window.set_focus()
+            popup_window.Edit.set_focus()
             time.sleep(sleepTime)
-            popup_window.Edit.SetEditText(vcode)
+            popup_window.Edit.set_edit_text(vcode)
             time.sleep(sleepTime)
             popup_window.child_window(title=u"确定", class_name="Button").Click()
 
-        data = pywinauto.clipboard.GetData() # Copy from clipboard directly after manual copy
+        data = pywinauto.clipboard.get_data() # Copy from clipboard directly after manual copy
         lst = data.strip().split("\r\n")
         matrix = []
         for i in range(0, len(lst)):
@@ -237,18 +237,18 @@ class OperationOfThs:
 
     def maxWindow(self):
         # logger.info("Max current window")
-        if self.__main_window.GetShowState() != 3:
+        if self.__main_window.get_show_state() != 3:
             self.__main_window.Maximize()
-        self.__main_window.SetFocus()
+        self.__main_window.set_focus()
         time.sleep(sleepTime)
 
     def minWindow(self):
         # logger.info("Min current window")
-        if self.__main_window.GetShowState() != 2:
+        if self.__main_window.get_show_state() != 2:
             self.__main_window.Minimize()
 
     def restoreWindow(self):
-        if self.__main_window.HasStyle(win32defines.WS_MINIMIZE): # if minimized
+        if self.__main_window.has_style(win32defines.WS_MINIMIZE): # if minimized
             ShowWindow(self.__main_window.wrapper_object(), 9) # restore window state
         else:
             SetForegroundWindow(self.__main_window.wrapper_object()) # bring to front
@@ -261,11 +261,11 @@ class OperationOfThs:
             self.__closePopupWindows()
             picName = "../../logs/auto_deal_%s.png" % datetime.now().strftime("%Y-%m-%d_%H-%M")
             self.restoreWindow()
-            keyboard.SendKeys("{F4}")
+            keyboard.send_keys("{F4}")
             time.sleep(2*sleepTime)
-            keyboard.SendKeys("{F5}")
+            keyboard.send_keys("{F5}")
             time.sleep(2*sleepTime)
-            keyboard.SendKeys("{F5}")
+            keyboard.send_keys("{F5}")
             time.sleep(2*sleepTime)
             self.__main_window.CaptureAsImage().save(picName)
             time.sleep(sleepTime)
