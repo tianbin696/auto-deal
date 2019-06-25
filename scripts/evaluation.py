@@ -75,8 +75,8 @@ class Stock:
         # direction = get_direction_by_avg(self.code, prices, vols, False, open_price, highest_price)
         direction = get_direction_by_composite_ways(self.code, prices, vols, False, open_price, highest_price)
         amount = 0
-        if "S" in direction:
-            sell_amount = self.get_sell_amount(prices[0], direction)
+        if direction == "S":
+            sell_amount = self.get_sell_amount(prices[0])
             if self.total_position >= sell_amount:
                 self.total_position -= sell_amount
                 self.free_money += sell_amount * prices[0]
@@ -102,9 +102,8 @@ class Stock:
     def get_buy_amount(self, price):
         return int(self.free_money/100/price)*100
 
-    def get_sell_amount(self, price, direction):
-        percentage = float(direction.split("_")[1])
-        return max(int(self.total_position/percentage/100)*100, 100) - 100
+    def get_sell_amount(self, price):
+        return max(int(self.total_position/100)*100, 100) - 100
 
 
 def save_2_candidates(code):
