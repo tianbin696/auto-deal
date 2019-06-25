@@ -615,7 +615,7 @@ class Monitor:
         free_money = maxAmount
         if code in stock_positions:
             free_money = max(maxAmount - stock_positions[code]*price, 0)
-        return int(free_money/200/price)*100
+        return int(free_money/100/price)*100
 
     def getSellAmount(self, code, price):
         return max(int(stock_positions[code]/400)*100, 100) - 100
@@ -662,7 +662,7 @@ def get_direction_by_rsi(code, prices, is_logging=True):
             direction = 'B'
     if rsi < min(rsi_1, rsi_2, rsi_3, rsi_4):
         if rsi > 75:
-            direction = 'S'
+            direction = 'S_2'
     if is_logging:
         logger.info("code=%s, price=%.2f, rsi=%.2f, rsi_1=%.2f, direction=%s" %
                     (code, prices[0], rsi, rsi_1, direction))
@@ -707,15 +707,15 @@ def get_direction_by_avg(code, prices, vols, is_logging=True, open_price=0, high
         if open_price*1.01 < prices[0] < numpy.max(prices[0:days4])*0.87 and liang_bi < 0.66:
             direction = 'B'
     if diff_1 < 0 < diff_2:
-        direction = 'S'
+        direction = 'S_1'
     if 0 < prices[0] < prices[1]*0.92 or 0 < prices[0] < open_price * 0.92 or 0 < prices[0] < highest_price*0.93:
-        direction = 'S'
+        direction = 'S_2'
     if 0 < prices[0] < numpy.min(prices[1:days4]) and liang_bi > 1.2:
-        direction = 'S'
+        direction = 'S_1'
     if numpy.min(prices[1:2*days4])*1.19 < prices[0] < prices[1]*1.045 and liang_bi > 1.9:
-        direction = 'S'
+        direction = 'S_3'
     if open_price*0.95 > prices[0] > numpy.min(prices[0:10])*1.15 and liang_bi > 0.8:
-        direction = 'S'
+        direction = 'S_3'
     if is_logging:
         logger.info("code=%s, direction=%s, prices=%s, vols=%s" % (code, direction, prices[0: days2], vols[0: days2]))
     return direction
@@ -726,10 +726,10 @@ def get_direction_by_composite_ways(code, prices, vols, is_logging=True, open_pr
     if prices[0] <= 0 or prices[0] > prices[1]*1.11 > 0 or 0 < prices[0] < prices[1]*0.89:
         return 'N'
     direction = get_direction_by_avg(code, prices, vols, is_logging, open_price, highest_price)
-    if direction == 'S' or direction == 'B':
+    if "S" in direction or direction == 'B':
         return direction
     direction = get_direction_by_rsi(code, prices, is_logging)
-    if direction == 'S' or direction == 'B':
+    if "S" in direction or direction == 'B':
         return direction
     # d = {'close':prices[0:52]}
     # df = pd.DataFrame(d).reset_index()
