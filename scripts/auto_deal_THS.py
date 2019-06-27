@@ -706,7 +706,7 @@ def get_direction_by_avg(code, prices, vols, is_logging=True, open_price=0, high
             direction = 'B'
         if open_price*1.01 < prices[0] < numpy.max(prices[0:days4])*0.87 and liang_bi < 0.66:
             direction = 'B'
-        if numpy.min(prices[1:days4])*1.1 < prices[0] < numpy.max(prices[1:days4])*0.9 and liang_bi < 0.6:
+        if numpy.min(prices[1:6])*1.05 < prices[0] < numpy.max(prices[1:6])*0.95 and liang_bi < 0.6:
             direction = 'B'
     if diff_1 < 0 < diff_2:
         direction = 'S'
