@@ -8,6 +8,7 @@ import numpy
 import os
 from datetime import datetime
 from datetime import timedelta
+import traceback
 
 import pytz
 import pywinauto
@@ -417,10 +418,10 @@ class Monitor:
                         self.makeDecision(code, price, open_prices[0], p_changes[0], highest_prices[0], lowest_price[0], volumes[0])
                         time.sleep(0.5)
                     except Exception as e:
-                        logger.error("Failed to monitor %s: %s" % (code, e))
+                        logger.error("Failed to monitor %s: %s" % (code, traceback.format_exc()))
 
             except Exception as e:
-                logger.error("Exception happen within loop: %s" % e)
+                logger.error("Exception happen within loop: %s" % traceback.format_exc())
 
     def formatDate(self, num):
         if num < 10:
