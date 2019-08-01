@@ -51,8 +51,8 @@ new_codes = []
 ignore_codes = []
 stock_positions = {}
 stock_chenbens = {}
-maxAmount = 320000
-globalAvailableMoney = 1*maxAmount
+maxAmount = 60000
+globalAvailableMoney = 5*maxAmount
 minAmount = 0
 minBuyAmount = 10000
 fullSellAmount = 10000
@@ -701,26 +701,28 @@ def get_direction_by_avg(code, prices, vols, is_logging=True, open_price=0, high
             direction = 'B'
         if diff_1 > diff_2 > 0 > diff_3:
             direction = 'B'
-        if numpy.max(prices[1:2*days4])*0.87 > prices[0] > 0 and 0 < liang_bi < 0.6:
-            direction = 'B'
+        # if numpy.max(prices[1:2*days4])*0.87 > prices[0] > 0 and 0 < liang_bi < 0.6:
+        #     direction = 'B'
         if numpy.max(prices[1:30])*0.95 < open_price < numpy.min(prices[1:26])*1.15 and prices[0] > prices[1]*1.02 and liang_bi > 1.0:
             direction = 'B'
-        if open_price*1.01 < prices[0] < numpy.max(prices[0:days4])*0.87 and liang_bi < 0.66:
-            direction = 'B'
-        if numpy.min(prices[1:6])*1.05 < prices[0] < numpy.max(prices[1:6])*0.95 and liang_bi < 0.6:
-            direction = 'B'
+        # if open_price*1.01 < prices[0] < numpy.max(prices[0:days4])*0.87 and liang_bi < 0.66:
+        #     direction = 'B'
+        # if numpy.min(prices[1:6])*1.05 < prices[0] < numpy.max(prices[1:6])*0.95 and liang_bi < 0.6:
+        #     direction = 'B'
         if liang_bi < 0.4:
             direction = 'B'
     if diff_1 < 0 < diff_2:
         direction = 'S'
-    if 0 < prices[0] < prices[1]*0.92 or 0 < prices[0] < open_price * 0.92 or 0 < prices[0] < highest_price*0.93:
+    if diff_1 < diff_2 < 0 < diff_3:
         direction = 'S'
+    # if 0 < prices[0] < prices[1]*0.92 or 0 < prices[0] < open_price * 0.92 or 0 < prices[0] < highest_price*0.93:
+    #     direction = 'S'
     if 0 < prices[0] < numpy.min(prices[1:days4]) and liang_bi > 1.2:
         direction = 'S'
-    if numpy.min(prices[1:2*days4])*1.19 < prices[0] < prices[1]*1.045 and liang_bi > 1.9:
-        direction = 'S'
-    if open_price*0.95 > prices[0] > numpy.min(prices[0:10])*1.15 and liang_bi > 0.8:
-        direction = 'S'
+    # if numpy.min(prices[1:2*days4])*1.19 < prices[0] < prices[1]*1.045 and liang_bi > 1.9:
+    #     direction = 'S'
+    # if open_price*0.95 > prices[0] > numpy.min(prices[0:10])*1.15 and liang_bi > 0.8:
+    #     direction = 'S'
     if is_logging:
         logger.info("code=%s, direction=%s, prices=%s, vols=%s" % (code, direction, prices[0: days2], vols[0: days2]))
     return direction
