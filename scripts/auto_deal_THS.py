@@ -701,9 +701,9 @@ def get_direction_by_avg(code, prices, vols, is_logging=True, open_price=0, high
             direction = 'B'
         if diff_1 > diff_2 > 0 > diff_3:
             direction = 'B'
-        if numpy.max(prices[1:2*days4])*0.87 > prices[0] > 0 and 0 < liang_bi < 0.6:
+        if numpy.max(prices[1:26])*0.85 > prices[0] > 0 and 0 < liang_bi < 0.6:
             direction = 'B'
-        if numpy.max(prices[1:30])*0.95 < open_price < numpy.min(prices[1:26])*1.15 and prices[0] > prices[1]*1.02 and liang_bi > 1.0:
+        if numpy.max(prices[1:26])*0.95 < open_price < numpy.min(prices[1:26])*1.15 and prices[0] > prices[1]*1.02 and liang_bi > 1.0:
             direction = 'B'
         # if open_price*1.01 < prices[0] < numpy.max(prices[0:days4])*0.87 and liang_bi < 0.66:
         #     direction = 'B'
