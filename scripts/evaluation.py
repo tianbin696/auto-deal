@@ -218,14 +218,14 @@ def scan_all():
 def scan_filtered(path="../codes/candidates.txt", save_candidates=False):
     endDate = (datetime.now() - timedelta(days = 0))
     endTime = int(endDate.strftime("%Y%m%d"))
-    startTime = 20100525
+    startTime = 20160101
     # st_codes = ts_local.get_st_list()
     for code in list(open(path)):
         # if code.strip() in st_codes:
         #     continue
         code = append_loc(code.strip())
         try:
-            test(code, startTime, endTime, 3.0, 6.0, save_candidates)
+            test(code, startTime, endTime, 1.0, 6.0, save_candidates)
         except Exception as e:
             print("%s" % e)
 
