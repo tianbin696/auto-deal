@@ -108,10 +108,19 @@ class TushareAPI:
             code = "%s.SH" % code
         return code
 
+    def get_last_business_day(self):
+        data_folder = "../cache/"
+        files = [v for v in os.listdir(data_folder)]
+        files.sort()
+        last_day = files[-1]
+        today_str = time.strftime("%Y%m%d", time.localtime())
+        if last_day == today_str:
+            yesterday = (datetime.now() - timedelta(days = 1))
+            last_day = yesterday.strftime("%Y%m%d")
+        return last_day
 
     def update_h_data(self):
-        yesterday = (datetime.now() - timedelta(days = 1))
-        yesterday_str = yesterday.strftime("%Y%m%d")
+        yesterday_str = self.get_last_business_day()
         today_str = time.strftime("%Y%m%d", time.localtime())
         path="../codes/candidates.txt"
         for code in list(open(path)):

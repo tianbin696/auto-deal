@@ -521,8 +521,9 @@ class Monitor:
             logger.info("Getting historical data for code: %s" % code)
             while retry > 0:
                 try:
-                    yesterday = (datetime.now() - timedelta(days = 1))
-                    timeStr = yesterday.strftime("%Y%m%d")
+                    # yesterday = (datetime.now() - timedelta(days = 1))
+                    # timeStr = yesterday.strftime("%Y%m%d")
+                    timeStr = local_ts.get_last_business_day()
                     # df = ts.get_h_data(code, pause=10)
                     if int(code) < 600000:
                         code_str = "%s.SZ" % code
