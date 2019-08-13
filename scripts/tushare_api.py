@@ -130,8 +130,8 @@ class TushareAPI:
             nd2 = {'ts_code': code, 'trade_date': [today_str],
                    'close': rt_df['price'][0:1].astype('float'), 'high': rt_df['high'][0:1].astype('float'),
                    'low': rt_df['low'][0:1].astype('float'), 'vol': rt_df['volume'][0:1].astype('float'),
-                   'open': rt_df['open'][0:1], 'pre_close': df['pre_close'][0:1],
-                   'amount': rt_df['amount'][0:1]}
+                   'open': rt_df['open'][0:1], 'pre_close': rt_df['pre_close'][0:1],
+                   'amount': [rt_df['amount'][0:1].astype('float')[0]/1000]}
             ndf2 = pd.DataFrame(nd2)
 
             df = pd.concat([ndf2, ndf]).reset_index()
