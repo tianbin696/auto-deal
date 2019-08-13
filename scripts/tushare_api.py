@@ -115,8 +115,9 @@ class TushareAPI:
         last_day = files[-1]
         today_str = time.strftime("%Y%m%d", time.localtime())
         if last_day == today_str:
-            yesterday = (datetime.now() - timedelta(days = 1))
-            last_day = yesterday.strftime("%Y%m%d")
+            # yesterday = (datetime.now() - timedelta(days = 1))
+            # last_day = yesterday.strftime("%Y%m%d")
+            last_day = files[-2]
         return last_day
 
     def update_h_data(self):
