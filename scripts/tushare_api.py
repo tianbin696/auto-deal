@@ -3,6 +3,7 @@
 import tushare as ts
 import logging
 import time
+import pandas as pd
 import os.path
 import os
 import pandas
@@ -98,9 +99,50 @@ class TushareAPI:
             index -= 1
         return None
 
+    def append_loc(self, code):
+        if code.find("SH") >= 0 or code.find("SZ") >= 0:
+            return code
+        if int(code) < 600000:
+            code = "%s.SZ" % code
+        else:
+            code = "%s.SH" % code
+        return code
+
+
+    def update_h_data(self):
+        yesterday = (datetime.now() - timedelta(days = 1))
+        yesterday_str = yesterday.strftime("%Y%m%d")
+        today_str = time.strftime("%Y%m%d", time.localtime())
+        path="../codes/candidates.txt"
+        for code in list(open(path)):
+            code = self.append_loc(code.strip())
+            df = self.get_h_data(code, timeStr=yesterday_str)
+            size = len(df['close'])
+            d = {'ts_code': df['ts_code'][0:size], 'trade_date': df['trade_date'][0:size],
+                 'close': df['close'][0:size].astype('float'), 'high': df['high'][0:size].astype('float'),
+                 'low': df['low'][0:size].astype('float'), 'vol': df['vol'][0:size].astype('int')*100,
+                 'open': df['open'][0:size], 'pre_close': df['pre_close'][0:size],
+                 'amount': df['amount'][0:size]}
+            ndf = pd.DataFrame(d)
+
+            # Extend df
+            rt_df = ts.get_realtime_quotes(code[0:6])
+            nd2 = {'ts_code': code, 'trade_date': [today_str],
+                   'close': rt_df['price'][0:1].astype('float'), 'high': rt_df['high'][0:1].astype('float'),
+                   'low': rt_df['low'][0:1].astype('float'), 'vol': rt_df['volume'][0:1].astype('float'),
+                   'open': rt_df['open'][0:1], 'pre_close': df['pre_close'][0:1],
+                   'amount': rt_df['amount'][0:1]}
+            ndf2 = pd.DataFrame(nd2)
+
+            df = pd.concat([ndf2, ndf]).reset_index()
+            cache_file = cacheFolder + "/" + today_str + "/" + code + "_" + today_str + ".csv"
+            if not os.path.exists(cacheFolder + "/" + today_str):
+                os.mkdir(cacheFolder + "/" + today_str)
+            if len(df) > 0:
+                writer = open(cache_file, "w")
+                df.to_csv(writer)
+                writer.close()
 
 if __name__ == "__main__":
     local_ts = TushareAPI()
-    code = '002025'
-    timeStr = '2018-08-03'
-    print("Fangliang time for code=%s: %s" %(code, local_ts.get_fangliang_time(code, timeStr=timeStr)))
+    local_ts.update_h_data()
