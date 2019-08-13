@@ -518,7 +518,8 @@ class Monitor:
                         code_str = "%s.SZ" % code
                     else:
                         code_str = "%s.SH" % code
-                    df = ts.pro_bar(ts_code=code_str, adj='qfq', retry_count=9)
+                    # df = ts.pro_bar(ts_code=code_str, adj='qfq', retry_count=9)
+                    df = local_ts.get_h_data(code_str, timeStr=timeStr)
                     d = {'close':df['close'][0:52].astype('float'), 'high':df['high'][0:52].astype('float'), 'low':df['low'][0:52].astype('float'), 'volume':df['vol'][0:52].astype('int')*100}
                     break
                 except Exception as e:
@@ -746,7 +747,7 @@ def test():
     monitor = Monitor()
 
     # Test before start
-    test_codes = ["600197", "002389"]
+    test_codes = ["601688"]
     # test_codes.extend(["002797", "002673", "601066", "600958", "601198", "000686", "002670", "600061", "600864", "601788"])
     # test_codes.extend(["002195", "600718", "600446", "600536", "600797", "002657", "600571", "600588", "600756", "002777"])
     for code in test_codes:
