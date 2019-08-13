@@ -319,8 +319,9 @@ class Monitor:
 
         # temp fix
         tmp_arr = []
+        exclude_codes = []
         for code in stock_codes:
-            if code != '002410' and code != '002624':
+            if code not in exclude_codes:
                 tmp_arr.append(code)
         del stock_codes[:]
         stock_codes.extend(tmp_arr)
