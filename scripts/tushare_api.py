@@ -129,7 +129,7 @@ class TushareAPI:
             size = len(df['close'])
             d = {'ts_code': df['ts_code'][0:size], 'trade_date': df['trade_date'][0:size],
                  'close': df['close'][0:size].astype('float'), 'high': df['high'][0:size].astype('float'),
-                 'low': df['low'][0:size].astype('float'), 'vol': df['vol'][0:size].astype('int')*100,
+                 'low': df['low'][0:size].astype('float'), 'vol': df['vol'][0:size].astype('int'),
                  'open': df['open'][0:size], 'pre_close': df['pre_close'][0:size],
                  'amount': df['amount'][0:size]}
             ndf = pd.DataFrame(d)
@@ -138,7 +138,7 @@ class TushareAPI:
             rt_df = ts.get_realtime_quotes(code[0:6])
             nd2 = {'ts_code': code, 'trade_date': [today_str],
                    'close': rt_df['price'][0:1].astype('float'), 'high': rt_df['high'][0:1].astype('float'),
-                   'low': rt_df['low'][0:1].astype('float'), 'vol': rt_df['volume'][0:1].astype('float'),
+                   'low': rt_df['low'][0:1].astype('float'), 'vol': [rt_df['volume'][0:1].astype('float')[0]/100],
                    'open': rt_df['open'][0:1], 'pre_close': rt_df['pre_close'][0:1],
                    'amount': [rt_df['amount'][0:1].astype('float')[0]/1000]}
             ndf2 = pd.DataFrame(nd2)
