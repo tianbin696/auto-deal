@@ -847,6 +847,7 @@ if __name__ == '__main__':
             #         break
             #     time.sleep(60)
             # scan_all()
+            local_ts.update_h_data()
 
             logger.info("Close THS after deal")
             time.sleep(120)
