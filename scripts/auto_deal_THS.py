@@ -317,6 +317,15 @@ class Monitor:
             if code not in stock_codes:
                 stock_codes.append(code)
 
+        # temp fix
+        tmp_arr = []
+        for code in stock_codes:
+            if code != '002410' and code != '002624':
+                tmp_arr.append(code)
+        del stock_codes[:]
+        stock_codes.extend(tmp_arr)
+        del tmp_arr[:]
+
         start_time = time.time()
         for code in stock_codes:
             p_changes = []
