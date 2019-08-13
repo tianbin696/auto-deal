@@ -526,6 +526,7 @@ class Monitor:
                     logger.error("Failed to get history data: %s" % e)
                     time.sleep(60)
                     retry -= 1
+                    return [0, 0, 0]
             ndf = pd.DataFrame(d)
 
             # Extend df
