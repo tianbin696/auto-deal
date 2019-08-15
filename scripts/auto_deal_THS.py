@@ -529,8 +529,8 @@ class Monitor:
                         code_str = "%s.SZ" % code
                     else:
                         code_str = "%s.SH" % code
-                    # df = ts.pro_bar(ts_code=code_str, adj='qfq', retry_count=9)
-                    df = local_ts.get_h_data(code_str, timeStr=timeStr)
+                    df = ts.pro_bar(ts_code=code_str, adj='qfq', retry_count=9)
+                    # df = local_ts.get_h_data(code_str, timeStr=timeStr)
                     d = {'close':df['close'][0:52].astype('float'), 'high':df['high'][0:52].astype('float'), 'low':df['low'][0:52].astype('float'), 'volume':df['vol'][0:52].astype('int')*100}
                     break
                 except Exception as e:
