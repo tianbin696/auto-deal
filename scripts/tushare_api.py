@@ -34,7 +34,7 @@ class TushareAPI:
         if os.path.exists(cacheFile):
             df = pandas.read_csv(cacheFile)
         else:
-            df = ts.pro_bar(ts_code=code, adj="qfq")
+            df = ts.pro_bar(ts_code=code, adj="qfq", retry_count=3)
             if len(df) > 0:
                 writer = open(cacheFile, "w")
                 df.to_csv(writer)
@@ -121,6 +121,12 @@ class TushareAPI:
         return last_day
 
     def update_h_data(self):
+        path="../codes/candidates.txt"
+        for code in list(open(path)):
+            code = self.append_loc(code.strip())
+            self.get_h_data(code)
+
+    def update_h_data1(self):
         yesterday_str = self.get_last_business_day()
         today_str = time.strftime("%Y%m%d", time.localtime())
         path="../codes/candidates.txt"
