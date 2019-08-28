@@ -830,6 +830,8 @@ if __name__ == '__main__':
 
             time.sleep(60)
             ths_start()
+            ths_close()
+            ths_start()
 
             cache.clear()
             del stock_codes[:]
