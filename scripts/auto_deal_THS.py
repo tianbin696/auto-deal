@@ -103,16 +103,19 @@ class OperationOfThs:
         self.__dialog_window.Edit0.set_focus()
         time.sleep(sleepTime)
         self.__dialog_window.Edit0.set_edit_text(code)
+        keyboard.send_keys(code)
         time.sleep(sleepTime)
 
         self.__dialog_window.Edit2.set_focus()
         time.sleep(sleepTime)
         self.__dialog_window.Edit2.set_edit_text(price)
+        keyboard.send_keys("%s" % price)
         time.sleep(sleepTime)
 
         self.__dialog_window.Edit3.set_focus()
         time.sleep(sleepTime)
         self.__dialog_window.Edit3.set_edit_text(quantity)
+        keyboard.send_keys("%d" % quantity)
         time.sleep(sleepTime)
 
         self.__dialog_window[u'买入Button'].click()
@@ -128,16 +131,19 @@ class OperationOfThs:
         self.__dialog_window.Edit0.set_focus()
         time.sleep(sleepTime)
         self.__dialog_window.Edit0.set_edit_text(code)
+        keyboard.send_keys(code)
         time.sleep(sleepTime)
 
         self.__dialog_window.Edit2.set_focus()
         time.sleep(sleepTime)
         self.__dialog_window.Edit2.set_edit_text(price)
+        keyboard.send_keys("%s" % price)
         time.sleep(sleepTime)
 
         self.__dialog_window.Edit3.set_focus()
         time.sleep(sleepTime)
         self.__dialog_window.Edit3.set_edit_text(quantity)
+        keyboard.send_keys("%d" % quantity)
         time.sleep(sleepTime)
 
         self.__dialog_window[u'卖出Button'].click()
