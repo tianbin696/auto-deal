@@ -194,7 +194,7 @@ class OperationOfThs:
         time.sleep(sleepTime)
         popup_window = self.__main_window.popup_window()
         if popup_window:
-            popup_window = self.__app.window_(handle=popup_window)
+            popup_window = self.__app.window(handle=popup_window)
             popup_window.capture_as_image().save("v_code.png")
             vcode = get_vcode('v_code.png')
             popup_window.set_focus()
