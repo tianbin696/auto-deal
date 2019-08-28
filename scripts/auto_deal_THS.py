@@ -195,7 +195,7 @@ class OperationOfThs:
         popup_window = self.__main_window.popup_window()
         if popup_window:
             popup_window = self.__app.window_(handle=popup_window)
-            popup_window.CaptureAsImage().save("v_code.png")
+            popup_window.capture_as_image().save("v_code.png")
             vcode = get_vcode('v_code.png')
             popup_window.set_focus()
             popup_window.Edit.set_focus()
