@@ -169,7 +169,8 @@ class OperationOfThs:
     def getChenben(self):
         position = self.__getCleanedData()
         for index in range(1, len(position)):
-            code = position[index][1].encode()
+            # code = position[index][1].encode() # for VM
+            code = position[index][1]
             chenben = position[index][7]
             stock_chenbens[code] = float(chenben)
 
@@ -181,7 +182,8 @@ class OperationOfThs:
     def getPosition(self):
         position = self.__getCleanedData()
         for index in range(1, len(position)):
-            code = position[index][1].encode()
+            # code = position[index][1].encode() # for VM
+            code = position[index][1]
             amount = position[index][4]
             if position[index][3] != position[index][4]:
                 amount = 0
