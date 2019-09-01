@@ -171,7 +171,7 @@ class OperationOfThs:
         for index in range(1, len(position)):
             # code = position[index][1].encode() # for VM
             code = position[index][1]
-            chenben = position[index][7]
+            chenben = position[index][6]
             stock_chenbens[code] = float(chenben)
 
         logger.info("Chenbens: %s" % stock_chenbens)
