@@ -820,7 +820,7 @@ if __name__ == '__main__':
                 logger.info("Sleep before monitor, current_wday=%d" % wday)
                 time.sleep(3600)
                 continue
-            
+
             hour = time.localtime().tm_hour
             if hour < 7 or hour >= 15:
                 logger.info("Sleep before monitor, current_hour=%d" % hour)
@@ -830,6 +830,7 @@ if __name__ == '__main__':
                 #     time.sleep(3600)
                 continue
 
+            mouse.click(coords=(4000, 4000))
             time.sleep(60)
             ths_start()
             ths_close()
