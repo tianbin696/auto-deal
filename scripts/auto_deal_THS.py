@@ -830,8 +830,8 @@ if __name__ == '__main__':
                 #     time.sleep(3600)
                 continue
 
-            mouse.click(coords=(4000, 4000))
             time.sleep(60)
+            mouse.click(coords=(4000, 4000))
             ths_start()
             ths_close()
             ths_start()
