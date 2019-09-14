@@ -233,7 +233,7 @@ def scan_filtered(path="../codes/candidates.txt", save_candidates=False):
 # get_all_codes()
 # scan_all()
 clear_candidates()
-scan_filtered(path="../codes/hs_500.txt", save_candidates=True)
+scan_filtered(path="../codes/manual_filtered.txt", save_candidates=True)
 del all_increases[:]
 del all_returns[:]
 scan_filtered()
