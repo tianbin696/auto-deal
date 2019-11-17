@@ -693,16 +693,16 @@ def get_direction_by_rsi(code, prices, is_logging=True):
 
 def get_direction_by_avg2(code, prices, vols, is_logging=True, open_price=0, highest_price=0):
     days = 10
-    times=5
+    threash_hold = 0.20
     avgs = []
     avgs.append(numpy.mean(prices[0:days]))
-    for i in range(1, days*times):
+    for i in range(1, 61):
         avgs.append(numpy.mean(prices[i:days+i]))
-    if prices[0] < numpy.max(prices[0:days*times])*0.80:
-        if avgs[0] > numpy.min(avgs[0:days])*1.01:
+    if prices[0] < numpy.max(prices[0:60])*(1-threash_hold):
+        if avgs[0] > avgs[1] > avgs[2] > avgs[3] and avgs[3] < avgs[4] < avgs[5] < avgs[6]:
             return 'B'
-    if prices[0] > numpy.min(prices[0:days*times])*1.20:
-        if avgs[0] < numpy.max(avgs[0:days])*0.99:
+    if prices[0] > numpy.min(prices[0:60])*(1+threash_hold):
+        if avgs[0] < avgs[1] < avgs[2] < avgs[3] and avgs[3] > avgs[4] > avgs[5] < avgs[6]:
             return 'S'
     return 'N'
 
@@ -764,9 +764,9 @@ def get_direction_by_composite_ways(code, prices, vols, is_logging=True, open_pr
     # To skip exception value
     if prices[0] <= 0 or prices[0] > prices[1]*1.11 > 0 or 0 < prices[0] < prices[1]*0.89:
         return 'N'
-    # direction = get_direction_by_avg2(code, prices, vols, is_logging, open_price, highest_price)
-    # if direction == 'S' or direction == 'B':
-    #     return direction
+    direction = get_direction_by_avg2(code, prices, vols, is_logging, open_price, highest_price)
+    if direction == 'S' or direction == 'B':
+        return direction
     direction = get_direction_by_avg(code, prices, vols, is_logging, open_price, highest_price)
     if direction == 'S' or direction == 'B':
         return direction
