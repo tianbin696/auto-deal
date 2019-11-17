@@ -103,7 +103,7 @@ class Stock:
         return int(self.free_money/200/price)*100
 
     def get_sell_amount(self, price):
-        return min(int(self.total_position/200)*100, self.total_position)
+        return max(int(self.total_position/200)*100, 100)
 
 
 def save_2_candidates(code):
