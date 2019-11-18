@@ -680,16 +680,30 @@ def get_direction_by_rsi(code, prices, is_logging=True):
     rsi_4 = getRSI(prices[4:], days)
     direction = 'N'
     if rsi > max(rsi_1, rsi_2, rsi_3, rsi_4):
-        if 0 < rsi < 25:
+        if 0 < rsi < 20:
             direction = 'B'
     if rsi < min(rsi_1, rsi_2, rsi_3, rsi_4):
-        if rsi > 75:
+        if rsi > 85:
             direction = 'S'
     if is_logging:
         logger.info("code=%s, price=%.2f, rsi=%.2f, rsi_1=%.2f, direction=%s" %
                     (code, prices[0], rsi, rsi_1, direction))
     return direction
 
+
+def get_direction_by_avg2(code, prices, vols, is_logging=True, open_price=0, highest_price=0):
+    days = 10
+    avgs = []
+    avgs.append(numpy.mean(prices[0:days]))
+    for i in range(1, 11):
+        avgs.append(numpy.mean(prices[i:days+i]))
+    if prices[0] < numpy.max(prices[0:60])*0.80:
+        if avgs[0] > avgs[1] > avgs[2] > avgs[3] and avgs[3] < avgs[4] < avgs[5] < avgs[6]:
+            return 'B'
+    if prices[0] > numpy.min(prices[0:30])*1.15:
+        if avgs[0] < avgs[1] < avgs[2] < avgs[3] and avgs[3] > avgs[4] > avgs[5] < avgs[6]:
+            return 'S'
+    return 'N'
 
 def get_direction_by_avg(code, prices, vols, is_logging=True, open_price=0, highest_price=0):
     days1 = 10
@@ -718,9 +732,9 @@ def get_direction_by_avg(code, prices, vols, is_logging=True, open_price=0, high
 
     direction = 'N'
     if prices[0] > numpy.min(prices[1:days4]) > 0 and prices[1]*1.07 > prices[0] > max(highest_price*0.97, prices[1]*0.97):
-        if diff_1 > 0 > diff_2:
+        if diff_1 > 0 > diff_2 and avg1_0 > avg1_1 > avg1_2:
             direction = 'B'
-        if diff_1 > diff_2 > 0 > diff_3:
+        if diff_1 > diff_2 > 0 > diff_3 and avg1_0 > avg1_1 > avg1_2:
             direction = 'B'
         if numpy.max(prices[1:31])*0.85 > prices[0] > 0 and 0 < liang_bi < 0.60:
             direction = 'B'
@@ -728,16 +742,16 @@ def get_direction_by_avg(code, prices, vols, is_logging=True, open_price=0, high
             direction = 'B'
         if numpy.min(prices[1:6])*1.05 < prices[0] < numpy.max(prices[1:6])*0.95 and liang_bi < 0.6:
             direction = 'B'
-        if liang_bi < 0.4:
+        if liang_bi < 0.45:
             direction = 'B'
     if diff_1 < 0 < diff_2:
         direction = 'S'
     if diff_1 < diff_2 < 0 < diff_3:
         direction = 'S'
-    if 0 < prices[0] < numpy.min(prices[1:days4]) and liang_bi > 1.2:
-        direction = 'S'
-    if numpy.min(prices[1:21])*1.15 < prices[0] < prices[1]*1.05 and liang_bi > 1.6:
-        direction = 'S'
+    # if 0 < prices[0] < numpy.min(prices[1:days4]) and liang_bi > 1.2:
+    #     direction = 'S'
+    # if numpy.min(prices[1:21])*1.15 < prices[0] < prices[1]*1.05 and liang_bi > 1.6:
+    #     direction = 'S'
     if open_price*0.95 > prices[0] > numpy.min(prices[0:10])*1.15 and liang_bi > 0.8:
         direction = 'S'
     if is_logging:
@@ -749,6 +763,9 @@ def get_direction_by_composite_ways(code, prices, vols, is_logging=True, open_pr
     # To skip exception value
     if prices[0] <= 0 or prices[0] > prices[1]*1.11 > 0 or 0 < prices[0] < prices[1]*0.89:
         return 'N'
+    direction = get_direction_by_avg2(code, prices, vols, is_logging, open_price, highest_price)
+    if direction == 'S' or direction == 'B':
+        return direction
     direction = get_direction_by_avg(code, prices, vols, is_logging, open_price, highest_price)
     if direction == 'S' or direction == 'B':
         return direction

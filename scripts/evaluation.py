@@ -100,10 +100,10 @@ class Stock:
         self.returns.append(float("%.2f" % ((value - total_available_money)/total_available_money)))
 
     def get_buy_amount(self, price):
-        return int(self.free_money/100/price)*100
+        return int(self.free_money/200/price)*100
 
     def get_sell_amount(self, price):
-        return max(int(self.total_position/100)*100, 100) - 100
+        return max(int(self.total_position/200)*100, 100)
 
 
 def save_2_candidates(code):
@@ -225,15 +225,15 @@ def scan_filtered(path="../codes/candidates.txt", save_candidates=False):
             continue
         code = append_loc(code.strip())
         try:
-            test(code, startTime, endTime, 1.0, 4.0, save_candidates)
+            test(code, startTime, endTime, 0.5, 4.0, save_candidates)
         except Exception as e:
             print("%s" % e)
 
 
 # get_all_codes()
 # scan_all()
-clear_candidates()
-scan_filtered(path="../codes/manual_filtered.txt", save_candidates=True)
+# clear_candidates()
+# scan_filtered(path="../codes/manual_filtered.txt", save_candidates=True)
 del all_increases[:]
 del all_returns[:]
 scan_filtered()
