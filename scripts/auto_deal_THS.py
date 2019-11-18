@@ -700,7 +700,7 @@ def get_direction_by_avg2(code, prices, vols, is_logging=True, open_price=0, hig
     if prices[0] < numpy.max(prices[0:60])*0.80:
         if avgs[0] > avgs[1] > avgs[2] > avgs[3] and avgs[3] < avgs[4] < avgs[5] < avgs[6]:
             return 'B'
-    if prices[0] > numpy.min(prices[0:60])*1.20:
+    if prices[0] > numpy.min(prices[0:30])*1.15:
         if avgs[0] < avgs[1] < avgs[2] < avgs[3] and avgs[3] > avgs[4] > avgs[5] < avgs[6]:
             return 'S'
     return 'N'
