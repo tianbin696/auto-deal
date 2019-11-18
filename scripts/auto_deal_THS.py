@@ -769,9 +769,9 @@ def get_direction_by_composite_ways(code, prices, vols, is_logging=True, open_pr
     direction = get_direction_by_avg(code, prices, vols, is_logging, open_price, highest_price)
     if direction == 'S' or direction == 'B':
         return direction
-    direction = get_direction_by_rsi(code, prices, is_logging)
-    if direction == 'S' or direction == 'B':
-        return direction
+    # direction = get_direction_by_rsi(code, prices, is_logging)
+    # if direction == 'S' or direction == 'B':
+    #     return direction
     # d = {'close':prices[0:52]}
     # df = pd.DataFrame(d).reset_index()
     # direction = get_direction_by_macd(code, df)
