@@ -226,7 +226,7 @@ def scan_filtered(path="../codes/candidates.txt", save_candidates=False):
             continue
         code = append_loc(code.strip())
         try:
-            test(code, startTime, endTime, 0.5, 4.0, save_candidates)
+            test(code, startTime, endTime, 1.0, 4.0, save_candidates)
         except Exception as e:
             print("%s" % e)
 
