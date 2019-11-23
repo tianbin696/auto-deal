@@ -31,7 +31,7 @@ from stats import sort_codes
 from macd import get_MACD
 
 from tushare_api import TushareAPI
-token = "edb4af8baea44c2cd6e02d8e02e81682eb98928475b3f7f67d3ba5f2"
+token = "cd2026ad7373788082deede38ff419cd87415f50c24322819b71a002"
 ts.set_token(token)
 local_ts = TushareAPI()
 
