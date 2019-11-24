@@ -123,11 +123,12 @@ def test(code, start_date=20100101, end_date=20200101, expect_return=0.8, expect
         if numpy.isnan(stock.increases[last_index]):
             print("NaN of code: %s" % code)
             exit(1)
-        if stock.returns[last_index] > max(expect_return, stock.increases[last_index]*1.5) \
-                and numpy.max(stock.increases) - numpy.min(stock.increases) < expect_diff \
+        if stock.returns[last_index] > max(0.50, stock.increases[last_index]*1.5) \
+                and numpy.max(stock.increases) < numpy.min(stock.increases)*1.5 \
                 and stock.increases[last_index] < 1.5 \
                 and numpy.mean(stock.returns) > numpy.mean(stock.increases)*1.5 \
-                and stock.returns[last_index] > numpy.max(stock.returns)*0.70:
+                and stock.returns[last_index] > numpy.max(stock.returns)*0.70 \
+                and stock.increases[last_index] > numpy.max(stock.increases)*0.70:
             if save_to_candidates:
                 save_2_candidates(code)
             stock.print_as_csv("../analyze/%s_%s.csv" % (code, stock.start_date))
