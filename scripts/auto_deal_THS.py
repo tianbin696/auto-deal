@@ -322,7 +322,7 @@ class Monitor:
                 stock_codes.append(code)
 
         for code in new_codes:
-            if code not in stock_codes:
+            if code not in stock_codes and (code.startswith('0') or code.startswith('6')):
                 stock_codes.append(code)
 
         # temp fix
