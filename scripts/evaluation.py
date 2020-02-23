@@ -219,7 +219,7 @@ def scan_all():
 def scan_filtered(path="../codes/candidates.txt", save_candidates=False):
     endDate = (datetime.now() - timedelta(days = 0))
     endTime = int(endDate.strftime("%Y%m%d"))
-    startTime = endTime - 30000
+    startTime = endTime - 90000
     st_codes = ts_local.get_st_list()
     for code in list(open(path)):
         if code.strip() in st_codes:
