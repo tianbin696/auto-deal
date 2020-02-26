@@ -56,7 +56,8 @@ class TushareAPI:
                 if not os.path.exists(cacheFile):
                     continue
                 df = self.get_h_data(code, timeStr=timeStr)
-                if df['close'][0] >= df['close'][1]*1.095 and df['close'][1] >= df['close'][2]*1.095:
+                if df['close'][0] >= max(df['close'][1]*1.05, df['open'][0]) \
+                        and df['close'][1] >= max(df['close'][2]*1.05, df['open'][1]):
                     codes.append(code_without_loc)
                     # print("Found: %s" % code_without_loc)
             except Exception as e:
@@ -183,6 +184,7 @@ if __name__ == "__main__":
     local_ts = TushareAPI()
     timeStr = time.strftime("%Y%m%d", time.localtime())
     # local_ts.update_h_data(local_ts.get_last_business_day())
-    local_ts.update_h_data(timeStr)
-    print("%s" % local_ts.get_lianban_list(local_ts.get_last_business_day()))
-    print("%s" % local_ts.get_lianban_list(timeStr=timeStr))
+    # local_ts.update_h_data(timeStr)
+    # print("%s" % local_ts.get_lianban_list(local_ts.get_last_business_day()))
+    codes = local_ts.get_lianban_list(timeStr=timeStr)
+    print("%d: %s" % (len(codes), codes))
