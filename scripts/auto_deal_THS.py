@@ -897,7 +897,8 @@ if __name__ == '__main__':
                     break
                 time.sleep(60)
             # scan_all()
-            local_ts.update_h_data()
+            timeStr = time.strftime("%Y%m%d", time.localtime())
+            local_ts.update_h_data(timeStr)
 
             logger.info("Close THS after deal")
             time.sleep(120)

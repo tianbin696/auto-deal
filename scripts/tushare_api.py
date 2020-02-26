@@ -47,6 +47,7 @@ class TushareAPI:
         codes = []
         full_list = self.get_code_list()
         for code in full_list:
+            code_without_loc = code.strip()
             code = self.append_loc(code.strip())
             try:
                 if not timeStr:
@@ -56,8 +57,8 @@ class TushareAPI:
                     continue
                 df = self.get_h_data(code, timeStr=timeStr)
                 if df['close'][0] >= df['close'][1]*1.095 and df['close'][1] >= df['close'][2]*1.095:
-                    codes.append(code)
-                    print("Found: %s" % code)
+                    codes.append(code_without_loc)
+                    # print("Found: %s" % code_without_loc)
             except Exception as e:
                 continue
         return codes
@@ -180,7 +181,8 @@ class TushareAPI:
 
 if __name__ == "__main__":
     local_ts = TushareAPI()
+    timeStr = time.strftime("%Y%m%d", time.localtime())
     # local_ts.update_h_data(local_ts.get_last_business_day())
-    # print("%s" % local_ts.get_lianban_list(local_ts.get_last_business_day()))
-    local_ts.update_h_data()
-    print("%s" % local_ts.get_lianban_list())
+    local_ts.update_h_data(timeStr)
+    print("%s" % local_ts.get_lianban_list(local_ts.get_last_business_day()))
+    print("%s" % local_ts.get_lianban_list(timeStr=timeStr))
