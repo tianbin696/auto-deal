@@ -47,6 +47,7 @@ class TushareAPI:
         codes = []
         full_list = self.get_code_list()
         for code in full_list:
+            code = self.append_loc(code.strip())
             try:
                 if not timeStr:
                     timeStr = self.get_last_business_day()
@@ -149,7 +150,6 @@ class TushareAPI:
         today_str = time.strftime("%Y%m%d", time.localtime())
         path="../codes/candidates.txt"
         for code in list(open(path)):
-            code_without_loc = code
             code = self.append_loc(code.strip())
             df = self.get_h_data(code, timeStr=yesterday_str)
             size = len(df['close'])
@@ -170,7 +170,7 @@ class TushareAPI:
             ndf2 = pd.DataFrame(nd2)
 
             df = pd.concat([ndf2, ndf]).reset_index()
-            cache_file = cacheFolder + "/" + today_str + "/" + code_without_loc + "_" + today_str + ".csv"
+            cache_file = cacheFolder + "/" + today_str + "/" + code + "_" + today_str + ".csv"
             if not os.path.exists(cacheFolder + "/" + today_str):
                 os.mkdir(cacheFolder + "/" + today_str)
             if len(df) > 0:
@@ -180,5 +180,7 @@ class TushareAPI:
 
 if __name__ == "__main__":
     local_ts = TushareAPI()
-    local_ts.update_h_data(local_ts.get_last_business_day())
-    print("%s" % local_ts.get_lianban_list(local_ts.get_last_business_day()))
+    # local_ts.update_h_data(local_ts.get_last_business_day())
+    # print("%s" % local_ts.get_lianban_list(local_ts.get_last_business_day()))
+    local_ts.update_h_data()
+    print("%s" % local_ts.get_lianban_list())
