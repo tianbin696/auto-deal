@@ -48,10 +48,11 @@ logger = logging.getLogger('auto_deal')
 logger.addHandler(console)
 stock_codes = []
 new_codes = []
+lianban_codes = []
 ignore_codes = []
 stock_positions = {}
 stock_chenbens = {}
-maxAmount = 25000
+maxAmount = 12000
 globalAvailableMoney = 50000
 minAmount = 0
 minBuyAmount = 5000
@@ -63,6 +64,9 @@ rsi_days=24
 cache = {}
 
 def readCodes():
+    global lianban_codes
+    lianban_codes = local_ts.get_lianban_list(local_ts.get_last_business_day())
+
     global new_codes
     timeStr = time.strftime("%Y%m%d", time.localtime())
     filePath = "../codes/candidates.txt"
@@ -325,6 +329,10 @@ class Monitor:
             if code not in stock_codes and (code.startswith('0') or code.startswith('6')):
                 stock_codes.append(code)
 
+        for code in lianban_codes:
+            if code not in stock_codes and (code.startswith('0') or code.startswith('6')):
+                stock_codes.append(code)
+
         # temp fix
         tmp_arr = []
         exclude_codes = []
@@ -408,17 +416,17 @@ class Monitor:
                 totalSleep += monitorInterval
                 if totalSleep > 3600:
                     totalSleep = 0
-                    # self.operation.saveScreenshot("状态更新", '状态更新')
+                    self.operation.saveScreenshot("状态更新", '状态更新')
 
                 if not isStarted:
                     continue
 
-                if not self.compare("14", "45"):
-                    logger.info("Sleep before deal start")
-                    continue
-                if not deal_started:
-                    self.operation.saveScreenshot("开始交易", '闭市前30分钟开始交易')
-                    deal_started = True
+                # if not self.compare("14", "45"):
+                #     logger.info("Sleep before deal start")
+                #     continue
+                # if not deal_started:
+                #     self.operation.saveScreenshot("开始交易", '闭市前30分钟开始交易')
+                #     deal_started = True
 
                 print()
                 logger.debug("looping monitor stocks")
@@ -426,6 +434,11 @@ class Monitor:
                 for code in stock_codes:
                     try:
                         if code in ignore_codes or self.avg10[code][0] <= 0:
+                            continue
+                        if code in new_codes and not self.compare("14", "45"):
+                            logger.info("Sleep before deal start")
+                            continue
+                        if code not in new_codes and self.compare("14", "45"):
                             continue
                         p_changes = []
                         open_prices = []
@@ -755,10 +768,22 @@ def get_direction_by_avg(code, prices, vols, is_logging=True, open_price=0, high
     return direction
 
 
+def get_direction_for_lianban(code, prices, vols, is_logging=True, open_price=0, highest_price=0):
+    avg_5 = numpy.mean(prices[0:5])
+    if open_price * 1.01 < prices[0] < prices[1]*1.02:
+        return 'B'
+    if prices[0] < avg_5:
+        return 'S'
+    return 'N'
+
 def get_direction_by_composite_ways(code, prices, vols, is_logging=True, open_price=0, highest_price=0):
     # To skip exception value
     if prices[0] <= 0 or prices[0] > prices[1]*1.11 > 0 or 0 < prices[0] < prices[1]*0.89:
         return 'N'
+
+    if not monitor.compare("14", "45"):
+        return get_direction_for_lianban(code, prices, vols, is_logging, open_price, highest_price)
+
     direction = get_direction_by_avg2(code, prices, vols, is_logging, open_price, highest_price)
     if direction == 'S' or direction == 'B':
         return direction
