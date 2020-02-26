@@ -889,13 +889,13 @@ if __name__ == '__main__':
 
             # get_code_filter_list(avg10Days, "codes.txt", timeStr=None)
             # from evaluation import scan_all
-            # while True:
-            #     hour = time.localtime().tm_hour
-            #     if hour >= 16:
-            #         # 日线数据15-16点更新
-            #         time.sleep(60)
-            #         break
-            #     time.sleep(60)
+            while True:
+                hour = time.localtime().tm_hour
+                if hour >= 16:
+                    # 日线数据15-16点更新
+                    time.sleep(60)
+                    break
+                time.sleep(60)
             # scan_all()
             local_ts.update_h_data()
 
