@@ -781,7 +781,7 @@ def get_direction_by_composite_ways(code, prices, vols, is_logging=True, open_pr
     if prices[0] <= 0 or prices[0] > prices[1]*1.11 > 0 or 0 < prices[0] < prices[1]*0.89:
         return 'N'
 
-    if not monitor.compare("14", "45"):
+    if code not in new_codes:
         return get_direction_for_lianban(code, prices, vols, is_logging, open_price, highest_price)
 
     direction = get_direction_by_avg2(code, prices, vols, is_logging, open_price, highest_price)
