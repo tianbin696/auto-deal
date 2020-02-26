@@ -10,7 +10,7 @@ import pandas
 from datetime import datetime
 from datetime import timedelta
 
-token = "edb4af8baea44c2cd6e02d8e02e81682eb98928475b3f7f67d3ba5f2"
+token = "cd2026ad7373788082deede38ff419cd87415f50c24322819b71a002"
 ts.set_token(token)
 
 logger = logging.getLogger('TushareAPI')
@@ -42,6 +42,24 @@ class TushareAPI:
             df = pandas.read_csv(cacheFile)
         return df[daysAgo:].reset_index()
 
+
+    def get_lianban_list(self, timeStr=None):
+        codes = []
+        full_list = self.get_code_list()
+        for code in full_list:
+            try:
+                if not timeStr:
+                    timeStr = self.get_last_business_day()
+                cacheFile = cacheFolder + "/" + timeStr + "/" + code + "_" + timeStr + ".csv"
+                if not os.path.exists(cacheFile):
+                    continue
+                df = self.get_h_data(code, timeStr=timeStr)
+                if df['close'][0] >= df['close'][1]*1.095 and df['close'][1] >= df['close'][2]*1.095:
+                    codes.append(code)
+                    print("Found: %s" % code)
+            except Exception as e:
+                continue
+        return codes
 
     def get_st_list(self):
         fs = ts.get_st_classified()
@@ -120,17 +138,18 @@ class TushareAPI:
             last_day = files[-2]
         return last_day
 
-    def update_h_data(self):
-        path="../codes/candidates.txt"
+    def update_h_data(self, time_str=None):
+        path="../codes/all_codes.txt"
         for code in list(open(path)):
             code = self.append_loc(code.strip())
-            self.get_h_data(code)
+            self.get_h_data(code, timeStr=time_str)
 
     def update_h_data1(self):
         yesterday_str = self.get_last_business_day()
         today_str = time.strftime("%Y%m%d", time.localtime())
         path="../codes/candidates.txt"
         for code in list(open(path)):
+            code_without_loc = code
             code = self.append_loc(code.strip())
             df = self.get_h_data(code, timeStr=yesterday_str)
             size = len(df['close'])
@@ -151,7 +170,7 @@ class TushareAPI:
             ndf2 = pd.DataFrame(nd2)
 
             df = pd.concat([ndf2, ndf]).reset_index()
-            cache_file = cacheFolder + "/" + today_str + "/" + code + "_" + today_str + ".csv"
+            cache_file = cacheFolder + "/" + today_str + "/" + code_without_loc + "_" + today_str + ".csv"
             if not os.path.exists(cacheFolder + "/" + today_str):
                 os.mkdir(cacheFolder + "/" + today_str)
             if len(df) > 0:
@@ -161,4 +180,5 @@ class TushareAPI:
 
 if __name__ == "__main__":
     local_ts = TushareAPI()
-    local_ts.update_h_data()
+    local_ts.update_h_data(local_ts.get_last_business_day())
+    print("%s" % local_ts.get_lianban_list(local_ts.get_last_business_day()))
