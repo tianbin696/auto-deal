@@ -635,7 +635,7 @@ class Monitor:
         # 涨破RSI与阈值，买入
         if code not in self.isBuyeds or not self.isBuyeds[code]:
             if code not in self.isSelleds or not self.isSelleds[code]:
-                if direction == 'B' and code in new_codes:
+                if direction == 'B':
                         return 'B'
 
         return 'N'
