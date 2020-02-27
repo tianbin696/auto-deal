@@ -782,7 +782,9 @@ def get_direction_by_composite_ways(code, prices, vols, is_logging=True, open_pr
         return 'N'
 
     if code not in new_codes:
-        return get_direction_for_lianban(code, prices, vols, is_logging, open_price, highest_price)
+        direction = get_direction_for_lianban(code, prices, vols, is_logging, open_price, highest_price)
+        logger.info("Lianban direction for %s: %s" % (code, direction))
+        return direction
 
     direction = get_direction_by_avg2(code, prices, vols, is_logging, open_price, highest_price)
     if direction == 'S' or direction == 'B':
