@@ -144,8 +144,11 @@ class TushareAPI:
     def update_h_data(self, time_str=None):
         path="../codes/all_codes.txt"
         for code in list(open(path)):
-            code = self.append_loc(code.strip())
-            self.get_h_data(code, timeStr=time_str)
+            try:
+                code = self.append_loc(code.strip())
+                self.get_h_data(code, timeStr=time_str)
+            except Exception as e:
+                continue
 
     def update_h_data1(self):
         yesterday_str = self.get_last_business_day()
@@ -185,6 +188,7 @@ if __name__ == "__main__":
     timeStr = time.strftime("%Y%m%d", time.localtime())
     # local_ts.update_h_data(local_ts.get_last_business_day())
     # local_ts.update_h_data(timeStr)
-    # print("%s" % local_ts.get_lianban_list(local_ts.get_last_business_day()))
+    codes = local_ts.get_lianban_list(timeStr=local_ts.get_last_business_day())
+    print("%d: %s" % (len(codes), codes))
     codes = local_ts.get_lianban_list(timeStr=timeStr)
     print("%d: %s" % (len(codes), codes))
