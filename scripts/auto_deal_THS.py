@@ -189,8 +189,8 @@ class OperationOfThs:
             # code = position[index][1].encode() # for VM
             code = position[index][1]
             amount = position[index][4]
-            if position[index][3] != position[index][4]:
-                amount = 0
+            # if position[index][3] != position[index][4]:
+            #     amount = 0
             stock_positions[code] = int(amount)
 
         logger.info("Positions: %s" % stock_positions)
