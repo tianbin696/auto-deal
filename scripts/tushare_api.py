@@ -56,8 +56,8 @@ class TushareAPI:
                 if not os.path.exists(cacheFile):
                     continue
                 df = self.get_h_data(code, timeStr=timeStr)
-                if df['close'][0] >= max(df['close'][1]*1.05, df['open'][0]) \
-                        and df['close'][1] >= max(df['close'][2]*1.05, df['open'][1]):
+                if df['close'][0] >= max(df['close'][1]*1.03, df['open'][0]*1.02) \
+                        and df['close'][1] >= max(df['close'][2]*1.03, df['open'][1]*1.02):
                     codes.append(code_without_loc)
                     # print("Found: %s" % code_without_loc)
             except Exception as e:
