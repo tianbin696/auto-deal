@@ -53,7 +53,7 @@ ignore_codes = []
 stock_positions = {}
 stock_chenbens = {}
 maxAmount = 15000
-globalAvailableMoney = 50000
+globalAvailableMoney = 100000
 minAmount = 0
 minBuyAmount = 5000
 fullSellAmount = 10000
@@ -71,9 +71,9 @@ def readCodes():
     timeStr = time.strftime("%Y%m%d", time.localtime())
     filePath = "../codes/candidates.txt"
     new_codes = []
-    if os.path.exists(filePath):
-        for code in list(open(filePath)):
-            new_codes.append(code.strip())
+    # if os.path.exists(filePath):
+    #     for code in list(open(filePath)):
+    #         new_codes.append(code.strip())
     logger.info("Monitor codes: %s" % new_codes)
 
 
