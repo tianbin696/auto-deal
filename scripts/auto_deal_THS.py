@@ -188,7 +188,7 @@ class OperationOfThs:
         for index in range(1, len(position)):
             # code = position[index][1].encode() # for VM
             code = position[index][1]
-            amount = position[index][4]
+            amount = position[index][3]
             # if position[index][3] != position[index][4]:
             #     amount = 0
             stock_positions[code] = int(amount)
