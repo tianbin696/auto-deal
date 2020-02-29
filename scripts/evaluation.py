@@ -11,6 +11,7 @@ from auto_deal_THS import get_direction_by_rsi
 from auto_deal_THS import get_direction_by_avg
 from auto_deal_THS import get_direction_by_macd
 from auto_deal_THS import get_direction_by_composite_ways
+from auto_deal_THS import get_direction_for_lianban
 from auto_deal_THS import getRSI
 from tushare_api import TushareAPI
 
@@ -198,6 +199,30 @@ def clear_candidates():
         os.remove("../codes/candidates.txt")
 
 
+def evaluate_lianban(code, time_str=None, index=0):
+    df = ts_local.get_h_data(ts_local.append_loc(code), timeStr=time_str)
+    buy_price = 0
+    sell_price = 0
+    if df['high'][index-1] > max(df['open'][index-1], df['close'][index]) \
+            and df['open'][index-1] < df['close'][index]*1.04:
+        buy_price = max(df['open'][index-1], df['close'][index])
+        # print("Buy date: %s" % df['trade_date'][index-1])
+    else:
+        return 0
+    for i in range(index-2, -1, -1):
+        prices = []
+        prices.extend(df['close'][i:])
+        direction = get_direction_for_lianban(code, prices, df['amount'][i:], False, df['open'][i], df['high'][i])
+        if direction == "S":
+            sell_price = df['close'][i]
+            # print("Sell date: %s" % df['trade_date'][i])
+            break
+    if sell_price == 0:
+        sell_price = df['close'][0]
+    increase_ratio = (sell_price-buy_price)/buy_price*100
+    return increase_ratio
+
+
 def scan_all():
     clear_candidates()
     ts_local = TushareAPI()
@@ -235,10 +260,26 @@ def scan_filtered(path="../codes/candidates.txt", save_candidates=False):
 # scan_all()
 # clear_candidates()
 # scan_filtered(path="../codes/manual_filtered.txt", save_candidates=True)
-del all_increases[:]
-del all_returns[:]
-scan_filtered()
-stats(all_increases)
-stats(all_returns)
-print("increase avg: %.2f" % numpy.mean(all_increases))
-print("return avg: %.2f" % numpy.mean(all_returns))
+# del all_increases[:]
+# del all_returns[:]
+# scan_filtered()
+# stats(all_increases)
+# stats(all_returns)
+# print("increase avg: %.2f" % numpy.mean(all_increases))
+# print("return avg: %.2f" % numpy.mean(all_returns))
+
+timeStr = ts_local.get_last_business_day()
+for i in range(30, 0, -1):
+    index = i
+    codes = ts_local.get_lianban_list(timeStr=timeStr, index=index)
+    print("%d-%d" % (i, len(codes)))
+    print("Codes: %s" % codes)
+    increase_ratios = []
+    increase_ratios_2 = []
+    for code in codes:
+        increase_val = evaluate_lianban(code, timeStr, index)
+        increase_ratios.append("%.2f" % increase_val)
+        if increase_val != 0:
+            increase_ratios_2.append(increase_val)
+    print("Increase ratio: %s" % increase_ratios)
+    print("Increase avg: %.2f" % numpy.mean(increase_ratios_2))
