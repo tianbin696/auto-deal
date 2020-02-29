@@ -438,7 +438,7 @@ class Monitor:
                         if code in new_codes and not self.compare("14", "45"):
                             logger.info("Sleep before deal start")
                             continue
-                        if code not in new_codes and self.compare("14", "45"):
+                        if code not in new_codes and self.compare("15", "00"):
                             continue
                         p_changes = []
                         open_prices = []
@@ -775,7 +775,7 @@ def get_direction_for_lianban(code, prices, vols, is_logging=True, open_price=0,
         return 'B'
     if avg_1 < avg_2 and prices[0] < min(open_price, prices[1]):
         return 'S'
-    if prices[0] < open_price*0.92:
+    if prices[0] < highest_price*0.92:
         return 'S'
     return 'N'
 
