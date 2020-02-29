@@ -775,6 +775,8 @@ def get_direction_for_lianban(code, prices, vols, is_logging=True, open_price=0,
         return 'B'
     if avg_1 < avg_2 and prices[0] < min(open_price, prices[1]):
         return 'S'
+    if prices[0] < open_price*0.92:
+        return 'S'
     return 'N'
 
 
