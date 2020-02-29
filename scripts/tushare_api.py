@@ -7,6 +7,7 @@ import pandas as pd
 import os.path
 import os
 import pandas
+import numpy
 from datetime import datetime
 from datetime import timedelta
 
@@ -56,8 +57,10 @@ class TushareAPI:
                 if not os.path.exists(cacheFile):
                     continue
                 df = self.get_h_data(code, timeStr=timeStr)
-                if df['close'][0] >= max(df['close'][1]*1.03, df['open'][0]*1.02) \
-                        and df['close'][1] >= max(df['close'][2]*1.03, df['open'][1]*1.02):
+                if df['open'][0]*1.03 <= df['close'][0] <= numpy.min(df['close'][0:10])*1.20 \
+                        and df['open'][1]*1.03 <= df['close'][1] \
+                        and numpy.mean(df['amount'][0:5]) > numpy.mean(df['amount'][0:10]) \
+                        and numpy.mean(df['close'][0:5]) > numpy.mean(df['close'][0:10]):
                     codes.append(code_without_loc)
                     # print("Found: %s" % code_without_loc)
             except Exception as e:
@@ -188,7 +191,9 @@ if __name__ == "__main__":
     timeStr = time.strftime("%Y%m%d", time.localtime())
     # local_ts.update_h_data(local_ts.get_last_business_day())
     # local_ts.update_h_data(timeStr)
-    codes = local_ts.get_lianban_list(timeStr=local_ts.get_last_business_day())
+    codes = local_ts.get_lianban_list(timeStr="20200226")
     print("%d: %s" % (len(codes), codes))
-    codes = local_ts.get_lianban_list(timeStr=timeStr)
+    codes = local_ts.get_lianban_list(timeStr="20200227")
+    print("%d: %s" % (len(codes), codes))
+    codes = local_ts.get_lianban_list(timeStr="20200228")
     print("%d: %s" % (len(codes), codes))
