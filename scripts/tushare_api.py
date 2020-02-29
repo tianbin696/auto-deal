@@ -44,10 +44,10 @@ class TushareAPI:
         return df[daysAgo:].reset_index()
 
 
-    def get_lianban_list(self, timeStr=None):
+    def get_lianban_list(self, timeStr=None, index=0):
         codes = []
-        full_list = self.get_code_list()
-        for code in full_list:
+        path="../codes/all_codes.txt"
+        for code in list(open(path)):
             code_without_loc = code.strip()
             code = self.append_loc(code.strip())
             try:
@@ -57,15 +57,18 @@ class TushareAPI:
                 if not os.path.exists(cacheFile):
                     continue
                 df = self.get_h_data(code, timeStr=timeStr)
-                if df['open'][0]*1.03 <= df['close'][0] <= numpy.min(df['close'][0:10])*1.20 \
-                        and df['open'][1]*1.03 <= df['close'][1] \
-                        and numpy.mean(df['amount'][0:5]) > numpy.mean(df['amount'][0:10]) \
-                        and numpy.mean(df['close'][0:5]) > numpy.mean(df['close'][0:10]):
+                if max(df['open'][index]*1.04, df['high'][index]*0.96, numpy.max(df['close'][index:index+30])*0.85) \
+                        <= df['close'][index] <= numpy.min(df['close'][index:index+30])*1.30 \
+                        and df['amount'][index] >= numpy.mean(df['amount'][index:index+5])*1.25 \
+                        and numpy.mean(df['amount'][index:index+3]) > numpy.mean(df['amount'][index:index+6]) \
+                        and numpy.mean(df['close'][index:index+3]) > numpy.mean(df['close'][index:index+9]) \
+                        > numpy.mean(df['close'][index:index+60]):
                     codes.append(code_without_loc)
                     # print("Found: %s" % code_without_loc)
             except Exception as e:
                 continue
         return codes
+
 
     def get_st_list(self):
         fs = ts.get_st_classified()
@@ -186,14 +189,13 @@ class TushareAPI:
                 df.to_csv(writer)
                 writer.close()
 
+
 if __name__ == "__main__":
     local_ts = TushareAPI()
     timeStr = time.strftime("%Y%m%d", time.localtime())
+    timeStr = local_ts.get_last_business_day()
     # local_ts.update_h_data(local_ts.get_last_business_day())
     # local_ts.update_h_data(timeStr)
-    codes = local_ts.get_lianban_list(timeStr="20200226")
-    print("%d: %s" % (len(codes), codes))
-    codes = local_ts.get_lianban_list(timeStr="20200227")
-    print("%d: %s" % (len(codes), codes))
-    codes = local_ts.get_lianban_list(timeStr="20200228")
-    print("%d: %s" % (len(codes), codes))
+    for i in range(19, -1, -1):
+        codes = local_ts.get_lianban_list(timeStr=timeStr, index=i)
+        print("%d-%d: %s" % (i, len(codes), codes))
