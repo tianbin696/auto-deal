@@ -421,12 +421,12 @@ class Monitor:
                 if not isStarted:
                     continue
 
-                # if not self.compare("14", "45"):
-                #     logger.info("Sleep before deal start")
-                #     continue
-                # if not deal_started:
-                #     self.operation.saveScreenshot("开始交易", '闭市前30分钟开始交易')
-                #     deal_started = True
+                if not self.compare("9", "40"):
+                    logger.info("Sleep before deal start")
+                    continue
+                if not deal_started:
+                    self.operation.saveScreenshot("开始交易", '9:40 开始交易')
+                    deal_started = True
 
                 print()
                 logger.debug("looping monitor stocks")
@@ -769,13 +769,14 @@ def get_direction_by_avg(code, prices, vols, is_logging=True, open_price=0, high
 
 
 def get_direction_for_lianban(code, prices, vols, is_logging=True, open_price=0, highest_price=0):
-    avg_5 = numpy.mean(prices[0:5])
-    avg_10 = numpy.mean(prices[0:10])
-    if avg_5 > avg_10 and max(open_price*1.02, highest_price*0.98) < prices[0] < prices[1]*1.04:
+    avg_1 = numpy.mean(prices[0:3])
+    avg_2 = numpy.mean(prices[0:6])
+    if avg_1 > avg_2 and max(prices[1], open_price, highest_price*0.98) < prices[0] < prices[1]*1.04:
         return 'B'
-    if avg_5 < avg_10 and prices[0] < min(open_price, prices[1]):
+    if avg_1 < avg_2 and prices[0] < min(open_price, prices[1]):
         return 'S'
     return 'N'
+
 
 def get_direction_by_composite_ways(code, prices, vols, is_logging=True, open_price=0, highest_price=0):
     # To skip exception value
