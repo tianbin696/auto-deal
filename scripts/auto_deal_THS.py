@@ -52,7 +52,7 @@ lianban_codes = []
 ignore_codes = []
 stock_positions = {}
 stock_chenbens = {}
-maxAmount = 15000
+maxAmount = 12000
 globalAvailableMoney = 100000
 minAmount = 0
 minBuyAmount = 5000
@@ -775,7 +775,7 @@ def get_direction_for_lianban(code, prices, vols, is_logging=True, open_price=0,
         return 'B'
     if avg_1 < avg_2 and prices[0] < min(open_price, prices[1])*0.96:
         return 'S'
-    if prices[0] < highest_price*0.93 or prices[0] < open_price*0.94:
+    if prices[0] < highest_price*0.92 or prices[0] < open_price*0.93:
         return 'S'
     return 'N'
 
