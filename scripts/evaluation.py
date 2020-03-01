@@ -203,7 +203,7 @@ def evaluate_lianban(code, time_str=None, index=0):
     df = ts_local.get_h_data(ts_local.append_loc(code), timeStr=time_str)
     buy_price = 0
     sell_price = 0
-    if df['high'][index-1] > max(df['open'][index-1], df['close'][index]) \
+    if df['high'][index-1] > df['open'][index-1] > df['close'][index] \
             and df['open'][index-1] < df['close'][index]*1.04:
         buy_price = max(df['open'][index-1], df['close'][index])
         # print("Buy date: %s" % df['trade_date'][index-1])
@@ -270,19 +270,20 @@ def scan_filtered(path="../codes/candidates.txt", save_candidates=False):
 
 timeStr = ts_local.get_last_business_day()
 avgs = []
-for i in range(120, 1, -1):
+for i in range(280, 2, -1):
     index = i
     codes = ts_local.get_lianban_list(timeStr=timeStr, index=index, do_cache=True)
     print("%d-%d" % (i, len(codes)))
     print("Codes: %s" % codes)
     increase_ratios = []
-    increase_ratios_2 = []
+    increase_ratios_2 = [0.0]
     for code in codes:
         increase_val = evaluate_lianban(code, timeStr, index)
         increase_ratios.append("%.2f" % increase_val)
         if increase_val != 0:
             increase_ratios_2.append(increase_val)
     print("Increase ratio: %s" % increase_ratios)
-    avgs.append(numpy.mean(increase_ratios_2))
-    print("Increase avg: %.2f" % numpy.mean(increase_ratios_2))
-    print("Avg:%.2f, Sum:%.2f" % (numpy.mean(avgs), numpy.sum(avgs)))
+    if len(increase_ratios_2) > 1:
+        avgs.append(numpy.mean(increase_ratios_2))
+        print("Increase avg: %.2f" % numpy.mean(increase_ratios_2))
+        print("Avg:%.2f, Sum:%.2f" % (numpy.mean(avgs), numpy.sum(avgs)))

@@ -49,8 +49,30 @@ class TushareAPI:
             cache[cacheFile] = df
         return df
 
+    def getRSI(self, prices, days=14):
+        positiveSum = 0
+        positiveCount = 0
+        negativeSum = 0
+        negativeCount = 0
+        totalSum = 0
+        for i in range(0, days):
+            increase = (prices[i] - prices[i+1])/prices[i+1]
+            if increase > 0:
+                positiveSum += increase
+                positiveCount += 1
+            else:
+                negativeSum += increase
+                negativeCount += 1
+        result = ((positiveSum)*100) / ((positiveSum + abs(negativeSum)))
+        return int(result)
+
     def get_lianban_list(self, timeStr=None, index=0, do_cache=False):
         codes = []
+        index_df = self.get_index_h_data("399001.SZ", do_cache=True)
+        # rsi = self.getRSI(index_df['close'][index:].values, 60)
+        if index_df['close'][index] < numpy.mean(index_df['close'][index:index+10]):
+            return codes
+
         path="../codes/all_codes.txt"
         for code in list(open(path)):
             code_without_loc = code.strip()
@@ -62,14 +84,11 @@ class TushareAPI:
                 if not os.path.exists(cacheFile):
                     continue
                 df = self.get_h_data(code, timeStr=timeStr, do_cache=do_cache)
-                if max(df['open'][index]*1.04, df['high'][index]*0.96, numpy.max(df['close'][index:index+30])*0.85) \
+                if max(min(df['open'][index], df['close'][index+1])*1.04, df['high'][index]*0.96) \
                         <= df['close'][index] <= numpy.min(df['close'][index:index+30])*1.30 \
-                        and df['amount'][index] >= numpy.mean(df['amount'][index:index+5])*1.25 \
-                        and numpy.mean(df['amount'][index:index+3]) > numpy.mean(df['amount'][index:index+6]) \
-                        and numpy.mean(df['close'][index:index+3]) > numpy.mean(df['close'][index:index+9]) \
-                        > numpy.mean(df['close'][index:index+60]):
+                        and df['amount'][index] >= numpy.mean(df['amount'][index:index+3])*1.70 \
+                        and numpy.mean(df['close'][index:index+5]) > numpy.mean(df['close'][index:index+10]):
                     codes.append(code_without_loc)
-                    # print("Found: %s" % code_without_loc)
             except Exception as e:
                 continue
         return codes
@@ -160,6 +179,14 @@ class TushareAPI:
                 self.get_h_data(code, timeStr=time_str)
             except Exception as e:
                 continue
+
+    def get_index_h_data(self, code, do_cache=False):
+        if do_cache and code in cache:
+            return cache[code]
+        df = ts.pro_bar(ts_code=code, asset='I')
+        if do_cache:
+            cache[code] = df
+        return df
 
     def update_h_data1(self):
         yesterday_str = self.get_last_business_day()
