@@ -204,8 +204,8 @@ def evaluate_lianban(code, time_str=None, index=0):
     buy_price = 0
     sell_price = 0
     prices = []
-    if df['high'][index-1] > max(df['close'][index], df['open'][index-1]):
-        prices.append(max(df['close'][index], df['open'][index-1])+0.01)
+    if df['high'][index-1] > max(df['close'][index], df['open'][index-1])*1.01:
+        prices.append(max(df['close'][index], df['open'][index-1])*1.01+0.01)
     else:
         prices.append(df['high'][index-1])
     prices.extend(df['close'][index:])

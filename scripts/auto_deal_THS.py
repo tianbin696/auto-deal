@@ -771,7 +771,7 @@ def get_direction_by_avg(code, prices, vols, is_logging=True, open_price=0, high
 def get_direction_for_lianban(code, prices, vols, is_logging=True, open_price=0, highest_price=0):
     avg_1 = numpy.mean(prices[0:5])
     avg_2 = numpy.mean(prices[0:10])
-    if avg_1 > avg_2 and max(prices[1], open_price, highest_price*0.98) < prices[0] < prices[1]*1.05:
+    if avg_1 > avg_2 and max(max(prices[1], open_price)*1.01, highest_price*0.98) < prices[0] < prices[1]*1.05:
         return 'B'
     if avg_1 < avg_2 and prices[0] < min(open_price, prices[1])*0.96:
         return 'S'
