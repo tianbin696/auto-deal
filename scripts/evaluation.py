@@ -270,7 +270,7 @@ def scan_filtered(path="../codes/candidates.txt", save_candidates=False):
 
 timeStr = ts_local.get_last_business_day()
 avgs = []
-for i in range(30, 0, -1):
+for i in range(120, 1, -1):
     index = i
     codes = ts_local.get_lianban_list(timeStr=timeStr, index=index, do_cache=True)
     print("%d-%d" % (i, len(codes)))
