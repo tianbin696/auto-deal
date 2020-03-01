@@ -780,6 +780,21 @@ def get_direction_for_lianban(code, prices, vols, is_logging=True, open_price=0,
     return 'N'
 
 
+def formatDate2(num):
+    if num < 10:
+        return "0%d" % num
+    else:
+        return "%d" % num
+
+
+def compare2(hour, minute):
+    tz = pytz.timezone('Hongkong')
+    now = datetime.now(tz)
+    targetStr = "%d-%s-%s %s:%s:00" % (now.year, formatDate2(now.month), formatDate2(now.day), hour, minute)
+    targetTime = tz.localize(datetime.strptime(targetStr, "%Y-%m-%d %H:%M:%S"))
+    return now > targetTime
+
+
 def get_direction_by_composite_ways(code, prices, vols, is_logging=True, open_price=0, highest_price=0):
     # To skip exception value
     if prices[0] <= 0 or prices[0] > prices[1]*1.11 > 0 or 0 < prices[0] < prices[1]*0.89:
@@ -788,6 +803,9 @@ def get_direction_by_composite_ways(code, prices, vols, is_logging=True, open_pr
     if code not in new_codes:
         direction = get_direction_for_lianban(code, prices, vols, is_logging, open_price, highest_price)
         logger.info("Lianban direction for %s: %s" % (code, direction))
+        if not compare2("14", "50") and direction == 'S':
+            # Make sure all sell action happen based on like close price
+            return 'N'
         return direction
 
     direction = get_direction_by_avg2(code, prices, vols, is_logging, open_price, highest_price)
