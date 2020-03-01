@@ -276,6 +276,7 @@ def scan_filtered(path="../codes/candidates.txt", save_candidates=False):
 
 timeStr = ts_local.get_last_business_day()
 avgs = []
+sums = []
 for i in range(280, 2, -1):
     index = i
     codes = ts_local.get_lianban_list(timeStr=timeStr, index=index, do_cache=True)
@@ -293,3 +294,5 @@ for i in range(280, 2, -1):
         avgs.append(numpy.mean(increase_ratios_2))
         print("Increase avg: %.2f" % numpy.mean(increase_ratios_2))
         print("Avg:%.2f, Sum:%.2f" % (numpy.mean(avgs), numpy.sum(avgs)))
+        sums.append(numpy.sum(avgs))
+print("Sums: %s" % sums)
