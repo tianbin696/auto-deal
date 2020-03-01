@@ -16,6 +16,7 @@ ts.set_token(token)
 
 logger = logging.getLogger('TushareAPI')
 cacheFolder = "../cache"
+cache = {}
 
 class TushareAPI:
     def get_historic_price(self, code):
@@ -25,12 +26,14 @@ class TushareAPI:
             logger.error("Failed to get historical price for %s: %s" % (code, e))
         return []
 
-    def get_h_data(self, code, timeStr = None, daysAgo = 0):
+    def get_h_data(self, code, timeStr = None, daysAgo = 0, do_cache=False):
         if not timeStr:
             timeStr = time.strftime("%Y%m%d", time.localtime())
         cacheFile = cacheFolder + "/" + timeStr + "/" + code + "_" + timeStr + ".csv"
         if not os.path.exists(cacheFolder + "/" + timeStr):
             os.mkdir(cacheFolder + "/" + timeStr)
+        if do_cache and cacheFile in cache:
+            return cache[cacheFile]
 
         if os.path.exists(cacheFile):
             df = pandas.read_csv(cacheFile)
@@ -41,10 +44,12 @@ class TushareAPI:
                 df.to_csv(writer)
                 writer.close()
             df = pandas.read_csv(cacheFile)
-        return df[daysAgo:].reset_index()
+        df = df[daysAgo:].reset_index()
+        if do_cache:
+            cache[cacheFile] = df
+        return df
 
-
-    def get_lianban_list(self, timeStr=None, index=0):
+    def get_lianban_list(self, timeStr=None, index=0, do_cache=False):
         codes = []
         path="../codes/all_codes.txt"
         for code in list(open(path)):
@@ -56,7 +61,7 @@ class TushareAPI:
                 cacheFile = cacheFolder + "/" + timeStr + "/" + code + "_" + timeStr + ".csv"
                 if not os.path.exists(cacheFile):
                     continue
-                df = self.get_h_data(code, timeStr=timeStr)
+                df = self.get_h_data(code, timeStr=timeStr, do_cache=do_cache)
                 if max(df['open'][index]*1.04, df['high'][index]*0.96, numpy.max(df['close'][index:index+30])*0.85) \
                         <= df['close'][index] <= numpy.min(df['close'][index:index+30])*1.30 \
                         and df['amount'][index] >= numpy.mean(df['amount'][index:index+5])*1.25 \

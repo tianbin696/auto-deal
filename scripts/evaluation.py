@@ -272,7 +272,7 @@ timeStr = ts_local.get_last_business_day()
 avgs = []
 for i in range(30, 0, -1):
     index = i
-    codes = ts_local.get_lianban_list(timeStr=timeStr, index=index)
+    codes = ts_local.get_lianban_list(timeStr=timeStr, index=index, do_cache=True)
     print("%d-%d" % (i, len(codes)))
     print("Codes: %s" % codes)
     increase_ratios = []
@@ -285,4 +285,4 @@ for i in range(30, 0, -1):
     print("Increase ratio: %s" % increase_ratios)
     avgs.append(numpy.mean(increase_ratios_2))
     print("Increase avg: %.2f" % numpy.mean(increase_ratios_2))
-print("Avg:%.2f, Sum:%.2f" % (numpy.mean(avgs), numpy.sum(avgs)))
+    print("Avg:%.2f, Sum:%.2f" % (numpy.mean(avgs), numpy.sum(avgs)))
