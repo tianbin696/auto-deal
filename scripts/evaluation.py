@@ -203,9 +203,15 @@ def evaluate_lianban(code, time_str=None, index=0):
     df = ts_local.get_h_data(ts_local.append_loc(code), timeStr=time_str)
     buy_price = 0
     sell_price = 0
-    prices = [df['high'][index-1]]
+    prices = []
+    if df['open'][index-1] > df['close'][index]:
+        prices.append(df['open'][index-1]+0.01)
+    elif df['high'][index-1] > df['close'][index]:
+        prices.append(df['close'][index]+0.01)
+    else:
+        prices.append(df['high'][index-1])
     prices.extend(df['close'][index:])
-    direction = get_direction_for_lianban(code, prices, df['amount'][index-1], False, df['open'][index-1], df['high'][index-1])
+    direction = get_direction_for_lianban(code, prices, df['amount'][index-1], False, df['open'][index-1], prices[0])
     if direction == 'B':
         buy_price = max(df['open'][index-1], df['close'][index])
         # print("Buy date: %s" % df['trade_date'][index-1])
