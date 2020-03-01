@@ -86,6 +86,8 @@ class TushareAPI:
                 if not os.path.exists(cacheFile):
                     continue
                 df = self.get_h_data(code, timeStr=timeStr, do_cache=do_cache)
+                if len(df['close']) <= index:
+                    continue
                 if max(min(df['open'][index], df['close'][index+1])*1.04, df['high'][index]*0.96) \
                         <= df['close'][index] <= numpy.min(df['close'][index:index+30])*1.30 \
                         and df['amount'][index] >= numpy.mean(df['amount'][index:index+3])*1.70 \
