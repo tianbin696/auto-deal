@@ -233,5 +233,5 @@ if __name__ == "__main__":
     # local_ts.update_h_data(local_ts.get_last_business_day())
     # local_ts.update_h_data(timeStr)
     for i in range(19, -1, -1):
-        codes = local_ts.get_lianban_list(timeStr=timeStr, index=i)
+        codes = local_ts.get_lianban_list(timeStr=timeStr, index=i, do_cache=True)
         print("%d-%d: %s" % (i, len(codes), codes))
