@@ -275,6 +275,7 @@ def scan_filtered(path="../codes/candidates.txt", save_candidates=False):
 # print("return avg: %.2f" % numpy.mean(all_returns))
 
 timeStr = ts_local.get_last_business_day()
+timeStr = time.strftime("%Y%m%d", time.localtime())
 avgs = []
 sums = []
 for i in range(280, 2, -1):
