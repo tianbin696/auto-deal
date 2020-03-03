@@ -229,7 +229,8 @@ class TushareAPI:
 if __name__ == "__main__":
     local_ts = TushareAPI()
     timeStr = time.strftime("%Y%m%d", time.localtime())
-    timeStr = local_ts.get_last_business_day()
+    # timeStr = local_ts.get_last_business_day()
+    print("Time: %s" % timeStr)
     # local_ts.update_h_data(local_ts.get_last_business_day())
     # local_ts.update_h_data(timeStr)
     for i in range(19, -1, -1):
