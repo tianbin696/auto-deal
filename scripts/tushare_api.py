@@ -174,7 +174,7 @@ class TushareAPI:
         if last_day == today_str:
             # yesterday = (datetime.now() - timedelta(days = 1))
             # last_day = yesterday.strftime("%Y%m%d")
-            last_day = files[-2]
+            last_day = files[-1]
         return last_day
 
     def update_h_data(self, time_str=None):
@@ -230,8 +230,8 @@ class TushareAPI:
 
 if __name__ == "__main__":
     local_ts = TushareAPI()
-    timeStr = time.strftime("%Y%m%d", time.localtime())
-    # timeStr = local_ts.get_last_business_day()
+    # timeStr = time.strftime("%Y%m%d", time.localtime())
+    timeStr = local_ts.get_last_business_day()
     print("Time: %s" % timeStr)
     # local_ts.update_h_data(local_ts.get_last_business_day())
     # local_ts.update_h_data(timeStr)
