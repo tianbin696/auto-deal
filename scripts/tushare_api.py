@@ -70,10 +70,10 @@ class TushareAPI:
         codes = []
         index_df = self.get_index_h_data("399001.SZ", do_cache=True)
         # rsi = self.getRSI(index_df['close'][index:].values, 60)
-        if index_df['close'][index] < numpy.mean(index_df['close'][index:index+10]) \
-                or (index_df['close'][index] > numpy.min(index_df['close'][index:index+60])*1.30
-                    and index_df['vol'][index] < numpy.mean(index_df['vol'][index:index+10])):
-            return codes
+        # if index_df['close'][index] < numpy.mean(index_df['close'][index:index+10]) \
+        #         or (index_df['close'][index] > numpy.min(index_df['close'][index:index+60])*1.30
+        #             and index_df['vol'][index] < numpy.mean(index_df['vol'][index:index+10])):
+        #     return codes
 
         path="../codes/all_codes.txt"
         for code in list(open(path)):
