@@ -73,7 +73,9 @@ class TushareAPI:
         # if index_df['close'][index] < numpy.mean(index_df['close'][index:index+10]) \
         #         or (index_df['close'][index] > numpy.min(index_df['close'][index:index+60])*1.30
         #             and index_df['vol'][index] < numpy.mean(index_df['vol'][index:index+10])):
-        #     return codes
+        if index_df['close'][index] > numpy.min(index_df['close'][index:index+60])*1.30 \
+                and index_df['vol'][index] < numpy.mean(index_df['vol'][index:index+10]):
+            return codes
 
         path="../codes/all_codes.txt"
         for code in list(open(path)):
