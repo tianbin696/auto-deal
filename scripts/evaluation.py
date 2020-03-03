@@ -278,11 +278,13 @@ timeStr = ts_local.get_last_business_day()
 timeStr = time.strftime("%Y%m%d", time.localtime())
 avgs = []
 sums = []
-for i in range(280, 2, -1):
+for i in range(280, -1, -1):
     index = i
     codes = ts_local.get_lianban_list(timeStr=timeStr, index=index, do_cache=True)
     print("%d-%d" % (i, len(codes)))
     print("Codes: %s" % codes)
+    if index <= 0:
+        break
     increase_ratios = []
     increase_ratios_2 = [0.0]
     for code in codes:
