@@ -66,6 +66,7 @@ cache = {}
 def readCodes():
     global lianban_codes
     lianban_codes = local_ts.get_lianban_list(local_ts.get_last_business_day())
+    logger.info("Monitor codes: %s" % lianban_codes)
 
     global new_codes
     timeStr = time.strftime("%Y%m%d", time.localtime())
