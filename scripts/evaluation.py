@@ -211,7 +211,7 @@ def evaluate_lianban(code, time_str=None, index=0):
     prices.extend(df['close'][index:])
     direction = get_direction_for_lianban(code, prices, df['amount'][index-1], False, df['open'][index-1], prices[0])
     if direction == 'B':
-        buy_price = max(df['open'][index-1], df['close'][index])
+        buy_price = max(df['open'][index-1], df['close'][index])*1.01
         # print("Buy date: %s" % df['trade_date'][index-1])
     else:
         return 0
