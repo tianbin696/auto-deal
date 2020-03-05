@@ -15,7 +15,7 @@ token = "cd2026ad7373788082deede38ff419cd87415f50c24322819b71a002"
 ts.set_token(token)
 
 logger = logging.getLogger('TushareAPI')
-cacheFolder = "../cache"
+cacheFolder = "../../cache"
 cache = {}
 
 class TushareAPI:
@@ -166,7 +166,7 @@ class TushareAPI:
         return code
 
     def get_last_business_day(self):
-        data_folder = "../cache/"
+        data_folder = "../../cache/"
         files = [v for v in os.listdir(data_folder)]
         files.sort()
         last_day = files[-1]
