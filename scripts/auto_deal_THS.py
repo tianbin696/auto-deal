@@ -422,11 +422,11 @@ class Monitor:
                 if not isStarted:
                     continue
 
-                if not self.compare("9", "40"):
+                if not self.compare("9", "26"):
                     logger.info("Sleep before deal start")
                     continue
                 if not deal_started:
-                    self.operation.saveScreenshot("开始交易", '9:40 开始交易')
+                    self.operation.saveScreenshot("开始交易", '9:26 开始交易')
                     deal_started = True
 
                 print()
@@ -774,11 +774,11 @@ def get_direction_for_lianban(code, prices, vols, is_logging=True, open_price=0,
     avg_2 = numpy.mean(prices[0:10])
     if avg_1 > avg_2 and max(max(prices[1], open_price)*1.01, highest_price*0.98) < prices[0] < prices[1]*1.05:
         return 'B'
-    if avg_1 < avg_2 and prices[0] < min(open_price, prices[1])*0.96:
+    if avg_1 < avg_2 and prices[0] < min(open_price, prices[1])*0.92:
         return 'S'
     if prices[0] < highest_price*0.92 or prices[0] < open_price*0.93:
         return 'S'
-    return 'N'
+    return 'B'
 
 
 def formatDate2(num):

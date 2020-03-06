@@ -69,13 +69,8 @@ class TushareAPI:
     def get_lianban_list(self, timeStr=None, index=0, do_cache=False):
         codes = []
         index_df = self.get_index_h_data("399001.SZ", do_cache=True)
-        # rsi = self.getRSI(index_df['close'][index:].values, 60)
-        # if index_df['close'][index] < numpy.mean(index_df['close'][index:index+10]) \
-        #         or (index_df['close'][index] > numpy.min(index_df['close'][index:index+60])*1.30
-        #             and index_df['vol'][index] < numpy.mean(index_df['vol'][index:index+10])):
-        if index_df['close'][index] > numpy.min(index_df['close'][index:index+60])*1.30 \
-                and index_df['vol'][index] < numpy.mean(index_df['vol'][index:index+10]):
-            return codes
+        # if index_df['close'][index] < numpy.mean(index_df['close'][index:index+30]):
+        #     return codes
 
         path="../codes/all_codes.txt"
         for code in list(open(path)):
@@ -91,8 +86,9 @@ class TushareAPI:
                 if len(df['close']) <= index:
                     continue
                 if max(max(df['open'][index], df['close'][index+1])*1.04, df['high'][index]*0.96) \
-                        <= df['close'][index] <= numpy.min(df['close'][index:index+30])*1.30 \
-                        and df['amount'][index] >= numpy.mean(df['amount'][index:index+3])*1.70 \
+                        <= df['close'][index] <= numpy.min(df['close'][index:index+30])*1.20 \
+                        and numpy.mean(df['amount'][index:index+6])*2.0 >= numpy.mean(df['amount'][index:index+3]) \
+                        >= numpy.mean(df['amount'][index:index+6])*1.50 \
                         and numpy.mean(df['close'][index:index+5]) > numpy.mean(df['close'][index:index+10]):
                     codes.append(code_without_loc)
             except Exception as e:
