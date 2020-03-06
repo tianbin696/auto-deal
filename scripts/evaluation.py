@@ -279,22 +279,24 @@ timeStr = ts_local.get_last_business_day()
 # timeStr = time.strftime("%Y%m%d", time.localtime())
 avgs = []
 sums = []
+index_df = ts_local.get_index_h_data("399001.SZ", do_cache=True)
 for i in range(280, -1, -1):
     index = i
+    trade_date = index_df['trade_date'][i]
     codes = ts_local.get_lianban_list(timeStr=timeStr, index=index, do_cache=True)
-    print("%d-%d" % (i, len(codes)))
+    print("%s-%d-%d" % (trade_date, i, len(codes)))
     print("Codes: %s" % codes)
     if index <= 0:
         break
     increase_ratios = []
-    increase_ratios_2 = [0.0]
+    increase_ratios_2 = []
     for code in codes:
         increase_val = evaluate_lianban(code, timeStr, index)
         increase_ratios.append("%.2f" % increase_val)
         if increase_val != 0:
             increase_ratios_2.append(increase_val)
     print("Increase ratio: %s" % increase_ratios)
-    if len(increase_ratios_2) > 1:
+    if len(increase_ratios_2) > 0:
         avgs.append(numpy.mean(increase_ratios_2))
         print("Increase avg: %.2f" % numpy.mean(increase_ratios_2))
         print("Avg:%.2f, Sum:%.2f" % (numpy.mean(avgs), numpy.sum(avgs)))
