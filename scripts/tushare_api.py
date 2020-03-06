@@ -85,7 +85,7 @@ class TushareAPI:
                 df = self.get_h_data(code, timeStr=timeStr, do_cache=do_cache)
                 if len(df['close']) <= index:
                     continue
-                if max(max(df['open'][index], df['close'][index+1])*1.04, df['high'][index]*0.96) \
+                if max(max(df['open'][index], df['close'][index+1])*1.03, df['high'][index]*0.95) \
                         <= df['close'][index] <= numpy.min(df['close'][index:index+30])*1.20 \
                         and numpy.mean(df['amount'][index:index+6])*2.0 >= numpy.mean(df['amount'][index:index+3]) \
                         >= numpy.mean(df['amount'][index:index+6])*1.50 \
