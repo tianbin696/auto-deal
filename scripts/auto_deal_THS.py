@@ -399,7 +399,7 @@ class Monitor:
             try:
                 self.operation.moveMouse()
 
-                if (self.compare("09", "30") and not self.compare("11", "30")) or (self.compare("13", "00") and not self.compare("15", "00")):
+                if (self.compare("09", "24") and not self.compare("11", "30")) or (self.compare("13", "00") and not self.compare("15", "00")):
                     # 交易时间：[09:30 ~ 11:30, 13:00 ~ 15:00]
                     if not isStarted:
                         self.operation.saveScreenshot("开始交易", '开始交易')
