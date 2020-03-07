@@ -87,8 +87,8 @@ class TushareAPI:
                     continue
                 if max(max(df['open'][index], df['close'][index+1])*1.03, df['high'][index]*0.95) \
                         <= df['close'][index] <= numpy.min(df['close'][index:index+30])*1.20 \
-                        and numpy.mean(df['amount'][index:index+6])*2.0 >= numpy.mean(df['amount'][index:index+3]) \
-                        >= numpy.mean(df['amount'][index:index+6])*1.50 \
+                        and numpy.mean(df['amount'][index:index+9])*2.0 >= numpy.mean(df['amount'][index:index+3]) \
+                        >= numpy.mean(df['amount'][index:index+9])*1.50 \
                         and numpy.mean(df['close'][index:index+5]) > numpy.mean(df['close'][index:index+10]):
                     codes.append(code_without_loc)
             except Exception as e:
