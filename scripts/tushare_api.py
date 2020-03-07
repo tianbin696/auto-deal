@@ -69,8 +69,8 @@ class TushareAPI:
     def get_lianban_list(self, timeStr=None, index=0, do_cache=False):
         codes = []
         index_df = self.get_index_h_data("399001.SZ", do_cache=True)
-        # if index_df['close'][index] < numpy.mean(index_df['close'][index:index+30]):
-        #     return codes
+        if index_df['close'][index] < numpy.min(index_df['close'][index+1:index+31]):
+            return codes
 
         path="../codes/all_codes.txt"
         for code in list(open(path)):
