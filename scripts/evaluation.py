@@ -216,7 +216,9 @@ def evaluate_lianban(code, time_str=None, index=0):
         # print("Buy date: %s" % df['trade_date'][index-1])
     else:
         return 0
+    hold_days = 0
     for i in range(index-2, -1, -1):
+        hold_days = index-1-i
         prices = []
         prices.extend(df['close'][i:])
         direction = get_direction_for_lianban(code, prices, df['amount'][i:], False, df['open'][i], df['high'][i])
@@ -227,7 +229,7 @@ def evaluate_lianban(code, time_str=None, index=0):
     if sell_price == 0:
         sell_price = df['close'][0]
     increase_ratio = (sell_price-buy_price)/buy_price*100
-    return increase_ratio
+    return [increase_ratio, hold_days]
 
 
 def scan_all():
@@ -280,6 +282,7 @@ timeStr = ts_local.get_last_business_day()
 avgs = []
 sums = []
 index_df = ts_local.get_index_h_data("399001.SZ", do_cache=True)
+hold_days = []
 for i in range(3600, -1, -1):
     index = i
     trade_date = index_df['trade_date'][i]
@@ -290,15 +293,19 @@ for i in range(3600, -1, -1):
         break
     increase_ratios = []
     increase_ratios_2 = []
+    hold_days_2 = []
     for code in codes:
-        increase_val = evaluate_lianban(code, timeStr, index)
+        [increase_val, days] = evaluate_lianban(code, timeStr, index)
         increase_ratios.append("%.2f" % increase_val)
         if increase_val != 0:
             increase_ratios_2.append(increase_val)
+            hold_days_2.append(days)
     print("Increase ratio: %s" % increase_ratios)
     if len(increase_ratios_2) > 0:
         avgs.append(numpy.mean(increase_ratios_2))
+        hold_days.append(numpy.mean(hold_days_2))
         print("Increase avg: %.2f" % numpy.mean(increase_ratios_2))
-        print("Avg:%.2f, Sum:%.2f" % (numpy.mean(avgs), numpy.sum(avgs)))
+        print("Avg:%.2f, Sum:%.2f, Days:%.2f" % (numpy.mean(avgs), numpy.sum(avgs), numpy.mean(hold_days)))
         sums.append(numpy.sum(avgs))
 print("Sums: %s" % sums)
+print("Days: %s" % hold_days)
