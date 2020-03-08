@@ -766,7 +766,7 @@ def get_direction_by_avg(code, prices, vols, is_logging=True, open_price=0, high
     return direction
 
 
-def get_direction_for_lianban(code, prices, vols, is_logging=True, open_price=0, highest_price=0):
+def get_direction_for_lianban(code, prices, vols, is_logging=True, open_price=0, highest_price=0, buy_price=0):
     avg_1 = numpy.mean(prices[0:5])
     avg_2 = numpy.mean(prices[0:10])
     if avg_1 > avg_2 and max(max(prices[1], open_price)*1.01, highest_price*0.98) < prices[0] < prices[1]*1.05:
@@ -777,6 +777,10 @@ def get_direction_for_lianban(code, prices, vols, is_logging=True, open_price=0,
         return 'S'
     if prices[0] < numpy.min(prices[1:31]) and prices[0] < min(prices[1], open_price)*0.96:
         return 'S'
+    if buy_price > 0 and prices[0] > buy_price*1.20:
+        return 'S'
+    # if buy_price > 0 and prices[0] < buy_price*0.85:
+    #     return 'S'
     return 'B'
 
 
@@ -801,7 +805,10 @@ def get_direction_by_composite_ways(code, prices, vols, is_logging=True, open_pr
         return 'N'
 
     if code not in new_codes:
-        direction = get_direction_for_lianban(code, prices, vols, is_logging, open_price, highest_price)
+        chen_ben = 0.0
+        if code in stock_chenbens:
+            chen_ben = stock_chenbens[code]
+        direction = get_direction_for_lianban(code, prices, vols, is_logging, open_price, highest_price, chen_ben)
         logger.info("Lianban direction for %s: %s" % (code, direction))
         if not compare2("14", "50") and direction == 'S':
             # Make sure all sell action happen based on like close price

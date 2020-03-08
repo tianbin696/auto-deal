@@ -221,7 +221,7 @@ def evaluate_lianban(code, time_str=None, index=0):
         hold_days = index-1-i
         prices = []
         prices.extend(df['close'][i:])
-        direction = get_direction_for_lianban(code, prices, df['amount'][i:], False, df['open'][i], df['high'][i])
+        direction = get_direction_for_lianban(code, prices, df['amount'][i:], False, df['open'][i], df['high'][i], buy_price)
         if direction == "S":
             sell_price = df['close'][i]
             # print("Sell date: %s" % df['trade_date'][i])
@@ -283,7 +283,7 @@ avgs = []
 sums = []
 index_df = ts_local.get_index_h_data("399001.SZ", do_cache=True)
 hold_days = []
-for i in range(60, -1, -1):
+for i in range(120, -1, -1):
     index = i
     trade_date = index_df['trade_date'][i]
     codes = ts_local.get_lianban_list(timeStr=timeStr, index=index, do_cache=True)
