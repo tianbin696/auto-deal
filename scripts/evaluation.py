@@ -283,7 +283,7 @@ avgs = []
 sums = []
 index_df = ts_local.get_index_h_data("399001.SZ", do_cache=True)
 hold_days = []
-for i in range(240, -1, -1):
+for i in range(120, -1, -1):
     index = i
     trade_date = index_df['trade_date'][i]
     codes = ts_local.get_lianban_list(timeStr=timeStr, index=index, do_cache=True)
