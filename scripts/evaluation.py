@@ -283,6 +283,7 @@ avgs = []
 sums = []
 index_df = ts_local.get_index_h_data("399001.SZ", do_cache=True)
 hold_days = []
+max_size = 4
 for i in range(120, -1, -1):
     index = i
     trade_date = index_df['trade_date'][i]
@@ -302,9 +303,9 @@ for i in range(120, -1, -1):
             hold_days_2.append(days)
     print("Increase ratio: %s" % increase_ratios)
     if len(increase_ratios_2) > 0:
-        avgs.append(numpy.mean(increase_ratios_2))
-        hold_days.append(numpy.mean(hold_days_2))
-        print("Increase avg: %.2f" % numpy.mean(increase_ratios_2))
+        avgs.append(numpy.mean(increase_ratios_2[0:max_size]))
+        hold_days.append(numpy.mean(hold_days_2[0:max_size]))
+        print("Increase avg: %.2f" % numpy.mean(increase_ratios_2[0:max_size]))
         print("Avg:%.2f, Sum:%.2f, Days:%.2f" % (numpy.mean(avgs), numpy.sum(avgs), numpy.mean(hold_days)))
         sums.append(numpy.sum(avgs))
 print("Sums: %s" % sums)
