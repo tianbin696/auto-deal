@@ -65,7 +65,7 @@ cache = {}
 
 def readCodes():
     global lianban_codes
-    lianban_codes = local_ts.get_lianban_list(local_ts.get_last_business_day())
+    lianban_codes = local_ts.get_lianban_list(local_ts.get_last_business_day(), do_cache=False)
     logger.info("Monitor codes: %s" % lianban_codes)
 
     global new_codes
