@@ -303,7 +303,7 @@ for i in range(300, -1, -1):
             hold_days_2.append(days)
     print("Increase ratio: %s" % increase_ratios)
     if len(increase_ratios_2) > 0:
-        avgs.append(numpy.mean(increase_ratios_2[0:max_size]))
+        avgs.append(numpy.sum(increase_ratios_2[0:max_size]))
         hold_days.append(numpy.mean(hold_days_2[0:max_size]))
         print("Increase avg: %.2f" % numpy.mean(increase_ratios_2[0:max_size]))
         print("Avg:%.2f, Sum:%.2f, Days:%.2f" % (numpy.mean(avgs), numpy.sum(avgs), numpy.mean(hold_days)))
