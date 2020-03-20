@@ -808,6 +808,10 @@ def get_direction_by_composite_ways(code, prices, vols, is_logging=True, open_pr
         chen_ben = 0.0
         if code in stock_chenbens:
             chen_ben = stock_chenbens[code]
+
+        if chen_ben > 0 and highest_price*0.96 > prices[0] > chen_ben*1.15:
+            return 'S'
+
         direction = get_direction_for_lianban(code, prices, vols, is_logging, open_price, highest_price, chen_ben)
         logger.info("Lianban direction for %s: %s" % (code, direction))
         if not compare2("14", "50") and direction == 'S':
