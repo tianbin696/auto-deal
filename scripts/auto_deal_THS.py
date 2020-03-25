@@ -769,8 +769,7 @@ def get_direction_by_avg(code, prices, vols, is_logging=True, open_price=0, high
 def get_direction_for_lianban(code, prices, vols, is_logging=True, open_price=0, highest_price=0, buy_price=0):
     avg_1 = numpy.mean(prices[0:5])
     avg_2 = numpy.mean(prices[0:10])
-    if avg_1 > avg_2 and max(max(prices[1], open_price)*1.01, highest_price*0.98) < prices[0] < prices[1]*1.05:
-        return 'B'
+
     # if avg_1 < avg_2 and prices[0] < min(open_price, prices[1])*0.94:
     #     return 'S'
     if prices[0] < highest_price*0.92 or prices[0] < min(open_price, prices[1])*0.94:
@@ -781,7 +780,9 @@ def get_direction_for_lianban(code, prices, vols, is_logging=True, open_price=0,
         return 'S'
     # if buy_price > 0 and prices[0] < buy_price*0.85:
     #     return 'S'
-    return 'B'
+    if open_price < prices[1]*1.05:
+        return 'B'
+    return 'N'
 
 
 def formatDate2(num):

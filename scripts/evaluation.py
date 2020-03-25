@@ -215,7 +215,7 @@ def evaluate_lianban(code, time_str=None, index=0):
         buy_price = df['open'][index-1]
         # print("Buy date: %s" % df['trade_date'][index-1])
     else:
-        return 0
+        return [0, 0]
     hold_days = 0
     for i in range(index-2, -1, -1):
         hold_days = index-1-i
