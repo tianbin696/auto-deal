@@ -48,9 +48,10 @@ if __name__ == "__main__":
     rsi_value = get_rsi(df['close'], days=24)
     print "RSI-24 value: %d" % rsi_value
 
-    for i in range(0, 30):
+    for i in range(0, 120):
         updated_prices = []
         updated_prices.extend(df['close'][i:])
         direction = get_direction(updated_prices)
-        print "direction of %s: %s" % (df['trade_date'][i], direction)
+        if direction == "B" or direction == "S":
+            print "direction of %s: %s - %.2f" % (df['trade_date'][i], direction, df['close'][i])
 

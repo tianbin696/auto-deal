@@ -1,25 +1,25 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
 import ts_cli as ts
-import numpy
+import pandas as pd
+import bs_direction_avg as avg
+import bs_direction_rsi as rsi
+import bs_direction_macd as macd
 
 
 def get_direction(prices):
-    avg_01 = numpy.mean(prices[0:5])
-    avg_02 = numpy.mean(prices[0:10])
-    avg_03 = numpy.mean(prices[0:30])
+    __direction = avg.get_direction(prices)
+    if __direction == "B" or __direction == "S":
+        return __direction
 
-    avg_11 = numpy.mean(prices[1:6])
-    avg_12 = numpy.mean(prices[1:11])
-    avg_13 = numpy.mean(prices[1:31])
+    d = {'close': prices[0:52]}
+    __df = pd.DataFrame(d).reset_index()
+    __direction = macd.get_direction(__df)
+    if __direction == "B" or __direction == "S":
+        return __direction
 
-    if avg_12 > avg_11 > avg_13:
-        if avg_01 > avg_02 > avg_03:
-            return "B"
-    if avg_11 > avg_12 > avg_13:
-        if avg_02 > avg_01 > avg_03:
-            return "S"
-    return "N"
+    __direction = rsi.get_direction(prices)
+    return __direction
 
 
 if __name__ == "__main__":

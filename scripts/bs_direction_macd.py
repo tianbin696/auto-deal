@@ -41,5 +41,9 @@ if __name__ == "__main__":
     df = __get_macd(df, 12, 26, 9)
     print df[0:30]
 
-    direction = get_direction(df)
-    print direction
+    for i in range(0, 120):
+        d = df[i:]
+        d = d.reset_index()
+        direction = get_direction(d)
+        if direction == "B" or direction == "S":
+            print "direction of %s: %s - %.2f" % (df['trade_date'][i], direction, df['close'][i])
