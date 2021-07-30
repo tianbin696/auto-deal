@@ -10,7 +10,7 @@ from pywinauto import keyboard
 from pywinauto import win32defines
 from pywinauto.win32functions import SetForegroundWindow, ShowWindow
 from email_sender import sendEmail
-from ths_main import ths_start, ths_close
+from ths_window import ths_start, ths_close
 from yan_zhen_ma import get_vcode
 
 logging.basicConfig(level=logging.DEBUG,

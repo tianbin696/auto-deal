@@ -23,8 +23,8 @@ from pywinauto.win32functions import SetForegroundWindow, ShowWindow
 
 from email_sender import sendEmail
 from yan_zhen_ma import get_vcode
-from ths_main import ths_start
-from ths_main import ths_close
+from ths_window import ths_start
+from ths_window import ths_close
 from stats import get_code_filter_list
 from stats import var
 from stats import sort_codes
