@@ -26,7 +26,7 @@ logger = logging.getLogger('auto_deal')
 logger.addHandler(console)
 
 
-class OperationOfThs:
+class ThsCli:
     def __init__(self):
         self.sleep_time = 0.5
         self.screenshotCount = 1
@@ -220,7 +220,7 @@ class OperationOfThs:
 if __name__ == '__main__':
     ths_start()
 
-    tong_hua_shun = OperationOfThs()
+    tong_hua_shun = ThsCli()
 
     tong_hua_shun.order('600570', 'B', 0, 200)
     tong_hua_shun.order('600570', 'S', 0, 200)
