@@ -22,7 +22,7 @@ from pywinauto import win32defines
 from pywinauto.win32functions import SetForegroundWindow, ShowWindow
 
 from email_sender import sendEmail
-from yan_zhen_ma import get_vcode
+from vcode_cli import get_vcode
 from ths_window import ths_start
 from ths_window import ths_close
 from stats import get_code_filter_list

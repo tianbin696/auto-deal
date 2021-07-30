@@ -11,7 +11,7 @@ from pywinauto import win32defines
 from pywinauto.win32functions import SetForegroundWindow, ShowWindow
 from email_sender import sendEmail
 from ths_window import ths_start, ths_close
-from yan_zhen_ma import get_vcode
+from vcode_cli import get_vcode
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
