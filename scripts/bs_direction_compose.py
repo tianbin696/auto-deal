@@ -12,11 +12,11 @@ def get_direction(prices):
     if __direction == "B" or __direction == "S":
         return __direction
 
-    d = {'close': prices[0:52]}
-    __df = pd.DataFrame(d).reset_index()
-    __direction = macd.get_direction(__df)
-    if __direction == "B" or __direction == "S":
-        return __direction
+    # d = {'close': prices[0:52]}
+    # __df = pd.DataFrame(d).reset_index()
+    # __direction = macd.get_direction(__df)
+    # if __direction == "B" or __direction == "S":
+    #     return __direction
 
     __direction = rsi.get_direction(prices)
     return __direction
