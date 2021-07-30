@@ -1,4 +1,4 @@
-#/bin/env python
+#!/bin/env python
 # -*- coding: utf-8 -*-
 import pandas as pd
 import ts_cli as ts
