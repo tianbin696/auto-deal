@@ -37,13 +37,13 @@ def __get_macd(df, short=12, long=26, M=9):
 
 
 if __name__ == "__main__":
-    df = ts.get_h_data("600570.SH", start_date="20210701", end_date="20210730")
+    df = ts.get_h_data("600570.SH", start_date="20200730", end_date="20210730")
     df = __get_macd(df, 12, 26, 9)
     print df[0:30]
 
     for i in range(0, 120):
-        d = df[i:]
-        d = d.reset_index()
-        direction = get_direction(d)
+        d = {'close': df['close'][i:]}
+        __df = pd.DataFrame(d).reset_index()
+        direction = get_direction(__df)
         if direction == "B" or direction == "S":
             print "direction of %s: %s - %.2f" % (df['trade_date'][i], direction, df['close'][i])
