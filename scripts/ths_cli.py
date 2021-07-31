@@ -1,29 +1,26 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
 import logging
+import random
 import time
+from datetime import datetime
 import pywinauto
 import pywinauto.application
 import pywinauto.clipboard
-from datetime import datetime
 from pywinauto import keyboard
+from pywinauto import mouse
 from pywinauto import win32defines
 from pywinauto.win32functions import SetForegroundWindow, ShowWindow
 from email_sender import sendEmail
 from ths_window import ths_start, ths_close
-from vcode_cli import get_vcode
+# from vcode_cli import get_vcode
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                     datefmt='%a, %d %b %Y %H:%M:%S',
                     filename='../../logs/auto_deal_ths.log',
                     filemode='a')
-console = logging.StreamHandler()
-console.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s')
-console.setFormatter(formatter)
-logger = logging.getLogger('auto_deal')
-logger.addHandler(console)
+logger = logging.getLogger('ths_cli')
 
 
 class ThsCli:
@@ -215,6 +212,10 @@ class ThsCli:
             sendEmail([pic_name], status, title)
         except Exception as e:
             logger.error("failed to send email: %s" % e)
+
+    def move_mouse(self):
+        # move mouse randomly to prevent screen locked
+        mouse.move(coords=(random.randint(0, 99), random.randint(0, 99)))
 
 
 if __name__ == '__main__':

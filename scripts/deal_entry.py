@@ -3,8 +3,8 @@
 import datetime
 import logging
 import bs_direction_compose as direct_cli
-import bs_volume
 import bs_price
+import bs_volume
 import ts_cli as ts
 
 logging.basicConfig(level=logging.DEBUG,
@@ -12,12 +12,7 @@ logging.basicConfig(level=logging.DEBUG,
                     datefmt='%a, %d %b %Y %H:%M:%S',
                     filename='../../logs/auto_deal_ths.log',
                     filemode='a')
-console = logging.StreamHandler()
-console.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s')
-console.setFormatter(formatter)
-logger = logging.getLogger('deal_main')
-logger.addHandler(console)
+logger = logging.getLogger('deal_entry')
 
 
 class DealEntry:
