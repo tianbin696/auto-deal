@@ -3,6 +3,8 @@
 import datetime
 import logging
 import bs_direction_compose as direct_cli
+import bs_volume
+import bs_price
 import ts_cli as ts
 
 logging.basicConfig(level=logging.DEBUG,
@@ -34,18 +36,32 @@ class DealMain:
                                                                                 self.volume, self.yesterday_str))
         logger.info("historical data: %s" % self.h_data[0:3])
 
-    def get_rt_direction(self):
+    def get_rt_deal(self):
         if self.is_dealed:
-            return "N"
+            return None
         rt_df = ts.get_rt_price(self.code)
-        updated_prices = [float(rt_df['price'][0])]
+        rt_price = float(rt_df['price'][0])
+        updated_prices = [rt_price]
         updated_prices.extend(self.h_data['close'])
         logger.info("prices for code %s: %s" % (self.code, updated_prices[0:5]))
         __direction = direct_cli.get_direction(updated_prices)
         logger.info("realtime direction for code %s: %s" % (self.code, __direction))
-        return __direction
+
+        if __direction == "B":
+            __volume = bs_volume.get_buy_vol(rt_price)
+            __price = bs_price.get_buy_price(rt_price)
+            return [self.code, "B", __price, __volume]
+        if __direction == "S":
+            __volume = bs_volume.get_sell_vol(self.volume)
+            __price = bs_price.get_sell_price(rt_price)
+            return [self.code, "S", __price, __volume]
+        return None
 
 
 if __name__ == "__main__":
     deal_main = DealMain("600570", 55.01, 200)
-    rt_direction = deal_main.get_rt_direction()
+    deal = deal_main.get_rt_deal()
+    if deal:
+        print deal
+    else:
+        print "No deal expected"
