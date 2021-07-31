@@ -26,6 +26,7 @@ class AutoDeal:
         logger.info("THS window opened")
 
     def close_ths(self):
+        self.ths_cli.save_screenshot("Closing THS", "Closing THS")
         ths_window.ths_close()
         logger.info("THS window closed")
 
