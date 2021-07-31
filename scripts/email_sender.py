@@ -1,15 +1,14 @@
 #/bin/env python
 # -*- coding: utf-8 -*-
-
+import smtplib
 from email import encoders
 from email.header import Header
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
-import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 
-def sendEmail(photos, status, title=u'交易状态'):
+def send_email(photos, status, title=u'交易状态'):
     msg = MIMEMultipart()
     msg['From'] = "tianbin6961@sina.com"
     msg['To'] = "tianbin696@163.com"
@@ -39,5 +38,6 @@ def sendEmail(photos, status, title=u'交易状态'):
     server.sendmail("tianbin6961@sina.com", "tianbin696@163.com", msg.as_string())
     server.quit()
 
+
 if __name__ == "__main__":
-    sendEmail(['auto_deal.png'],'test')
+    send_email(['../conf/auto_deal.png'], 'test')

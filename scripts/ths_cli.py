@@ -11,7 +11,7 @@ from pywinauto import keyboard
 from pywinauto import mouse
 from pywinauto import win32defines
 from pywinauto.win32functions import SetForegroundWindow, ShowWindow
-from email_sender import sendEmail
+from email_sender import send_email
 from ths_window import ths_start, ths_close
 # from vcode_cli import get_vcode
 
@@ -209,7 +209,7 @@ class ThsCli:
             self.__main_window.capture_as_image().save(pic_name)
             time.sleep(self.sleep_time)
             self.screenshotCount += 1
-            sendEmail([pic_name], status, title)
+            send_email([pic_name], status, title)
         except Exception as e:
             logger.error("failed to send email: %s" % e)
 
