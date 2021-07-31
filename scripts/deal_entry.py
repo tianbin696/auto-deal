@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 import logging
-
+import bs_direction_compose as direct_cli
 import ts_cli as ts
 
 logging.basicConfig(level=logging.DEBUG,
@@ -23,6 +23,7 @@ class DealMain:
         self.code = code
         self.cost = cost
         self.volume = volume
+        self.is_dealed = False
         self.yesterday_str = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime("%Y%m%d")
         self.h_code = "%s.SH" % code
         if code < "600000":
@@ -33,6 +34,18 @@ class DealMain:
                                                                                 self.volume, self.yesterday_str))
         logger.info("historical data: %s" % self.h_data[0:3])
 
+    def get_rt_direction(self):
+        if self.is_dealed:
+            return "N"
+        rt_df = ts.get_rt_price(self.code)
+        updated_prices = [float(rt_df['price'][0])]
+        updated_prices.extend(self.h_data['close'])
+        logger.info("prices for code %s: %s" % (self.code, updated_prices[0:5]))
+        __direction = direct_cli.get_direction(updated_prices)
+        logger.info("realtime direction for code %s: %s" % (self.code, __direction))
+        return __direction
+
 
 if __name__ == "__main__":
     deal_main = DealMain("600570", 55.01, 200)
+    rt_direction = deal_main.get_rt_direction()
