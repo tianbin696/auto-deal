@@ -15,12 +15,12 @@ from email_cli import send_email
 from ths_window import ths_start, ths_close
 # from vcode_cli import get_vcode
 
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
-                    datefmt='%a, %d %b %Y %H:%M:%S',
-                    filename='../../logs/auto_deal_ths.log',
-                    filemode='a')
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s')
+console.setFormatter(formatter)
 logger = logging.getLogger('ths_cli')
+logger.addHandler(console)
 
 
 class ThsCli:

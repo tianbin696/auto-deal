@@ -7,12 +7,12 @@ import time_util
 from deal_entries import DealEntries
 from ths_cli import ThsCli
 
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
-                    datefmt='%a, %d %b %Y %H:%M:%S',
-                    filename='../../logs/auto_deal_ths.log',
-                    filemode='a')
-logger = logging.getLogger('auto_deal')
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s')
+console.setFormatter(formatter)
+logger = logging.getLogger('deal_starter')
+logger.addHandler(console)
 
 
 class AutoDeal:
