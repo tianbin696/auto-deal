@@ -20,7 +20,7 @@ logger = logging.getLogger('deal_main')
 logger.addHandler(console)
 
 
-class DealMain:
+class DealEntry:
     def __init__(self, code, cost, volume):
         self.code = code
         self.cost = cost
@@ -50,16 +50,18 @@ class DealMain:
         if __direction == "B":
             __volume = bs_volume.get_buy_vol(rt_price)
             __price = bs_price.get_buy_price(rt_price)
+            self.is_dealed = True
             return [self.code, "B", __price, __volume]
         if __direction == "S":
             __volume = bs_volume.get_sell_vol(self.volume)
             __price = bs_price.get_sell_price(rt_price)
+            self.is_dealed = True
             return [self.code, "S", __price, __volume]
         return None
 
 
 if __name__ == "__main__":
-    deal_main = DealMain("600570", 55.01, 200)
+    deal_main = DealEntry("600570", 55.01, 200)
     deal = deal_main.get_rt_deal()
     if deal:
         print deal
