@@ -1,14 +1,7 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
-import logging
 from deal_entry import DealEntry
-
-console = logging.StreamHandler()
-console.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s')
-console.setFormatter(formatter)
-logger = logging.getLogger('deal_loop')
-logger.addHandler(console)
+from logger_util import logger
 
 
 class DealEntries:

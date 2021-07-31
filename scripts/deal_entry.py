@@ -1,18 +1,11 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
 import datetime
-import logging
 import bs_direction_compose as direct_cli
 import bs_price
 import bs_volume
 import ts_cli as ts
-
-console = logging.StreamHandler()
-console.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s')
-console.setFormatter(formatter)
-logger = logging.getLogger('deal_entry')
-logger.addHandler(console)
+from logger_util import logger
 
 
 class DealEntry:

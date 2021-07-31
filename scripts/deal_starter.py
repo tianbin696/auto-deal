@@ -1,18 +1,11 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
-import logging
 import time
 import ths_window
 import time_util
 from deal_entries import DealEntries
 from ths_cli import ThsCli
-
-console = logging.StreamHandler()
-console.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s')
-console.setFormatter(formatter)
-logger = logging.getLogger('deal_starter')
-logger.addHandler(console)
+from logger_util import logger
 
 
 class AutoDeal:
