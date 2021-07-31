@@ -1,15 +1,13 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
 
-import math
 import numpy
-from tushare_api import TushareAPI
+from scripts.tushare_api import TushareAPI
 import logging
 import time
 from datetime import datetime
 from datetime import timedelta
 from collections import OrderedDict
-from macd import get_MACD
 
 logger = logging.getLogger('stats')
 ts = TushareAPI()

@@ -11,7 +11,7 @@ from pywinauto import keyboard
 from pywinauto import mouse
 from pywinauto import win32defines
 from pywinauto.win32functions import SetForegroundWindow, ShowWindow
-from email_sender import send_email
+from email_cli import send_email
 from ths_window import ths_start, ths_close
 # from vcode_cli import get_vcode
 

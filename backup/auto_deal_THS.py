@@ -21,16 +21,16 @@ from pywinauto import mouse
 from pywinauto import win32defines
 from pywinauto.win32functions import SetForegroundWindow, ShowWindow
 
-from email_sender import send_email
-from vcode_cli import get_vcode
-from ths_window import ths_start
-from ths_window import ths_close
-from stats import get_code_filter_list
-from stats import var
-from stats import sort_codes
-from macd import get_MACD
+from scripts.email_sender import send_email
+from scripts.vcode_cli import get_vcode
+from scripts.ths_window import ths_start
+from scripts.ths_window import ths_close
+from scripts.stats import get_code_filter_list
+from scripts.stats import var
+from scripts.stats import sort_codes
+from scripts.macd import get_MACD
 
-from tushare_api import TushareAPI
+from scripts.tushare_api import TushareAPI
 token = "cd2026ad7373788082deede38ff419cd87415f50c24322819b71a002"
 ts.set_token(token)
 local_ts = TushareAPI()

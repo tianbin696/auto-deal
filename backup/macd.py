@@ -4,7 +4,7 @@ import numpy as np
 import datetime
 import time
 
-from tushare_api import TushareAPI
+from scripts.tushare_api import TushareAPI
 ts = TushareAPI()
 
 def get_EMA(df,N):

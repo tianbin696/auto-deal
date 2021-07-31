@@ -1,8 +1,6 @@
 import tushare as ts
-import numpy
-from macd import get_MACD
-from auto_deal_THS import get_direction_by_rsi
-from auto_deal_THS import getRSI
+from backup.auto_deal_THS import get_direction_by_rsi
+from backup.auto_deal_THS import getRSI
 
 token = "546aae3c5aca9eb09c9181e04974ae3cf910ce6c0d8092dde678d1cd"
 pro = ts.pro_api(token)

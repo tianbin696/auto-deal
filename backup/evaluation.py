@@ -1,19 +1,14 @@
 import tushare as ts
 import numpy
-import time
 import pandas as pd
 import os
 
 from datetime import datetime
 from datetime import timedelta
 
-from auto_deal_THS import get_direction_by_rsi
-from auto_deal_THS import get_direction_by_avg
-from auto_deal_THS import get_direction_by_macd
-from auto_deal_THS import get_direction_by_composite_ways
-from auto_deal_THS import get_direction_for_lianban
-from auto_deal_THS import getRSI
-from tushare_api import TushareAPI
+from backup.auto_deal_THS import get_direction_by_composite_ways
+from backup.auto_deal_THS import get_direction_for_lianban
+from scripts.tushare_api import TushareAPI
 
 token = "546aae3c5aca9eb09c9181e04974ae3cf910ce6c0d8092dde678d1cd"
 pro = ts.pro_api(token)
