@@ -4,7 +4,7 @@ import numpy
 import ts_cli as ts
 
 
-def get_direction(price_in, df_h_in, days_in=10):
+def get_direction(price_in, df_h_in, days_in=20):
     upper_line = numpy.max(df_h_in['high'][0:days_in])
     if numpy.mean(df_h_in['close'][0:5]) < price_in < numpy.mean(df_h_in['close'][0:5])*1.20:
         if price_in > upper_line:
@@ -17,7 +17,7 @@ if __name__ == "__main__":
         df = ts.get_h_data(code, start_date="20150730", end_date="20210730")
         count = 0
         total_profit = 0
-        days = 10
+        days = 20
         for i in range(1, 300):
             __df = df[i+1:].reset_index()
             direction = get_direction(df['high'][i], __df, days)
