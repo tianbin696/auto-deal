@@ -36,7 +36,7 @@ class ThsCli:
             self.__main_window = self.__app.window(handle=top_window)
             self.__dialog_window = self.__app.window(handle=top_window)
         except Exception as e:
-            logger.info("error during init THS: %s" % e)
+            logger.error("failed to init THS: %s" % e)
             ths_close()
             raise Exception(e)
 
