@@ -13,12 +13,13 @@ def get_direction(price_in, df_h_in, days_in=20):
 
 
 if __name__ == "__main__":
-    for code in ['002032.SZ', '002311.SZ', '002271.SZ', '600161.SH', '601100.SH', '603899.SH']:
+    for code in ['002032.SZ', '002311.SZ', '002271.SZ', '600161.SH', '601100.SH', '603899.SH',
+                 '300014.SZ', '300059.SZ', '300661.SZ', '300676.SZ', '300750.SZ', '300782.SZ']:
         df = ts.get_h_data(code, start_date="20150730", end_date="20210730")
         count = 0
         total_profit = 0
         days = 20
-        for i in range(1, 300):
+        for i in range(1, 500):
             __df = df[i+1:].reset_index()
             direction = get_direction(df['high'][i], __df, days)
             if direction == "B":
