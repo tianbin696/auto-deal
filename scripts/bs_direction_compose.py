@@ -31,7 +31,7 @@ def get_direction(rt_df_in, df_h_in, is_intra_day_deal):
 if __name__ == "__main__":
     df = ts.get_h_data("601100.SH", start_date="20200730", end_date="20210730")
     for i in range(0, 120):
-        d = {'price': df['close'][i:i+1], 'open': df['open'][i:i+1], 'high': df['high'][i:i+1], 'low': df['low'][i:i+1],
+        d = {'price': df['high'][i:i+1], 'open': df['open'][i:i+1], 'high': df['high'][i:i+1], 'low': df['low'][i:i+1],
              'volume': df['vol'][i:i+1]}
         __rt_df = pd.DataFrame(d).reset_index()
         direction = get_direction(__rt_df, df[i+1:].reset_index(), True)
