@@ -2,11 +2,17 @@
 # -*- coding: utf-8 -*-
 import bs_direction_avg as avg
 import bs_direction_rsi as rsi
+import bs_direction_intra_day as intra
 import ts_cli as ts
 from logger_util import logger
 
 
-def get_direction(prices):
+def get_direction(prices, is_intra_day_deal=True, df_h_in=None):
+    if is_intra_day_deal:
+        __direction = intra.get_direction(prices[0], df_h_in)
+        logger.info("direction based on intra: %s" % __direction)
+        return __direction
+
     __direction = avg.get_direction(prices)
     if __direction == "B" or __direction == "S":
         logger.info("direction based on average: %s" % __direction)
@@ -23,6 +29,6 @@ if __name__ == "__main__":
     for i in range(0, 120):
         updated_prices = []
         updated_prices.extend(df['close'][i:])
-        direction = get_direction(updated_prices)
+        direction = get_direction(updated_prices, True, df[i+1:].reset_index())
         if direction == "B" or direction == "S":
             print "direction of %s: %s - %.2f" % (df['trade_date'][i], direction, df['close'][i])

@@ -1,6 +1,7 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
 import datetime
+import time_util
 import bs_direction_compose as direct_cli
 import bs_price
 import bs_volume
@@ -13,7 +14,10 @@ class DealEntry:
         self.code = code
         self.cost = cost
         self.volume = volume
-        self.is_dealed = False
+        self.is_intra_day = True
+        self.is_buyed = False
+        self.is_selled = False
+        self.buy_vol = 0
         self.yesterday_str = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime("%Y%m%d")
         self.h_code = "%s.SH" % code
         if code < "600000":
@@ -25,27 +29,42 @@ class DealEntry:
         logger.info("historical data: %s" % self.h_data[0:3])
 
     def get_rt_deal(self):
-        if self.is_dealed:
+        if self.is_buyed and self.is_selled:
             return None
         rt_df = ts.get_rt_price(self.code)
         rt_price = float(rt_df['price'][0])
+
+        if self.is_intra_day and is_closing_deal_window() and self.is_buyed and not self.is_selled:
+            __volume = self.buy_vol
+            __price = bs_price.get_sell_price(rt_price)
+            self.is_selled = True
+            return [self.code, "S", __price, __volume]
+
         updated_prices = [rt_price]
         updated_prices.extend(self.h_data['close'])
         logger.info("prices for code %s: %s" % (self.code, updated_prices[0:5]))
-        __direction = direct_cli.get_direction(updated_prices)
+        __direction = direct_cli.get_direction(updated_prices, self.is_intra_day, self.h_data)
         logger.info("realtime direction for code %s: %s" % (self.code, __direction))
 
-        if __direction == "B":
+        if __direction == "B" and not self.is_buyed:
             __volume = bs_volume.get_buy_vol(rt_price)
             __price = bs_price.get_buy_price(rt_price)
-            self.is_dealed = True
+            self.is_buyed = True
+            if self.is_intra_day:
+                self.buy_vol = __volume
             return [self.code, "B", __price, __volume]
-        if __direction == "S":
+        if __direction == "S" and not self.is_selled:
             __volume = bs_volume.get_sell_vol(self.volume)
             __price = bs_price.get_sell_price(rt_price)
-            self.is_dealed = True
+            self.is_selled = True
             return [self.code, "S", __price, __volume]
         return None
+
+
+def is_closing_deal_window():
+    if time_util.compare_time("14", "50"):
+        return True
+    return False
 
 
 if __name__ == "__main__":
