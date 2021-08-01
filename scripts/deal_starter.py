@@ -66,7 +66,7 @@ if __name__ == "__main__":
                 continue
 
             logger.info("time to start auto deal")
-            time.sleep(30)
+            time.sleep(60)
             auto_deal = AutoDeal()
             auto_deal.test()
             auto_deal.loop()

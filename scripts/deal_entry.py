@@ -40,10 +40,7 @@ class DealEntry:
             self.is_selled = True
             return [self.code, "S", __price, __volume]
 
-        updated_prices = [rt_price]
-        updated_prices.extend(self.h_data['close'])
-        logger.info("prices for code %s: %s" % (self.code, updated_prices[0:5]))
-        __direction = direct_cli.get_direction(updated_prices, self.is_intra_day, self.h_data)
+        __direction = direct_cli.get_direction(rt_df, self.h_data, self.is_intra_day)
         logger.info("realtime direction for code %s: %s" % (self.code, __direction))
 
         if __direction == "B" and not self.is_buyed:
