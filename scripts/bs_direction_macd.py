@@ -1,6 +1,7 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
 import pandas as pd
+
 import ts_cli as ts
 
 
@@ -37,7 +38,7 @@ def __get_macd(df, short=12, long=26, M=9):
 
 
 if __name__ == "__main__":
-    df = ts.get_h_data("600570.SH", start_date="20200730", end_date="20210730")
+    df = ts.get_h_data("601100.SH", start_date="20200730", end_date="20210730")
     df = __get_macd(df, 12, 26, 9)
     print df[0:30]
 

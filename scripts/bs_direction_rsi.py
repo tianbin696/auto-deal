@@ -11,10 +11,10 @@ def get_direction(prices):
     rsi_12 = get_rsi(prices[1:], 12)
     rsi_13 = get_rsi(prices[1:], 24)
     if rsi_11 < rsi_12 < rsi_13:
-        if rsi_01 > rsi_02 or rsi_01 > rsi_03:
+        if rsi_01 > rsi_02:
             return "B"
     if rsi_11 > rsi_12 > rsi_13:
-        if rsi_01 < rsi_02 or rsi_01 < rsi_03:
+        if rsi_01 < rsi_02:
             return "S"
     return "N"
 
@@ -37,7 +37,7 @@ def get_rsi(prices, days=14):
 
 
 if __name__ == "__main__":
-    df = ts.get_h_data("600570.SH", start_date="20200730", end_date="20210730")
+    df = ts.get_h_data("601100.SH", start_date="20200730", end_date="20210730")
 
     rsi_value = get_rsi(df['close'], days=6)
     print "RSI-6 value: %d" % rsi_value

@@ -37,7 +37,8 @@ class ThsCli:
             self.__dialog_window = self.__app.window(handle=top_window)
         except Exception as e:
             logger.info("error during init THS: %s" % e)
-            exit(1)
+            ths_close()
+            raise Exception(e)
 
     def __buy(self, code, price, quantity):
         keyboard.send_keys("{F1}")
