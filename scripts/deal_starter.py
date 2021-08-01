@@ -46,7 +46,7 @@ class AutoDeal:
 
 
 def is_within_deal_window():
-    if time_util.compare_time("09", "26") and not time_util.compare_time("15", "05"):
+    if time_util.compare_time("09", "26") and not time_util.compare_time("15", "00"):
         return True
     return False
 
