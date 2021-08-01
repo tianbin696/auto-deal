@@ -13,8 +13,9 @@ def get_direction(price_in, df_h_in, days_in=20):
 
 
 if __name__ == "__main__":
-    for code in ['002032.SZ', '002311.SZ', '002271.SZ', '600161.SH', '601100.SH', '603899.SH',
-                 '300014.SZ', '300059.SZ', '300661.SZ', '300676.SZ', '300750.SZ', '300782.SZ']:
+    for code in ['000538.SZ', '000568.SZ', '000938.SZ', '002304.SZ',
+                 '300298.SZ', '300413.SZ', '300457.SZ',
+                 '600188.SH', '600196.SH', '600219.SH', '600436.SH', '601919.SH', '603260.SH']:
         df = ts.get_h_data(code, start_date="20150730", end_date="20210730")
         count = 0
         total_profit = 0

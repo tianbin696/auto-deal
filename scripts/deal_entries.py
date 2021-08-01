@@ -6,8 +6,9 @@ from logger_util import logger
 
 class DealEntries:
     def __init__(self, costs=None, volumes=None):
-        self.default_codes = ['002032', '002311', '002271', '600161', '601100', '603899',
-                              '300014', '300059', '300661', '300676', '300750', '300782']
+        self.default_codes = ['000538', '000568', '000938', '002304',
+                              '300298', '300413', '300457',
+                              '600188', '600196', '600219', '600436', '601919', '603260']
         self.codes = self.default_codes
         self.costs = {}
         self.volumes = {}
