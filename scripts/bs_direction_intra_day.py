@@ -41,7 +41,7 @@ if __name__ == "__main__":
                     total_profit = total_profit + profit
                     print "profit of %s: %s, %%%.2f" % (df['trade_date'][i], direction, profit)
             avg_profit = total_profit/count
-            if avg_profit > 1.0 and count > 50:
+            if avg_profit > 1.0 and count > 50 and df['close'][0] < 200:
                 final_list.append(code.strip())
             print "code: %s, count: %d, average profit: %%%.2f" % (code_new, count, avg_profit)
         except Exception as exe:
