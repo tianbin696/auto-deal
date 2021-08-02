@@ -31,6 +31,7 @@ class AutoDeal:
         logger.info("testing finished")
 
     def loop(self):
+        sleep_count = 0
         while True:
             try:
                 self.ths_cli.move_mouse()
@@ -42,6 +43,9 @@ class AutoDeal:
                 for deal in __deals:
                     self.ths_cli.order(deal[0], deal[1], deal[2], deal[3])
                 time.sleep(30)
+                sleep_count = sleep_count + 30
+                if sleep_count % 3600 == 0:
+                    self.ths_cli.save_screenshot("status update", "status update")
             except Exception as exe:
                 logger.error("exception during deal loop: %s" % exe)
                 track = traceback.format_exc()
