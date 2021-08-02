@@ -7,9 +7,11 @@ from logger_util import logger
 
 class DealEntries:
     def __init__(self, costs=None, volumes=None):
-        self.default_codes = ['000009', '000426', '000488', '000799', '002096', '002294',
-                              '002803',
-                              '600532', '600577', '600616', '600702', '600988', '603709']
+        self.default_codes = ['000100', '000538', '000568', '000708', '002007',
+                              '002027', '002202', '002304', '002410',
+                              '300413', '300676', '300677',
+                              '600085', '600161', '600196', '600660', '601155',
+                              '603993', '688036']
         self.codes = self.default_codes
         self.costs = {}
         self.volumes = {}

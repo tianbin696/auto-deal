@@ -83,4 +83,4 @@ if __name__ == "__main__":
             logger.error("exception during main loop, %s" % exe)
             track = traceback.format_exc()
             print(track)
-            time.sleep(30)
+            time.sleep(60)
