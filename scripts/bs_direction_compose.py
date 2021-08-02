@@ -28,6 +28,10 @@ def get_direction(rt_df_in, df_h_in, is_intra_day_deal):
     return __direction
 
 
+def get_candidates():
+    return intra.get_candidates()
+
+
 if __name__ == "__main__":
     df = ts.get_h_data("601100.SH", start_date="20200730", end_date="20210730")
     for i in range(0, 120):
