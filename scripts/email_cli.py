@@ -10,7 +10,7 @@ from email.mime.text import MIMEText
 
 def send_email(photos, status, title=u'交易状态'):
     msg = MIMEMultipart()
-    msg['From'] = "tianbin6961@sina.com"
+    msg['From'] = "tianbin696@sina.com"
     msg['To'] = "tianbin696@163.com"
     msg['Subject'] = Header(title, 'utf-8').encode()
 
@@ -34,8 +34,8 @@ def send_email(photos, status, title=u'交易状态'):
             msg.attach(mime)
     server = smtplib.SMTP()
     server.connect("smtp.sina.com")
-    server.login("tianbin6961@sina.com", "tianbin6961994")
-    server.sendmail("tianbin6961@sina.com", "tianbin696@163.com", msg.as_string())
+    server.login("tianbin696@sina.com", "Jane19881122")
+    server.sendmail("tianbin696@sina.com", "tianbin696@163.com", msg.as_string())
     server.quit()
 
 
