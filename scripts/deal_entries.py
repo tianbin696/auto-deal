@@ -1,5 +1,6 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
+import time
 from deal_entry import DealEntry
 from logger_util import logger
 
@@ -43,6 +44,7 @@ class DealEntries:
             else:
                 logger.info("no deal for code %s" % deal_entry.code)
         logger.info("deals to handle: %s" % __list)
+        time.sleep(0.5)
         return __list
 
 
