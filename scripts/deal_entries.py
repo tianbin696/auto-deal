@@ -6,15 +6,18 @@ from logger_util import logger
 
 class DealEntries:
     def __init__(self, costs=None, volumes=None):
-        self.default_codes = ['000538', '000568', '000938', '002304',
-                              '300298', '300413', '300457',
-                              '600188', '600196', '600219', '600436', '601919', '603260']
+        self.default_codes = ['000100', '000408', '000538', '000568', '000596', '000725',
+                              '000895', '000938', '002027', '002294', '002304', '002410',
+                              '002456', '002460',
+                              '600196', '600219', '600436', '600519', '600660', '600893',
+                              '601012', '601828', '601888', '601899', '603156', '603260',
+                              '603288', '603799', '603986', '603993']
         self.codes = self.default_codes
         self.costs = {}
         self.volumes = {}
         if costs:
             for code in costs.keys():
-                if code not in self.codes and (code.startswith('0') or code.startswith('6')):
+                if code not in self.codes and (code.startswith('0') or code.startswith('3') or code.startswith('6')):
                     self.codes.append(code)
         for code in self.codes:
             if costs and code in costs:

@@ -55,7 +55,7 @@ if __name__ == "__main__":
     while True:
         try:
             week_day = time.localtime().tm_wday
-            if week_day == 5:
+            if week_day >= 5:
                 logger.info("now is Saturday, sleep to wait for deal time")
                 time.sleep(3600)
                 continue
