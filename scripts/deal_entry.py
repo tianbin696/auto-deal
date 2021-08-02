@@ -51,7 +51,7 @@ class DealEntry:
                 self.buy_vol = __volume
             return [self.code, "B", __price, __volume]
         if __direction == "S" and not self.is_selled:
-            __volume = bs_volume.get_sell_vol(self.volume)
+            __volume = bs_volume.get_sell_vol(self.volume, rt_price)
             __price = bs_price.get_sell_price(rt_price)
             self.is_selled = True
             return [self.code, "S", __price, __volume]

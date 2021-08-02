@@ -8,9 +8,11 @@ def get_buy_vol(input_price):
     return vol
 
 
-def get_sell_vol(input_vol):
+def get_sell_vol(input_vol, input_price=None):
     # sell 1/4 of volume
     vol = max(100, int(input_vol / 400) * 100)
+    if input_price:
+        vol = max(100, int(10000/input_price/100)*100)
     return vol
 
 
@@ -56,3 +58,12 @@ if __name__ == "__main__":
 
     volume = 900
     print "sell vol for %.2f: %d" % (volume, get_sell_vol(volume))
+
+    volume = 200
+    print "sell vol for %.2f: %d" % (volume, get_sell_vol(volume, 3))
+
+    volume = 200
+    print "sell vol for %.2f: %d" % (volume, get_sell_vol(volume, 101))
+
+    volume = 500
+    print "sell vol for %.2f: %d" % (volume, get_sell_vol(volume, 101))
