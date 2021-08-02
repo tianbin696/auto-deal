@@ -16,9 +16,11 @@ def get_direction(rt_df_in, df_h_in, days_in=20):
     return "N"
 
 
-if __name__ == "__main__":
+def get_candidates(codes=None):
     final_list = []
-    for code in list(open("../codes/all_codes.txt")):
+    if not codes:
+        codes = list(open("../codes/all_codes.txt"))
+    for code in codes:
         try:
             code_new = code.strip()
             if code_new.startswith('0') or code_new.startswith('3'):
@@ -47,3 +49,16 @@ if __name__ == "__main__":
         except Exception as exe:
             print "error for code %s" % code
     print "final list: %s" % final_list
+
+
+def test():
+    codes = ['002032', '002311', '002271', '600161', '601100', '603899',
+             '000009', '000426', '000488', '000799', '002096', '002294',
+             '002803',
+             '600532', '600577', '600616', '600702', '600988', '603709']
+    get_candidates(codes)
+
+
+if __name__ == "__main__":
+    # get_candidates()
+    test()
