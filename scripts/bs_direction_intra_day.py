@@ -18,14 +18,14 @@ def get_direction(rt_df_in, df_h_in, days_in=20):
 
 if __name__ == "__main__":
     final_list = []
-    for code in list(open("../codes/hs_300.txt")):
+    for code in list(open("../codes/all_codes.txt")):
         try:
-            code = code.strip()
-            if code.startswith('0') or code.startswith('3'):
-                code = "%s.SZ" % code
+            code_new = code.strip()
+            if code_new.startswith('0') or code_new.startswith('3'):
+                code_new = "%s.SZ" % code_new
             else:
-                code = "%s.SH" % code
-            df = ts.get_h_data(code, start_date="20150730", end_date="20210730")
+                code_new = "%s.SH" % code_new
+            df = ts.get_h_data(code_new, start_date="20150730", end_date="20210730")
             count = 0
             total_profit = 0
             days = 20
@@ -41,9 +41,9 @@ if __name__ == "__main__":
                     total_profit = total_profit + profit
                     print "profit of %s: %s, %%%.2f" % (df['trade_date'][i], direction, profit)
             avg_profit = total_profit/count
-            if avg_profit > 0.6 and count > 50:
-                final_list.append(code)
-            print "code: %s, count: %d, average profit: %%%.2f" % (code, count, avg_profit)
+            if avg_profit > 1.0 and count > 50:
+                final_list.append(code.strip())
+            print "code: %s, count: %d, average profit: %%%.2f" % (code_new, count, avg_profit)
         except Exception as exe:
             print "error for code %s" % code
     print "final list: %s" % final_list
