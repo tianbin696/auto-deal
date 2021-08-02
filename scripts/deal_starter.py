@@ -1,6 +1,7 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
 import time
+import traceback
 import ths_window
 import time_util
 from deal_entries import DealEntries
@@ -43,6 +44,9 @@ class AutoDeal:
                 time.sleep(30)
             except Exception as exe:
                 logger.error("exception during deal loop: %s" % exe)
+                track = traceback.format_exc()
+                print(track)
+                time.sleep(30)
 
 
 def is_within_deal_window():
@@ -72,4 +76,7 @@ if __name__ == "__main__":
             auto_deal.loop()
             logger.info("out of deal time now")
         except Exception as exe:
-            logger.error("exception during loop, %s" % exe)
+            logger.error("exception during main loop, %s" % exe)
+            track = traceback.format_exc()
+            print(track)
+            time.sleep(30)
