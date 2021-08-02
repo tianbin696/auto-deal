@@ -9,8 +9,7 @@ class DealEntries:
     def __init__(self, costs=None, volumes=None):
         self.default_codes = ['000009', '000426', '000488', '000799', '002096', '002294',
                               '002803',
-                              '600241', '600290', '600532', '600577', '600616', '600702',
-                              '600988', '603709']
+                              '600532', '600577', '600616', '600702', '600988', '603709']
         self.codes = self.default_codes
         self.costs = {}
         self.volumes = {}
