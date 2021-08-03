@@ -10,14 +10,14 @@ class DealEntries:
         self.codes = []
         self.costs = {}
         self.volumes = {}
+        if costs:
+            for code in costs.keys():
+                if code not in self.codes:
+                    self.codes.append(code)
         for code in list(open("candidates.txt")):
             code = code.strip()
             if code not in self.codes:
                 self.codes.append(code)
-        if costs:
-            for code in costs.keys():
-                if code not in self.codes and (code.startswith('0') or code.startswith('3') or code.startswith('6')):
-                    self.codes.append(code)
         for code in self.codes:
             if costs and code in costs:
                 self.costs[code] = costs[code]
