@@ -13,57 +13,23 @@ def get_sell_vol(input_vol, input_price=None):
     vol = max(100, int(input_vol / 400) * 100)
     if input_price:
         vol = max(100, int(10000/input_price/100)*100)
+        vol = min(input_vol, vol)
     return vol
 
 
 if __name__ == "__main__":
-    price = 45.00
-    print "buy vol for %.2f: %d" % (price, get_buy_vol(price))
-
-    price = 55.00
-    print "buy vol for %.2f: %d" % (price, get_buy_vol(price))
-
-    price = 95.00
-    print "buy vol for %.2f: %d" % (price, get_buy_vol(price))
-
-    price = 105.00
-    print "buy vol for %.2f: %d" % (price, get_buy_vol(price))
-
-    price = 155.00
-    print "buy vol for %.2f: %d" % (price, get_buy_vol(price))
-
-    volume = 100
-    print "sell vol for %.2f: %d" % (volume, get_sell_vol(volume))
-
-    volume = 200
-    print "sell vol for %.2f: %d" % (volume, get_sell_vol(volume))
-
-    volume = 300
-    print "sell vol for %.2f: %d" % (volume, get_sell_vol(volume))
-
-    volume = 400
-    print "sell vol for %.2f: %d" % (volume, get_sell_vol(volume))
-
-    volume = 500
-    print "sell vol for %.2f: %d" % (volume, get_sell_vol(volume))
-
-    volume = 600
-    print "sell vol for %.2f: %d" % (volume, get_sell_vol(volume))
-
-    volume = 700
-    print "sell vol for %.2f: %d" % (volume, get_sell_vol(volume))
-
-    volume = 800
-    print "sell vol for %.2f: %d" % (volume, get_sell_vol(volume))
-
-    volume = 900
-    print "sell vol for %.2f: %d" % (volume, get_sell_vol(volume))
-
-    volume = 200
-    print "sell vol for %.2f: %d" % (volume, get_sell_vol(volume, 3))
-
-    volume = 200
-    print "sell vol for %.2f: %d" % (volume, get_sell_vol(volume, 101))
-
-    volume = 500
-    print "sell vol for %.2f: %d" % (volume, get_sell_vol(volume, 101))
+    assert get_buy_vol(45.00) == 200
+    assert get_buy_vol(55.00) == 100
+    assert get_buy_vol(95.00) == 100
+    assert get_buy_vol(105.00) == 100
+    assert get_sell_vol(100) == 100
+    assert get_sell_vol(200) == 100
+    assert get_sell_vol(300) == 100
+    assert get_sell_vol(400) == 100
+    assert get_sell_vol(500) == 100
+    assert get_sell_vol(800) == 200
+    assert get_sell_vol(900) == 200
+    assert get_sell_vol(5000, 3) == 3300
+    assert get_sell_vol(2000, 3) == 2000
+    assert get_sell_vol(200, 99) == 100
+    assert get_sell_vol(200, 101) == 100
