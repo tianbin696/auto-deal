@@ -11,10 +11,11 @@ import ts_cli as ts
 def get_direction(rt_df_in, df_h_in, days_in=20):
     price_in = float(rt_df_in['price'][0])
     open_price = float(rt_df_in['open'][0])
+    pre_close = float(rt_df_in['pre_close'][0])
     upper_line = numpy.max(df_h_in['high'][0:days_in])
     lower_line = numpy.min(df_h_in['low'][0:days_in])
     if numpy.mean(df_h_in['close'][0:5]) < price_in < numpy.mean(df_h_in['close'][0:5])*1.20:
-        if price_in > upper_line and price_in > open_price:
+        if price_in > upper_line and price_in > open_price and upper_line < pre_close*1.06:
             return "B"
     if price_in < lower_line and price_in < open_price:
         return "S"
@@ -39,7 +40,7 @@ def get_candidates(codes=None):
             days = 20
             for i in range(1, 300):
                 d = {'price': df['high'][i:i+1], 'open': df['open'][i:i+1], 'high': df['high'][i:i+1], 'low': df['low'][i:i+1],
-                     'volume': df['vol'][i:i+1]}
+                     'volume': df['vol'][i:i+1], 'pre_close': df['close'][i:i+1]}
                 __rt_df = pd.DataFrame(d).reset_index()
                 __df = df[i+1:].reset_index()
                 direction = get_direction(__rt_df, __df, days)
