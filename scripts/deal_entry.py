@@ -35,7 +35,7 @@ class DealEntry:
         rt_price = float(rt_df['price'][0])
 
         if self.is_intra_day and self.is_buyed and not self.is_selled:
-            if is_closing_deal_window() or \
+            if is_closing_deal_window() or rt_price > float(rt_df['pre_close'][0])*1.18 or \
                     (rt_price > float(rt_df['pre_close'][0])*1.09 and
                      not self.code.startswith("3") and not self.code.startswith("688")):
                 __volume = self.buy_vol
