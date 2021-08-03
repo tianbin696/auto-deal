@@ -34,11 +34,12 @@ class DealEntry:
         rt_df = ts.get_rt_price(self.code)
         rt_price = float(rt_df['price'][0])
 
-        if self.is_intra_day and is_closing_deal_window() and self.is_buyed and not self.is_selled:
-            __volume = self.buy_vol
-            __price = bs_price.get_sell_price(rt_price)
-            self.is_selled = True
-            return [self.code, "S", __price, __volume]
+        if self.is_intra_day and self.is_buyed and not self.is_selled:
+            if is_closing_deal_window() or rt_price > float(rt_df['pre_close'][0])*1.09:
+                __volume = self.buy_vol
+                __price = bs_price.get_sell_price(rt_price)
+                self.is_selled = True
+                return [self.code, "S", __price, __volume]
 
         __direction = direct_cli.get_direction(rt_df, self.h_data, self.is_intra_day)
         logger.info("realtime direction for code %s: %s" % (self.code, __direction))
@@ -66,6 +67,7 @@ def is_closing_deal_window():
 
 if __name__ == "__main__":
     deal_main = DealEntry("600570", 55.01, 200)
+    deal_main.is_buyed = True
     deal = deal_main.get_rt_deal()
     if deal:
         print deal
