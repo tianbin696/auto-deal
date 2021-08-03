@@ -7,16 +7,13 @@ from logger_util import logger
 
 class DealEntries:
     def __init__(self, costs=None, volumes=None):
-        self.default_codes = ['000100', '000157', '000538', '000568', '000708',
-                              '002007', '002027', '002129', '002202', '002241',
-                              '002304', '002410',
-                              '300413', '300558', '300601', '300676', '300677',
-                              '600085', '600161', '600196', '600346', '600660',
-                              '600893', '601155', '601899', '601919', '603288',
-                              '603993', '688036']
-        self.codes = self.default_codes
+        self.codes = []
         self.costs = {}
         self.volumes = {}
+        for code in list(open("candidates.txt")):
+            code = code.strip()
+            if code not in self.codes:
+                self.codes.append(code)
         if costs:
             for code in costs.keys():
                 if code not in self.codes and (code.startswith('0') or code.startswith('3') or code.startswith('6')):
@@ -56,3 +53,5 @@ if __name__ == "__main__":
     deal_loop = DealEntries(costs={u'601100': 106.571, u'002271': 51.471, u'600161': 36.443, u'603899': 86.721},
                             volumes={u'601100': 800, u'002271': 1100, u'600161': 2000, u'603899': 700})
     print deal_loop.get_deals()
+
+    print "total count: %d, %s" % (len(deal_loop.codes), deal_loop.codes)
