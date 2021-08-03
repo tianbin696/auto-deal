@@ -61,4 +61,9 @@ def get_candidates(codes=None):
 
 if __name__ == "__main__":
     code_list = get_candidates()
-    get_candidates(code_list)
+    # get_candidates(code_list)
+    writer = open("candidates.txt", 'w')
+    writer.write(code_list[0])
+    for code in code_list[1:]:
+        writer.write("\n" + code)
+    writer.close()
