@@ -15,6 +15,7 @@ class AutoDeal:
         self.start_ths()
         self.ths_cli = ThsCli()
         self.deal_entries = DealEntries(self.ths_cli.get_cost(), self.ths_cli.get_volume())
+        self.ths_cli.save_screenshot("initial done for %d codes" % len(self.deal_entries.codes), "initial done")
 
     def start_ths(self):
         ths_window.ths_start()
