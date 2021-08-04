@@ -31,11 +31,12 @@ def get_direction(rt_df_in, df_h_in, is_intra_day_deal):
 
 def update_candidates():
     code_list = intra.get_candidates()
-    writer = open("code_candidates.txt", 'w')
-    writer.write(code_list[0])
-    for code in code_list[1:]:
-        writer.write("\n" + code)
-    writer.close()
+    if len(code_list) > 0:
+        writer = open("code_candidates.txt", 'w')
+        writer.write(code_list[0])
+        for __code in code_list[1:]:
+            writer.write("\n" + __code)
+        writer.close()
     return code_list
 
 
