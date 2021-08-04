@@ -1,10 +1,8 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
 import datetime
-
 import numpy
 import pandas as pd
-
 import ts_cli as ts
 
 
@@ -25,10 +23,10 @@ def get_direction(rt_df_in, df_h_in, days_in=20):
 def get_candidates(codes=None):
     final_list = []
     if not codes:
-        codes = list(open("../codes/hs_300.txt"))
-    for code in codes:
+        codes = list(open("code_hs_300.txt"))
+    for __code in codes:
         try:
-            code_new = code.strip()
+            code_new = __code.strip()
             if code_new.startswith('0') or code_new.startswith('3'):
                 code_new = "%s.SZ" % code_new
             else:
@@ -51,10 +49,10 @@ def get_candidates(codes=None):
                     print "profit of %s: %s, %%%.2f" % (df['trade_date'][i], direction, profit)
             avg_profit = total_profit/count
             if avg_profit > 0.8 and count > 30 and df['close'][0] < 200:
-                final_list.append(code.strip())
+                final_list.append(__code.strip())
             print "code: %s, count: %d, average profit: %%%.2f" % (code_new, count, avg_profit)
         except Exception as exe:
-            print "error for code %s" % code
+            print "error for code %s" % __code
     print "final list: %s" % final_list
     return final_list
 
@@ -62,7 +60,7 @@ def get_candidates(codes=None):
 if __name__ == "__main__":
     code_list = get_candidates()
     get_candidates(code_list)
-    writer = open("candidates.txt", 'w')
+    writer = open("code_candidates.txt", 'w')
     writer.write(code_list[0])
     for code in code_list[1:]:
         writer.write("\n" + code)

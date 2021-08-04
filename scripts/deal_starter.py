@@ -4,6 +4,7 @@ import time
 import traceback
 import ths_window
 import time_util
+import bs_direction_compose as direct_cli
 from deal_entries import DealEntries
 from ths_cli import ThsCli
 from logger_util import logger
@@ -79,6 +80,7 @@ if __name__ == "__main__":
             auto_deal.test()
             auto_deal.loop()
             logger.info("out of deal time now")
+            direct_cli.update_candidates()
         except Exception as exe:
             logger.error("exception during main loop, %s" % exe)
             track = traceback.format_exc()

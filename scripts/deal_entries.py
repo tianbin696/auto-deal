@@ -14,7 +14,7 @@ class DealEntries:
             for code in costs.keys():
                 if code not in self.codes:
                     self.codes.append(code)
-        for code in list(open("candidates.txt")):
+        for code in list(open("code_candidates.txt")):
             code = code.strip()
             if code not in self.codes:
                 self.codes.append(code)
