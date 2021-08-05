@@ -11,6 +11,9 @@ from logger_util import logger
 
 def get_direction(rt_df_in, df_h_in, is_intra_day_deal):
     rt_price = float(rt_df_in['price'][0])
+    if rt_price <= 0:
+        return "N"
+
     if is_intra_day_deal:
         __direction = intra.get_direction(rt_df_in, df_h_in)
         logger.info("direction based on intra: %s" % __direction)
