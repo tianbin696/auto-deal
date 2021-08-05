@@ -37,16 +37,17 @@ def get_candidates(codes=None):
             total_profit = 0
             days = 20
             for i in range(1, 300):
-                d = {'price': [df['high'][i]], 'open': [df['open'][i]], 'high': [df['high'][i]],
-                     'low': [df['low'][i]], 'volume': [df['vol'][i]], 'pre_close': [df['close'][i]]}
+                d = {'price': [max(df['low'][i], min(numpy.max(df['high'][i:i+20])+0.01, df['high'][i]))],
+                     'open': [df['open'][i]], 'high': [df['high'][i]], 'low': [df['low'][i]], 'volume': [df['vol'][i]],
+                     'pre_close': [df['close'][i]]}
                 __rt_df = pd.DataFrame(d).reset_index()
                 __df = df[i+1:].reset_index()
-                direction = get_direction(__rt_df, __df, days)
-                if direction == "B":
+                __direction = get_direction(__rt_df, __df, days)
+                if __direction == "B":
                     count = count + 1
                     profit = (df['close'][i]-numpy.max(df['high'][i+1:i+1+days]))*100/numpy.max(df['high'][i+1:i+1+days])
                     total_profit = total_profit + profit
-                    print "profit of %s: %s, %%%.2f" % (df['trade_date'][i], direction, profit)
+                    print "profit of %s: %s, %%%.2f" % (df['trade_date'][i], __direction, profit)
             avg_profit = total_profit/count
             if avg_profit > 0.8 and count > 30 and df['close'][0] < 200:
                 final_list.append(__code.strip())
@@ -59,8 +60,8 @@ def get_candidates(codes=None):
 
 def test_buy(code, start_date, end_date):
     df = ts.get_h_data(code, start_date=start_date, end_date=end_date)
-    d = {'price': [df['high'][0]], 'open': [df['open'][0]], 'high': [df['high'][0]], 'low': [df['low'][0]],
-         'volume': [df['vol'][0]], 'pre_close': [df['close'][1]]}
+    d = {'price': [max(df['low'][0], min(numpy.max(df['high'][0:20])+0.01, df['high'][0]))], 'open': [df['open'][0]],
+         'high': [df['high'][0]], 'low': [df['low'][0]], 'volume': [df['vol'][0]], 'pre_close': [df['close'][1]]}
     __rt_df = pd.DataFrame(d).reset_index()
     __df = df[1:].reset_index()
     __direction = get_direction(__rt_df, __df)
