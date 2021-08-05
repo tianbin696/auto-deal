@@ -37,8 +37,8 @@ def get_candidates(codes=None):
             total_profit = 0
             days = 20
             for i in range(1, 300):
-                d = {'price': df['high'][i:i+1], 'open': df['open'][i:i+1], 'high': df['high'][i:i+1], 'low': df['low'][i:i+1],
-                     'volume': df['vol'][i:i+1], 'pre_close': df['close'][i:i+1]}
+                d = {'price': df['high'][i:i+1], 'open': df['open'][i:i+1], 'high': df['high'][i:i+1],
+                     'low': df['low'][i:i+1], 'volume': df['vol'][i:i+1], 'pre_close': df['close'][i:i+1]}
                 __rt_df = pd.DataFrame(d).reset_index()
                 __df = df[i+1:].reset_index()
                 direction = get_direction(__rt_df, __df, days)
@@ -57,11 +57,32 @@ def get_candidates(codes=None):
     return final_list
 
 
+def test_buy(code, start_date, end_date):
+    df = ts.get_h_data(code, start_date=start_date, end_date=end_date)
+    d = {'price': df['high'][0:1], 'open': df['open'][0:1], 'high': df['high'][0:1], 'low': df['low'][0:1],
+         'volume': df['vol'][0:1], 'pre_close': df['close'][0:1]}
+    __rt_df = pd.DataFrame(d).reset_index()
+    __df = df[1:].reset_index()
+    __direction = get_direction(__rt_df, __df)
+    return __direction
+
+
+def test_sell(code, start_date, end_date):
+    df = ts.get_h_data(code, start_date=start_date, end_date=end_date)
+    d = {'price': df['low'][0:1], 'open': df['open'][0:1], 'high': df['high'][0:1], 'low': df['low'][0:1],
+         'volume': df['vol'][0:1], 'pre_close': df['close'][1:2]}
+    __rt_df = pd.DataFrame(d).reset_index()
+    __df = df[1:].reset_index()
+    __direction = get_direction(__rt_df, __df)
+    return __direction
+
+
 if __name__ == "__main__":
-    code_list = get_candidates()
-    get_candidates(code_list)
-    writer = open("code_candidates.txt", 'w')
-    writer.write(code_list[0])
-    for code in code_list[1:]:
-        writer.write("\n" + code)
-    writer.close()
+    direction = test_buy("601100.SH", "20160101", "20210803")
+    assert direction == "B"
+
+    direction = test_buy("601100.SH", "20160101", "20210728")
+    assert direction == "N"
+
+    direction = test_sell("601100.SH", "20160101", "20210222")
+    assert direction == "S"
