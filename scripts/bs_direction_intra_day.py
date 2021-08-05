@@ -13,7 +13,7 @@ def get_direction(rt_df_in, df_h_in, days_in=20):
     upper_line = numpy.max(df_h_in['high'][0:days_in])
     lower_line = numpy.min(df_h_in['low'][0:days_in])
     if numpy.mean(df_h_in['close'][0:5]) < price_in < numpy.mean(df_h_in['close'][0:5])*1.20:
-        if price_in > upper_line and price_in > open_price and upper_line < pre_close*1.04:
+        if max(upper_line, open_price) < price_in < pre_close*1.06:
             return "B"
     if price_in < lower_line and price_in < open_price:
         return "S"
@@ -37,24 +37,25 @@ def get_candidates(codes=None):
             total_profit = 0
             days = 20
             for i in range(1, 300):
-                d = {'price': [max(df['low'][i], min(numpy.max(df['high'][i:i+20])+0.01, df['high'][i]))],
-                     'open': [df['open'][i]], 'high': [df['high'][i]], 'low': [df['low'][i]], 'volume': [df['vol'][i]],
-                     'pre_close': [df['close'][i]]}
+                rt_price_in = min(max(df['open'][i], numpy.max(df['high'][i+1:i+1+days]))+0.01, df['high'][i])
+                d = {'price': [rt_price_in], 'open': [df['open'][i]], 'high': [df['high'][i]], 'low': [df['low'][i]],
+                     'volume': [df['vol'][i]], 'pre_close': [df['close'][i+1]]}
                 __rt_df = pd.DataFrame(d).reset_index()
                 __df = df[i+1:].reset_index()
                 __direction = get_direction(__rt_df, __df, days)
                 if __direction == "B":
                     count = count + 1
-                    profit = (df['close'][i]-numpy.max(df['high'][i+1:i+1+days]))*100/numpy.max(df['high'][i+1:i+1+days])
+                    buy_price = max(df['open'][i], numpy.max(df['high'][i+1:i+1+days]))
+                    profit = (df['close'][i]-buy_price)*100/buy_price
                     total_profit = total_profit + profit
                     print "profit of %s: %s, %%%.2f" % (df['trade_date'][i], __direction, profit)
             avg_profit = total_profit/count
-            if avg_profit > 0.8 and count > 30 and df['close'][0] < 200:
+            if avg_profit > 0.5 and count > 30 and df['close'][0] < 200:
                 final_list.append(__code.strip())
             print "code: %s, count: %d, average profit: %%%.2f" % (code_new, count, avg_profit)
+            print "final list: %s" % final_list
         except Exception as exe:
             print "error for code %s" % __code
-    print "final list: %s" % final_list
     return final_list
 
 
