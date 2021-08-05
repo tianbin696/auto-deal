@@ -59,8 +59,8 @@ def get_candidates(codes=None):
 
 def test_buy(code, start_date, end_date):
     df = ts.get_h_data(code, start_date=start_date, end_date=end_date)
-    d = {'price': df['high'][0:1], 'open': df['open'][0:1], 'high': df['high'][0:1], 'low': df['low'][0:1],
-         'volume': df['vol'][0:1], 'pre_close': df['close'][0:1]}
+    d = {'price': [df['high'][0]], 'open': [df['open'][0]], 'high': [df['high'][0]], 'low': [df['low'][0]],
+         'volume': [df['vol'][0]], 'pre_close': [df['close'][1]]}
     __rt_df = pd.DataFrame(d).reset_index()
     __df = df[1:].reset_index()
     __direction = get_direction(__rt_df, __df)
@@ -69,8 +69,8 @@ def test_buy(code, start_date, end_date):
 
 def test_sell(code, start_date, end_date):
     df = ts.get_h_data(code, start_date=start_date, end_date=end_date)
-    d = {'price': df['low'][0:1], 'open': df['open'][0:1], 'high': df['high'][0:1], 'low': df['low'][0:1],
-         'volume': df['vol'][0:1], 'pre_close': df['close'][1:2]}
+    d = {'price': [df['low'][0]], 'open': [df['open'][0]], 'high': [df['high'][0]], 'low': [df['low'][0]],
+         'volume': [df['vol'][0]], 'pre_close': [df['close'][1]]}
     __rt_df = pd.DataFrame(d).reset_index()
     __df = df[1:].reset_index()
     __direction = get_direction(__rt_df, __df)
@@ -80,6 +80,9 @@ def test_sell(code, start_date, end_date):
 if __name__ == "__main__":
     direction = test_buy("601100.SH", "20160101", "20210803")
     assert direction == "B"
+
+    direction = test_buy("601100.SH", "20160101", "20210802")
+    assert direction == "N"
 
     direction = test_buy("601100.SH", "20160101", "20210728")
     assert direction == "N"
