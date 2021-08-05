@@ -37,8 +37,8 @@ def get_candidates(codes=None):
             total_profit = 0
             days = 20
             for i in range(1, 300):
-                d = {'price': df['high'][i:i+1], 'open': df['open'][i:i+1], 'high': df['high'][i:i+1],
-                     'low': df['low'][i:i+1], 'volume': df['vol'][i:i+1], 'pre_close': df['close'][i:i+1]}
+                d = {'price': [df['high'][i]], 'open': [df['open'][i]], 'high': [df['high'][i]],
+                     'low': [df['low'][i]], 'volume': [df['vol'][i]], 'pre_close': [df['close'][i]]}
                 __rt_df = pd.DataFrame(d).reset_index()
                 __df = df[i+1:].reset_index()
                 direction = get_direction(__rt_df, __df, days)
@@ -89,3 +89,11 @@ if __name__ == "__main__":
 
     direction = test_sell("601100.SH", "20160101", "20210222")
     assert direction == "S"
+
+    code_list = get_candidates()
+    if len(code_list) > 0:
+        writer = open("code_candidates.txt", 'w')
+        writer.write(code_list[0])
+        for __code in code_list[1:]:
+            writer.write("\n" + __code)
+        writer.close()
