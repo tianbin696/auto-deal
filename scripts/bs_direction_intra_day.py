@@ -38,7 +38,7 @@ def get_candidates(codes=None):
             else:
                 code_new = "%s.SH" % code_new
             end_date = (datetime.datetime.now()).strftime("%Y%m%d")
-            df = ts.get_h_data(code_new, start_date="20160101", end_date=end_date)
+            df = ts.get_h_data_cache(code_new, start_date="20160101", end_date=end_date)
             count = 0
             total_profit = 0
             days = 20

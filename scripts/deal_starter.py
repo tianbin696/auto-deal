@@ -81,6 +81,7 @@ if __name__ == "__main__":
             auto_deal.test()
             auto_deal.loop()
             logger.info("out of deal time now")
+            direct_cli.update_cache()
             direct_cli.update_candidates()
         except Exception as exe:
             logger.error("exception during main loop, %s" % exe)

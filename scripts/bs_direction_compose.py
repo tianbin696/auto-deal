@@ -32,6 +32,10 @@ def get_direction(rt_df_in, df_h_in, is_intra_day_deal):
     return __direction
 
 
+def update_cache():
+    ts.update_cache()
+
+
 def update_candidates():
     code_list = intra.get_candidates()
     if len(code_list) > 0:
