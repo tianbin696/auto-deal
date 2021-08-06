@@ -48,18 +48,52 @@ def update_candidates():
 
 
 if __name__ == "__main__":
-    codes = update_candidates()
-    for code in codes:
-        end_date = (datetime.datetime.now()).strftime("%Y%m%d")
+    # codes = update_candidates()
+    end_date = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime("%Y%m%d")
+    deal_codes = []
+    for code in list(open("code_candidates.txt")):
+        code = code.strip()
         if code.startswith("6"):
             code = "%s.SH" % code
         else:
             code = "%s.SZ" % code
-        df = ts.get_h_data(code, start_date="20160101", end_date=end_date)
-        for i in range(0, 120):
-            d = {'price': df['high'][i:i+1], 'open': df['open'][i:i+1], 'high': df['high'][i:i+1],
-                 'low': df['low'][i:i+1], 'volume': df['vol'][i:i+1], 'pre_close': df['close'][i+1:i+2]}
-            __rt_df = pd.DataFrame(d).reset_index()
-            direction = get_direction(__rt_df, df[i+1:].reset_index(), True)
-            if direction == "B" or direction == "S":
-                print "%s, direction of %s: %s - %.2f" % (code, df['trade_date'][i], direction, df['close'][i])
+        df_h = ts.get_h_data_cache(code, start_date="20160101", end_date=end_date)
+        df_h_in = df_h[1:].reset_index()
+
+        d = {'price': [df_h['high'][0]-0.01], 'open': [df_h['open'][0]], 'high': [df_h['high'][0]], 'low': [df_h['low'][0]],
+             'volume': [df_h['vol'][0]], 'pre_close': [df_h['close'][1]]}
+        df_rt = pd.DataFrame(d).reset_index()
+        direction = get_direction(df_rt, df_h_in, True)
+        if direction == "B" or direction == "S":
+            print "%s, direction: %s - %.2f" % (code, direction, df_rt['price'][0])
+            deal_codes.append("%s-%s" % (code, direction))
+            continue
+
+        d = {'price': [df_h['open'][0]+0.01], 'open': [df_h['open'][0]], 'high': [df_h['high'][0]], 'low': [df_h['low'][0]],
+             'volume': [df_h['vol'][0]], 'pre_close': [df_h['close'][1]]}
+        df_rt = pd.DataFrame(d).reset_index()
+        direction = get_direction(df_rt, df_h_in, True)
+        if direction == "B" or direction == "S":
+            print "%s, direction: %s - %.2f" % (code, direction, df_rt['price'][0])
+            deal_codes.append("%s-%s" % (code, direction))
+            continue
+
+        d = {'price': [df_h['close'][0]], 'open': [df_h['open'][0]], 'high': [df_h['high'][0]], 'low': [df_h['low'][0]],
+             'volume': [df_h['vol'][0]], 'pre_close': [df_h['close'][1]]}
+        df_rt = pd.DataFrame(d).reset_index()
+        direction = get_direction(df_rt, df_h_in, True)
+        if direction == "B" or direction == "S":
+            print "%s, direction: %s - %.2f" % (code, direction, df_rt['price'][0])
+            deal_codes.append("%s-%s" % (code, direction))
+            continue
+
+        d = {'price': [df_h['low'][0]+0.01], 'open': [df_h['open'][0]], 'high': [df_h['high'][0]], 'low': [df_h['low'][0]],
+             'volume': [df_h['vol'][0]], 'pre_close': [df_h['close'][1]]}
+        df_rt = pd.DataFrame(d).reset_index()
+        direction = get_direction(df_rt, df_h_in, True)
+        if direction == "B" or direction == "S":
+            print "%s, direction: %s - %.2f" % (code, direction, df_rt['price'][0])
+            deal_codes.append("%s-%s" % (code, direction))
+            continue
+
+    print deal_codes

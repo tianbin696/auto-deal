@@ -7,7 +7,7 @@ import ts_cli as ts
 
 
 def get_direction(rt_df_in, df_h_in, days_in=20):
-    __direction = get_direction_upper_lower_line(rt_df_in, df_h_in, days_in)
+    __direction = get_direction_upper_lower_line(rt_df_in, df_h_in, days_in)[0]
     if __direction != "N":
         return __direction
     return "N"
@@ -16,14 +16,21 @@ def get_direction(rt_df_in, df_h_in, days_in=20):
 def get_direction_upper_lower_line(rt_df_in, df_h_in, days_in=20):
     price_in = float(rt_df_in['price'][0])
     open_price = float(rt_df_in['open'][0])
+    high_price = float(rt_df_in['high'][0])
     pre_close = float(rt_df_in['pre_close'][0])
     upper_line = numpy.max(df_h_in['high'][0:days_in])
     lower_line = numpy.min(df_h_in['low'][0:days_in])
+
+    if float(rt_df_in['price'][0]) <= 0:
+        # For testing
+        price_in = min(max(open_price, numpy.max(df_h_in['high'][0:days_in]))+0.01, high_price)
     if max(upper_line, open_price) < price_in < pre_close*1.06:
-        return "B"
+        # For testing
+        buy_price = max(open_price, numpy.max(df_h_in['high'][0:days_in]))
+        return ["B", buy_price]
     if price_in < lower_line and price_in < open_price:
-        return "S"
-    return "N"
+        return ["S"]
+    return ["N"]
 
 
 def get_candidates(codes=None):
@@ -43,15 +50,15 @@ def get_candidates(codes=None):
             total_profit = 0
             days = 20
             for i in range(1, 300):
-                rt_price_in = min(max(df['open'][i], numpy.max(df['high'][i+1:i+1+days]))+0.01, df['high'][i])
-                d = {'price': [rt_price_in], 'open': [df['open'][i]], 'high': [df['high'][i]], 'low': [df['low'][i]],
+                d = {'price': [0], 'open': [df['open'][i]], 'high': [df['high'][i]], 'low': [df['low'][i]],
                      'volume': [df['vol'][i]], 'pre_close': [df['close'][i+1]]}
                 __rt_df = pd.DataFrame(d).reset_index()
                 __df = df[i+1:].reset_index()
-                __direction = get_direction(__rt_df, __df, days)
+                __resp = get_direction_upper_lower_line(__rt_df, __df, days)
+                __direction = __resp[0]
                 if __direction == "B":
                     count = count + 1
-                    buy_price = max(df['open'][i], numpy.max(df['high'][i+1:i+1+days]))
+                    buy_price = __resp[1]
                     profit = (df['close'][i]-buy_price)*100/buy_price
                     total_profit = total_profit + profit
                     print "profit of %s: %s, %%%.2f" % (df['trade_date'][i], __direction, profit)
