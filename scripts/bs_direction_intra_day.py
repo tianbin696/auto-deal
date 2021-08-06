@@ -7,20 +7,20 @@ import ts_cli as ts
 
 
 def get_direction(rt_df_in, df_h_in, days_in=20):
-    __direction = get_direction_upper_lower_line(rt_df_in, df_h_in, days_in)[0]
+    __direction = get_direction_phiary(rt_df_in, df_h_in, days_in)[0]
     if __direction != "N":
         return __direction
     return "N"
 
 
-def get_direction_upper_lower_line(rt_df_in, df_h_in, days_in=20):
+def get_direction_phiary(rt_df_in, df_h_in, days_in=20):
+    # 菲阿里四价模型
     price_in = float(rt_df_in['price'][0])
     open_price = float(rt_df_in['open'][0])
     high_price = float(rt_df_in['high'][0])
     pre_close = float(rt_df_in['pre_close'][0])
     upper_line = numpy.max(df_h_in['high'][0:days_in])
     lower_line = numpy.min(df_h_in['low'][0:days_in])
-
     if float(rt_df_in['price'][0]) <= 0:
         # For testing
         price_in = min(max(open_price, numpy.max(df_h_in['high'][0:days_in]))+0.01, high_price)
@@ -54,7 +54,7 @@ def get_candidates(codes=None):
                      'volume': [df['vol'][i]], 'pre_close': [df['close'][i+1]]}
                 __rt_df = pd.DataFrame(d).reset_index()
                 __df = df[i+1:].reset_index()
-                __resp = get_direction_upper_lower_line(__rt_df, __df, days)
+                __resp = get_direction_phiary(__rt_df, __df, days)
                 __direction = __resp[0]
                 if __direction == "B":
                     count = count + 1
