@@ -7,6 +7,13 @@ import ts_cli as ts
 
 
 def get_direction(rt_df_in, df_h_in, days_in=20):
+    __direction = get_direction_upper_lower_line(rt_df_in, df_h_in, days_in)
+    if __direction != "N":
+        return __direction
+    return "N"
+
+
+def get_direction_upper_lower_line(rt_df_in, df_h_in, days_in=20):
     price_in = float(rt_df_in['price'][0])
     open_price = float(rt_df_in['open'][0])
     pre_close = float(rt_df_in['pre_close'][0])
