@@ -13,7 +13,7 @@ def get_direction(rt_df_in, df_h_in, days_in=20):
     upper_line = numpy.max(df_h_in['high'][0:days_in])
     lower_line = numpy.min(df_h_in['low'][0:days_in])
     if max(upper_line, open_price) < price_in < pre_close*1.06:
-            return "B"
+        return "B"
     if price_in < lower_line and price_in < open_price:
         return "S"
     return "N"
