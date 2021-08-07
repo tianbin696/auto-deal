@@ -1,12 +1,13 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
 import datetime
-import time_util
-import bs_direction_compose as direct_cli
-import bs_price
-import bs_volume
-import ts_cli as ts
-from logger_util import logger
+
+import scripts.bs_direction_compose as direct_cli
+import scripts.bs_price as bs_price
+import scripts.bs_volume as bs_volume
+import scripts.time_util as time_util
+import scripts.ts_cli as ts
+from scripts.logger_util import logger
 
 
 class DealEntry:
@@ -72,6 +73,6 @@ if __name__ == "__main__":
     deal_main.is_buyed = True
     deal = deal_main.get_rt_deal()
     if deal:
-        print deal
+        print(deal)
     else:
-        print "No deal expected"
+        print("No deal expected")

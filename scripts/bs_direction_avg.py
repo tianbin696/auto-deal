@@ -1,7 +1,8 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
-import ts_cli as ts
 import numpy
+
+import scripts.ts_cli as ts
 
 
 def get_direction(prices):
@@ -27,4 +28,4 @@ if __name__ == "__main__":
         updated_prices.extend(df['close'][i:])
         direction = get_direction(updated_prices)
         if direction == "B" or direction == "S":
-            print "direction of %s: %s - %.2f" % (df['trade_date'][i], direction, df['close'][i])
+            print("direction of %s: %s - %.2f" % (df['trade_date'][i], direction, df['close'][i]))

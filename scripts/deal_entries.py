@@ -1,8 +1,9 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
 import time
-from deal_entry import DealEntry
-from logger_util import logger
+
+from scripts.deal_entry import DealEntry
+from scripts.logger_util import logger
 
 
 class DealEntries:
@@ -48,10 +49,10 @@ class DealEntries:
 
 if __name__ == "__main__":
     deal_loop = DealEntries()
-    print deal_loop.get_deals()
+    print(deal_loop.get_deals())
 
     deal_loop = DealEntries(costs={u'601100': 106.571, u'002271': 51.471, u'600161': 36.443, u'603899': 86.721},
                             volumes={u'601100': 800, u'002271': 1100, u'600161': 2000, u'603899': 700})
-    print deal_loop.get_deals()
+    print(deal_loop.get_deals())
 
-    print "total count: %d, %s" % (len(deal_loop.codes), deal_loop.codes)
+    print("total count: %d, %s" % (len(deal_loop.codes), deal_loop.codes))

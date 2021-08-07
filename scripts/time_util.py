@@ -1,7 +1,8 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
-import pytz
 from datetime import datetime
+
+import pytz
 
 
 def format_date(num):
@@ -21,7 +22,7 @@ def compare_time(hour, minute):
 
 if __name__ == "__main__":
     res = compare_time("09", "25")
-    print "now is after 09:25: %s" % res
+    print("now is after 09:25: %s" % res)
 
     res = compare_time("15", "05")
-    print "now is after 15：05: %s" % res
+    print("now is after 15：05: %s" % res)

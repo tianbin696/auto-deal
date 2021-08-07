@@ -1,9 +1,11 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
 import datetime
+
 import numpy
 import pandas as pd
-import ts_cli as ts
+
+import scripts.ts_cli as ts
 
 
 def get_direction(rt_df_in, df_h_in, days_in=20):

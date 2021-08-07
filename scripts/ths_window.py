@@ -1,6 +1,7 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
 import time
+
 import pywinauto
 import pywinauto.application
 import pywinauto.clipboard

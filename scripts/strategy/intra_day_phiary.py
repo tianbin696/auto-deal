@@ -1,6 +1,7 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
 import numpy
+
 from scripts.strategy.intra_day_regression import IntraDayRegression
 
 

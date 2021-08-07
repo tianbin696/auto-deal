@@ -2,12 +2,12 @@
 # -*- coding: utf-8 -*-
 import time
 import traceback
-import ths_window
-import time_util
-import bs_direction_compose as direct_cli
-from deal_entries import DealEntries
-from ths_cli import ThsCli
-from logger_util import logger
+import scripts.ths_window
+import scripts.time_util
+import scripts.bs_direction_compose as direct_cli
+from scripts.deal_entries import DealEntries
+from scripts.ths_cli import ThsCli
+from scripts.logger_util import logger
 
 
 class AutoDeal:
@@ -18,12 +18,12 @@ class AutoDeal:
         self.ths_cli.save_screenshot("initial done for %d codes" % len(self.deal_entries.codes), "initial done")
 
     def start_ths(self):
-        ths_window.ths_start()
+        scripts.ths_window.ths_start()
         logger.info("THS window opened")
 
     def close_ths(self):
         self.ths_cli.save_screenshot("Closing THS", "Closing THS")
-        ths_window.ths_close()
+        scripts.ths_window.ths_close()
         logger.info("THS window closed")
 
     def test(self):
@@ -56,7 +56,7 @@ class AutoDeal:
 
 
 def is_within_deal_window():
-    if time_util.compare_time("09", "26") and not time_util.compare_time("15", "00"):
+    if scripts.time_util.compare_time("09", "26") and not scripts.time_util.compare_time("15", "00"):
         return True
     return False
 

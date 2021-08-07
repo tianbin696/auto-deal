@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import pandas as pd
 
-import ts_cli as ts
+import scripts.ts_cli as ts
 
 
 def get_direction(df):

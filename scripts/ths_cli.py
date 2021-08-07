@@ -4,6 +4,7 @@ import logging
 import random
 import time
 from datetime import datetime
+
 import pywinauto
 import pywinauto.application
 import pywinauto.clipboard
@@ -11,8 +12,10 @@ from pywinauto import keyboard
 from pywinauto import mouse
 from pywinauto import win32defines
 from pywinauto.win32functions import SetForegroundWindow, ShowWindow
-from email_cli import send_email
-from ths_window import ths_start, ths_close
+
+from scripts.email_cli import send_email
+from scripts.ths_window import ths_start, ths_close
+
 # from vcode_cli import get_vcode
 
 console = logging.StreamHandler()

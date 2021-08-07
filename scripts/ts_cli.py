@@ -1,8 +1,9 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
-import os
-import pandas
 import datetime
+import os
+
+import pandas
 import tushare as ts
 
 token = "3f249c0d4e9d93e62dd5a5b2c96dd75272e715fbfe8e972bf786aa9f"
@@ -20,7 +21,7 @@ def get_rt_price(code):
 
 
 def get_h_data_cache(code='600570.SH', start_date='20200101', end_date='20210101', force_update=False):
-    cache_folder = "../../cache"
+    cache_folder = "../cache"
     cache_file = cache_folder + "/" + code + ".csv"
     if not os.path.exists(cache_folder):
         os.mkdir(cache_folder)
@@ -46,18 +47,18 @@ def update_cache():
             __code = "%s.SH" % __code
         end_date = (datetime.datetime.now()).strftime("%Y%m%d")
         get_h_data_cache(__code, "20100101", end_date, True)
-        print "cached %s" % __code
+        print("cached %s" % __code)
 
 
 if __name__ == "__main__":
     df = get_h_data("600570.SH")
-    print df[0:3]
+    print(df[0:3])
 
     end_date_str = (datetime.datetime.now()).strftime("%Y%m%d")
     df = get_h_data("600570.SH", end_date=end_date_str)
-    print df[0:3]
+    print(df[0:3])
 
     df = get_rt_price("600570")
-    print df
+    print(df)
 
     update_cache()
