@@ -7,9 +7,18 @@ from scripts.strategy.intra_day_regression import IntraDayRegression
 
 
 class IntraDayCompose:
+    """
+    Test results (code_hs_300):
+    - Phiary: 20, Dual Thrust: 20, 0.25, 0.25
+        * all: 54.08/0.22
+        * filtered: 52.26/0.76
+    - Phiary: 25, Dual Thrust: 25, 0.25, 0.25
+        * all: 45.72/0.24
+        * filtered: 44.96/0.81
+    """
     def __init__(self):
-        self.phiary = IntraDayPhiary()
-        self.dual_thrust = IntraDayDualThrust()
+        self.phiary = IntraDayPhiary(days=25)
+        self.dual_thrust = IntraDayDualThrust(days=25, k1=0.25, k2=0.25)
         self.regression = IntraDayRegression(self)
 
     def get_direction(self, rt_df_in, df_h_in):
@@ -18,7 +27,8 @@ class IntraDayCompose:
             return direction
 
         direction = self.dual_thrust.get_direction(rt_df_in, df_h_in)
-        if direction != "N":
+        if direction != "B":
+            # Dual thrust only used for intra day buy
             logger.info("get direction of IntraDualThrust: %s" % direction)
             return direction
 
@@ -31,7 +41,8 @@ class IntraDayCompose:
             return direction
 
         direction = self.dual_thrust.get_direction_extra(rt_df_in, df_h_in)
-        if direction[0] != "N":
+        if direction[0] != "B":
+            # Dual thrust only used for intra day buy
             logger.info("get direction of IntraDayDualThrust: %s" % direction[0])
             return direction
 
