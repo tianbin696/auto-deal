@@ -4,7 +4,7 @@ import numpy
 from scripts.strategy.intra_day_regression import IntraDayRegression
 
 
-class IntraDualThrust:
+class IntraDayDualThrust:
     def __init__(self, days=20, k1=0.25, k2=0.25):
         self.days = days
         self.k1 = k1
@@ -47,7 +47,7 @@ class IntraDualThrust:
 
 
 if __name__ == "__main__":
-    strategy = IntraDualThrust()
+    strategy = IntraDayDualThrust()
     regression = IntraDayRegression(strategy)
-    regression.get_candidates()
-    regression.update_candidates()
+    regression.get_candidates(["000100", "601100"])
+    # regression.update_candidates()
