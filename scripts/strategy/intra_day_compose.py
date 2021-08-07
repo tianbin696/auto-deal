@@ -27,7 +27,7 @@ class IntraDayCompose:
             return direction
 
         direction = self.dual_thrust.get_direction(rt_df_in, df_h_in)
-        if direction != "B":
+        if direction == "B":
             # Dual thrust only used for intra day buy
             logger.info("get direction of IntraDualThrust: %s" % direction)
             return direction
@@ -41,7 +41,7 @@ class IntraDayCompose:
             return direction
 
         direction = self.dual_thrust.get_direction_extra(rt_df_in, df_h_in)
-        if direction[0] != "B":
+        if direction[0] == "B":
             # Dual thrust only used for intra day buy
             logger.info("get direction of IntraDayDualThrust: %s" % direction[0])
             return direction
