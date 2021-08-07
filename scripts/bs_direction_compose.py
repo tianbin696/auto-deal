@@ -38,7 +38,3 @@ def update_cache():
 def update_candidates():
     code_list = intra.update_candidates()
     return code_list
-
-
-if __name__ == "__main__":
-    update_candidates()

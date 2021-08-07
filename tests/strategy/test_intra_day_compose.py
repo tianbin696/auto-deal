@@ -40,3 +40,7 @@ class IntraDayComposeTest(unittest.TestCase):
         direction_1 = self.strategy.get_direction(rt_df, df_h)
         direction_2 = self.strategy.get_direction_extra(rt_df, df_h)
         self.assertEqual(direction_1, direction_2[0])
+
+    def test_get_candidates(self):
+        codes = self.strategy.get_candidates()
+        self.assertTrue(len(codes) > 0)
