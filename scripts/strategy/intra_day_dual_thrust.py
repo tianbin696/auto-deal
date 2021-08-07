@@ -50,5 +50,5 @@ class IntraDayDualThrust:
 if __name__ == "__main__":
     strategy = IntraDayDualThrust()
     regression = IntraDayRegression(strategy)
-    regression.get_candidates(["000100", "601100"])
-    # regression.update_candidates()
+    regression.get_candidates()
+    regression.update_candidates()

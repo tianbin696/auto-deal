@@ -32,7 +32,7 @@ class IntraDayCompose:
 
         direction = self.dual_thrust.get_direction_extra(rt_df_in, df_h_in)
         if direction[0] != "N":
-            logger.info("get direction of IntraDualThrust: %s" % direction[0])
+            logger.info("get direction of IntraDayDualThrust: %s" % direction[0])
             return direction
 
         return "N"

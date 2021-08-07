@@ -5,6 +5,7 @@ import scripts.bs_direction_rsi as rsi
 import scripts.ts_cli as ts
 from scripts.logger_util import logger
 from scripts.strategy.intra_day_compose import IntraDayCompose
+from scripts.strategy.intra_day_regression import IntraDayRegression
 intra = IntraDayCompose()
 
 
@@ -38,3 +39,9 @@ def update_cache():
 def update_candidates():
     code_list = intra.update_candidates()
     return code_list
+
+
+if __name__ == "__main__":
+    regression = IntraDayRegression(IntraDayCompose())
+    regression.get_candidates()
+    regression.update_candidates()
