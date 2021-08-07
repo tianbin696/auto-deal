@@ -44,3 +44,9 @@ class IntraDayCompose:
         self.regression.get_candidates()
         self.regression.update_candidates()
         return self.regression.final_list
+
+
+if __name__ == "__main__":
+    regression = IntraDayRegression(IntraDayCompose())
+    regression.get_candidates()
+    regression.update_candidates()

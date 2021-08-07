@@ -2,10 +2,12 @@
 # -*- coding: utf-8 -*-
 import logging
 
+import scripts.file_locator as locator
+
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                     datefmt='%a, %d %b %Y %H:%M:%S',
-                    filename='../logs/auto_deal_ths.log',
+                    filename=locator.get_path("logs/auto_deal_ths.log"),
                     filemode='a')
 console = logging.StreamHandler()
 console.setLevel(logging.INFO)

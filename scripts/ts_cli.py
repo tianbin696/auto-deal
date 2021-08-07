@@ -6,6 +6,8 @@ import os
 import pandas
 import tushare as ts
 
+import scripts.file_locator as locator
+
 token = "3f249c0d4e9d93e62dd5a5b2c96dd75272e715fbfe8e972bf786aa9f"
 ts.set_token(token)
 
@@ -21,7 +23,7 @@ def get_rt_price(code):
 
 
 def get_h_data_cache(code='600570.SH', start_date='20200101', end_date='20210101', force_update=False):
-    cache_folder = "../cache"
+    cache_folder = locator.get_path("cache")
     cache_file = cache_folder + "/" + code + ".csv"
     if not os.path.exists(cache_folder):
         os.mkdir(cache_folder)

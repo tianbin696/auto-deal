@@ -1,11 +1,11 @@
 #!/bin/env python
 # -*- coding: utf-8 -*-
 import datetime
-import os
 
 import numpy
 import pandas as pd
 
+import scripts.file_locator as locator
 import scripts.ts_cli as ts
 
 
@@ -13,14 +13,8 @@ class IntraDayRegression:
     def __init__(self, strategy):
         self.strategy = strategy
         self.final_list = []
-        self.code_hs_300 = "code_hs_300.txt"
-        self.candidates = "code_candidates.txt"
-        if not os.path.exists(self.code_hs_300):
-            self.code_hs_300 = "../code_hs_300.txt"
-            self.candidates = "../code_candidates.txt"
-        if not os.path.exists(self.code_hs_300):
-            self.code_hs_300 = "../scripts/code_hs_300.txt"
-            self.candidates = "../scripts/code_candidates.txt"
+        self.code_hs_300 = locator.get_path("code_hs_300.txt")
+        self.candidates = locator.get_path("code_candidates.txt")
 
     def get_candidates(self, codes=None):
         counts_all = []
