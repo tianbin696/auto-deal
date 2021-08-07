@@ -18,6 +18,9 @@ class IntraDayRegression:
         if not os.path.exists(self.code_hs_300):
             self.code_hs_300 = "../code_hs_300.txt"
             self.candidates = "../code_candidates.txt"
+        if not os.path.exists(self.code_hs_300):
+            self.code_hs_300 = "../scripts/code_hs_300.txt"
+            self.candidates = "../scripts/code_candidates.txt"
 
     def get_candidates(self, codes=None):
         counts_all = []
