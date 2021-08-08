@@ -2,12 +2,14 @@
 # -*- coding: utf-8 -*-
 import datetime
 import math
+import traceback
 
 import numpy
 import pandas as pd
 
 import scripts.ts_cli as ts
 from scripts.bs_volume import get_sell_vol, get_buy_vol
+from scripts.file_locator import get_path
 from scripts.strategy.intra_day_phiary import IntraDayPhiary
 
 
@@ -21,6 +23,11 @@ class IntraDayRegressionSingle:
         self.volume = 0
         self.leading_days = 30
         self.last_date = None
+        self.buy_fee = 0.0005
+        self.sell_fee = 0.0015
+        self.start_close = 0
+        self.end_close = 0
+        self.final_statement = None
         self.daily_values = {}
         self.daily_roes = {}
         self.daily_values_array = []
@@ -36,21 +43,24 @@ class IntraDayRegressionSingle:
             print("code=%s, date=%s, direction=%s" % (self.code, date, direction))
         if direction == "B":
             buy_price = response[1]
-            buy_vol = get_buy_vol(buy_price)
+            max_cost = self.free_money * (1 - self.buy_fee)
+            if self.volume == 0:
+                max_cost = max_cost / 2
+            buy_vol = get_buy_vol(buy_price, self.volume, max_cost)
             if buy_vol * buy_price < self.free_money:
                 if self.volume == 0:
                     # Open position
                     self.volume = buy_vol
-                    self.free_money = self.free_money - buy_price * buy_vol * 1.0005
+                    self.free_money = self.free_money - buy_price * buy_vol * (1 + self.buy_fee)
                 else:
                     # Update intra day deal profit
-                    intra_day_profit = buy_vol * (close * 0.998 - buy_price)
+                    intra_day_profit = buy_vol * (close * (1 - self.buy_fee - self.sell_fee) - buy_price)
                     self.free_money = self.free_money + intra_day_profit
         if direction == "S":
             sell_price = response[1]
             sell_vol = get_sell_vol(self.volume, sell_price)
             self.volume = self.volume - sell_vol
-            self.free_money = self.free_money + sell_vol * sell_price * 0.9985
+            self.free_money = self.free_money + sell_vol * sell_price * (1 - self.sell_fee)
         close_value = self.free_money + self.volume * close
         self.daily_values[date] = close_value
         daily_roe = (close_value - self.initial_money)/self.initial_money
@@ -68,8 +78,11 @@ class IntraDayRegressionSingle:
         var = numpy.var(self.daily_roes_array)
         var_sqrt = numpy.sqrt(var)
         self.sharp_ratio = (self.roe_per_year - roe_base)/var_sqrt
-        print("code=%s, roe_total=%.2f, roe_per_year=%.2f, max_drawdown=%.2f, sharp_ratio=%.2f" %
-              (self.code, self.roe_total, self.roe_per_year, self.max_drawdown, self.sharp_ratio))
+        close_increase = (self.end_close - self.start_close)/self.start_close
+        self.final_statement = "%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f" % (self.code, close_increase, self.roe_total,
+                                                                           self.roe_per_year, self.max_drawdown,
+                                                                           self.sharp_ratio)
+        print(self.final_statement)
         print("final position: close_value=%.2f, free_money=%.2f, market_value=%.2f, volume=%d, initial_money=%.2f" %
               (self.daily_values_array[-1], self.free_money, self.daily_values_array[-1] - self.free_money,
                self.volume, self.initial_money))
@@ -78,6 +91,8 @@ class IntraDayRegressionSingle:
         end_date = (datetime.datetime.now()).strftime("%Y%m%d")
         df_h = ts.get_h_data_cache(self.code, start_date="20160101", end_date=end_date)
         size = len(df_h['close'])
+        self.start_close = df_h['close'][size-self.leading_days]
+        self.end_close = df_h['close'][1]
         for i in range(size-self.leading_days, 1, -1):
             d = {'price': [0], 'open': [df_h['open'][i]], 'high': [df_h['high'][i]], 'low': [df_h['low'][i]],
                  'volume': [df_h['vol'][i]], 'pre_close': [df_h['close'][i+1]]}
@@ -88,6 +103,23 @@ class IntraDayRegressionSingle:
 
 
 if __name__ == "__main__":
-    regressionSingle = IntraDayRegressionSingle(IntraDayPhiary(), "601100.SH")
-    regressionSingle.regression()
-    regressionSingle.update_final_stats()
+    result_file = get_path("intra_day_regression_V2_results.txt")
+    writer = open(result_file, 'w')
+    writer.write("code_name\tincr\troe1\troe2\tdown\tsharp\n")
+    writer.flush()
+    for __code in list(open(get_path("code_candidates.txt"))):
+        try:
+            code_new = __code.strip()
+            if code_new.startswith('0') or code_new.startswith('3'):
+                code_new = "%s.SZ" % code_new
+            else:
+                code_new = "%s.SH" % code_new
+            regressionSingle = IntraDayRegressionSingle(IntraDayPhiary(), code_new)
+            regressionSingle.regression()
+            regressionSingle.update_final_stats()
+            writer.write("%s\n" % regressionSingle.final_statement)
+            writer.flush()
+        except Exception as exe:
+            track = traceback.format_exc()
+            print(track)
+    writer.close()
