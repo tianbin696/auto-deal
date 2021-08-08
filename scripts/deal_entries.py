@@ -4,6 +4,7 @@ import time
 
 from scripts.deal_entry import DealEntry
 from scripts.logger_util import logger
+from scripts.file_locator import get_path
 
 
 class DealEntries:
@@ -15,7 +16,7 @@ class DealEntries:
             for code in costs.keys():
                 if code not in self.codes:
                     self.codes.append(code)
-        for code in list(open("code_candidates.txt")):
+        for code in list(open(get_path("code_candidates.txt"))):
             code = code.strip()
             if code not in self.codes:
                 self.codes.append(code)
