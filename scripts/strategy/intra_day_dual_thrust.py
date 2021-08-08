@@ -6,18 +6,6 @@ from scripts.strategy.intra_day_regression import IntraDayRegression
 
 
 class IntraDayDualThrust:
-    """
-    Test results (code_hs_300):
-    - Dual Thrust: 20, 0.25, 0.25
-        * all: 34.36/0.29
-        * filtered: 36.91/0.71
-    - Dual Thrust: 25, 0.25, 0.25
-        * all: 25.71/0.32
-        * filtered: 34.22/0.77
-    - Dual Thrust: 30, 0.25, 0.25
-        * all: 20.01/0.33
-        * filtered: 33.50/0.77
-    """
     def __init__(self, days=25, k1=0.25, k2=0.25):
         self.days = days
         self.k1 = k1

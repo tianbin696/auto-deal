@@ -7,21 +7,6 @@ from scripts.strategy.intra_day_regression import IntraDayRegression
 
 
 class IntraDayCompose:
-    """
-    Test results (code_hs_300):
-    - Phiary: 15, Dual Thrust: 15, 0.25, 0.25
-        * all: 66.82/0.20
-        * filtered: 65.08/0.67
-    - Phiary: 20, Dual Thrust: 20, 0.25, 0.25
-        * all: 54.08/0.22
-        * filtered: 52.26/0.76
-    - Phiary: 25, Dual Thrust: 25, 0.25, 0.25
-        * all: 45.72/0.24
-        * filtered: 44.96/0.81
-    - Phiary: 30, Dual Thrust: 30, 0.25, 0.25
-        * all: 40.17/0.25
-        * filtered: 42.75/0.82
-    """
     def __init__(self):
         self.phiary = IntraDayPhiary(days=25)
         self.dual_thrust = IntraDayDualThrust(days=25, k1=0.25, k2=0.25)
