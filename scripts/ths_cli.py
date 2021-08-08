@@ -15,6 +15,7 @@ from pywinauto.win32functions import SetForegroundWindow, ShowWindow
 
 from scripts.email_cli import send_email
 from scripts.ths_window import ths_start, ths_close
+from scripts.file_locator import get_path
 
 # from vcode_cli import get_vcode
 
@@ -202,7 +203,8 @@ class ThsCli:
     def save_screenshot(self, status, title):
         try:
             self.__close_popup_windows()
-            pic_name = "../../logs/auto_deal_%s.png" % datetime.now().strftime("%Y-%m-%d_%H-%M")
+            log_folder = get_path("logs")
+            pic_name = "%s/auto_deal_%s.png" % (log_folder, datetime.now().strftime("%Y-%m-%d_%H-%M"))
             self.restore_window()
             keyboard.send_keys("{F4}")
             time.sleep(2*self.sleep_time)
