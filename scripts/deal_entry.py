@@ -48,7 +48,7 @@ class DealEntry:
         logger.info("realtime direction for code %s: %s" % (self.code, __direction))
 
         if __direction == "B" and not self.is_buyed and not is_closing_deal_window():
-            __volume = bs_volume.get_buy_vol(rt_price)
+            __volume = bs_volume.get_buy_vol(rt_price, self.volume)
             __price = bs_price.get_buy_price(rt_price)
             self.is_buyed = True
             if self.is_intra_day:

@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 
 
-def get_buy_vol(input_price):
-    max_cost = 10000
+def get_buy_vol(input_price, input_vol=0, max_cost=10000):
     vol = max(100, int(max_cost / (input_price * 100)) * 100)
+    if input_vol > 0:
+        return min(vol, input_vol)
     return vol
 
 

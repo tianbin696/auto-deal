@@ -9,6 +9,8 @@ class BsVolumeTest(unittest.TestCase):
         self.assertEqual(get_buy_vol(55.00), 100)
         self.assertEqual(get_buy_vol(95.00), 100)
         self.assertEqual(get_buy_vol(105.00), 100)
+        self.assertEqual(get_buy_vol(45.00, 100, 20000), 100)
+        self.assertEqual(get_buy_vol(45.00, 0, 20000), 400)
     
     def test_sell_vol(self):
         self.assertEqual(get_sell_vol(100), 100)
