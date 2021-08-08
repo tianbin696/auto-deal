@@ -4,10 +4,31 @@ Test results (code_hs_300):
     * filtered: 36.91/0.71
 - Dual Thrust: 25, 0.20, 0.25
     * all: 42.73/0.26
-    * filtered: 41.00/0.71
+    * filtered: 50/41.00/0.71
+- Dual Thrust: 25, 0.21, 0.25
+    * all: 38.74/0.26
+    * filtered: 44/38.91/0.73
+- Dual Thrust: 25, 0.22, 0.25
+    * all: 34.74/0.29
+    * filtered: 36/37.69/0.71
+- Dual Thrust: 25, 0.23, 0.25
+    * all: 31.37/0.30
+    * filtered: 22/37.68/0.68
+- Dual Thrust: 25, 0.24, 0.25
+    * all: 28.44/0.30
+    * filtered: 16/36.56/0.71
 - Dual Thrust: 25, 0.25, 0.25
     * all: 25.71/0.32
-    * filtered: 34.22/0.77
+    * filtered: 9/34.22/0.77
+- Dual Thrust: 25, 0.26, 0.25
+    * all: 23.29/0.31
+    * filtered: 7/36.00/0.63
+- Dual Thrust: 25, 0.28, 0.25
+    * all: 19.10/0.33
+    * filtered: 33.33/0.71
+- Dual Thrust: 25, 0.30, 0.25
+    * all: 15.67/0.34
+    * filtered: 31.00/1.01
 - Dual Thrust: 30, 0.25, 0.25
     * all: 20.01/0.33
     * filtered: 33.50/0.77

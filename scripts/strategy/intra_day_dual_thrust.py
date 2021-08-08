@@ -6,7 +6,7 @@ from scripts.strategy.intra_day_regression import IntraDayRegression
 
 
 class IntraDayDualThrust:
-    def __init__(self, days=25, k1=0.25, k2=0.25):
+    def __init__(self, days=25, k1=0.20, k2=0.25):
         self.days = days
         self.k1 = k1
         self.k2 = k2

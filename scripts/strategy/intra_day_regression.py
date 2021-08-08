@@ -60,6 +60,7 @@ class IntraDayRegression:
                 print("error for code %s" % __code)
         print("all counts average: %.2f" % numpy.mean(counts_all))
         print("all profits average: %.2f" % numpy.mean(profits_all))
+        print("filter count: %d/%d" % (len(counts_filtered), len(codes)))
         print("filtered counts average: %.2f" % numpy.mean(counts_filtered))
         print("filtered profits average: %.2f" % numpy.mean(profits_filtered))
         return self.final_list

@@ -6,11 +6,11 @@ Test results (code_hs_300):
     * all: 54.08/0.22
     * filtered: 52.26/0.76
 - Phiary: 25, Dual Thrust: 25, 0.20, 0.25
-    * all: 58.49/0.20
-    * filtered: 56.48/0.72
+    * all: 300/58.49/0.20
+    * filtered: 44/56.48/0.72
 - Phiary: 25, Dual Thrust: 25, 0.25, 0.25
-    * all: 45.72/0.24
-    * filtered: 44.96/0.81
+    * all: 300/45.72/0.24
+    * filtered: 51/44.96/0.81
 - Phiary: 30, Dual Thrust: 30, 0.25, 0.25
     * all: 40.17/0.25
     * filtered: 42.75/0.82
