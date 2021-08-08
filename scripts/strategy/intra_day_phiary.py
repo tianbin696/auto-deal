@@ -6,7 +6,19 @@ from scripts.strategy.intra_day_regression import IntraDayRegression
 
 
 class IntraDayPhiary:
-    def __init__(self, days=20):
+    """
+    Test results (code_hs_300):
+    - Phiary: 20
+        * all: 32.78/0.33
+        * filtered: 40.80/0.75
+    - Phiary: 25
+        * all: 29.75/0.34
+        * filtered: 40.30/0.83
+    - Phiary: 30
+        * all: 27.76/0.35
+        * filtered: 39.33/0.75
+    """
+    def __init__(self, days=25):
         self.days = days
 
     def get_direction(self, rt_df_in, df_h_in):
@@ -39,4 +51,3 @@ if __name__ == "__main__":
     strategy = IntraDayPhiary()
     regression = IntraDayRegression(strategy)
     regression.get_candidates()
-    regression.update_candidates()
