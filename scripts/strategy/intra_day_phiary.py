@@ -20,6 +20,7 @@ class IntraDayPhiary:
         price_in = float(rt_df_in['price'][0])
         open_price = float(rt_df_in['open'][0])
         high_price = float(rt_df_in['high'][0])
+        low_price = float(rt_df_in['low'][0])
         pre_close = float(rt_df_in['pre_close'][0])
         upper_line = numpy.max(df_h_in['high'][0:self.days])
         lower_line = numpy.min(df_h_in['low'][0:self.days])
@@ -30,8 +31,12 @@ class IntraDayPhiary:
             # For testing
             buy_price = max(open_price, numpy.max(df_h_in['high'][0:self.days]))
             return ["B", buy_price]
+        if float(rt_df_in['price'][0]) <= 0:
+            # For testing
+            price_in = max(min(lower_line, open_price)-0.01, low_price)
         if price_in < lower_line and price_in < open_price:
-            return ["S"]
+            sell_price = min(lower_line, open_price)
+            return ["S", sell_price]
         return ["N"]
 
 
