@@ -41,7 +41,7 @@ def get_h_data_cache(code='600570.SH', start_date='20200101', end_date='20210101
 
 
 def update_cache():
-    for __code in list(open("code_hs_300.txt")):
+    for __code in list(open(locator.get_path("code_hs_300.txt"))):
         __code = __code.strip()
         if __code.startswith('0') or __code.startswith('3'):
             __code = "%s.SZ" % __code
