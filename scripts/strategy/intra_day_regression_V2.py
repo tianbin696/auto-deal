@@ -11,6 +11,8 @@ import scripts.ts_cli as ts
 from scripts.bs_volume import get_sell_vol, get_buy_vol
 from scripts.file_locator import get_path
 from scripts.strategy.intra_day_phiary import IntraDayPhiary
+from scripts.strategy.intra_day_dual_thrust import IntraDayDualThrust
+from scripts.strategy.intra_day_compose import IntraDayCompose
 
 
 class IntraDayRegressionSingle:
@@ -115,7 +117,7 @@ if __name__ == "__main__":
                 code_new = "%s.SZ" % code_new
             else:
                 code_new = "%s.SH" % code_new
-            regressionSingle = IntraDayRegressionSingle(IntraDayPhiary(), code_new)
+            regressionSingle = IntraDayRegressionSingle(IntraDayCompose(), code_new)
             regressionSingle.regression()
             regressionSingle.update_final_stats()
             sharp_array.append(regressionSingle.sharp_ratio)

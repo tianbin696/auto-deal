@@ -42,7 +42,7 @@ class IntraDayDualThrust:
         if float(rt_df_in['price'][0]) <= 0:
             price_in = max(sell_line - 0.01, low_price)
         if price_in < sell_line:
-            return ["S"]
+            return ["S", price_in]
 
         return ["N"]
 
