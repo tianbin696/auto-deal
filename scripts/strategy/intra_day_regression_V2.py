@@ -50,9 +50,9 @@ class IntraDayRegressionSingle:
                 max_cost = max_cost / 2
             buy_vol = get_buy_vol(buy_price, self.volume, max_cost)
             if buy_vol * buy_price < self.free_money:
-                if self.volume == 0:
+                if self.volume >= 0:
                     # Open position
-                    self.volume = buy_vol
+                    self.volume = self.volume + buy_vol
                     self.free_money = self.free_money - buy_price * buy_vol * (1 + self.buy_fee)
                 else:
                     # Update intra day deal profit
