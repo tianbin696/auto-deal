@@ -180,6 +180,7 @@ class ThsCli:
         logger.info("trying to order: [%s - %s - %.2f - %d]" % (code, direction, price, quantity))
         try:
             self.restore_window()
+            self.__close_popup_windows()
 
             price = "%.2f" % price
             if direction == 'B':
