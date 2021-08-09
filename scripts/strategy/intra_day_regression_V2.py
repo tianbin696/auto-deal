@@ -74,7 +74,7 @@ class IntraDayRegressionSingle:
     def update_final_stats(self):
         self.roe_total = self.daily_roes[self.last_date]
         self.roe_per_year = math.pow(1+self.roe_total, 250.0/len(self.daily_roes_array)) - 1
-        roe_base = 0.03
+        roe_base = math.pow(1+(self.end_close-self.start_close)/self.start_close, 250.0/len(self.daily_roes_array)) - 1
         var = numpy.var(self.daily_roes_array)
         var_sqrt = numpy.sqrt(var)
         self.sharp_ratio = (self.roe_per_year - roe_base)/var_sqrt
@@ -107,6 +107,7 @@ if __name__ == "__main__":
     writer = open(result_file, 'w')
     writer.write("code_name\tincr\troe1\troe2\tdown\tsharp\n")
     writer.flush()
+    sharp_array = []
     for __code in list(open(get_path("code_candidates.txt"))):
         try:
             code_new = __code.strip()
@@ -117,9 +118,11 @@ if __name__ == "__main__":
             regressionSingle = IntraDayRegressionSingle(IntraDayPhiary(), code_new)
             regressionSingle.regression()
             regressionSingle.update_final_stats()
+            sharp_array.append(regressionSingle.sharp_ratio)
             writer.write("%s\n" % regressionSingle.final_statement)
             writer.flush()
         except Exception as exe:
             track = traceback.format_exc()
             print(track)
+    writer.write("average sharp ratio: %.2f\n" % numpy.mean(sharp_array))
     writer.close()
