@@ -12,3 +12,10 @@ class TalibUtilTest(unittest.TestCase):
         rsi = np.nan_to_num(rsi)
         self.assertEqual("70.69", "%.2f" % rsi[0])
         self.assertEqual("67.85", "%.2f" % rsi[1])
+
+    def test_kdj_cn(self):
+        df = get_h_data_cache("601100", "20210803")
+        k, d, j = KDJ_CN(df['high'][0:100], df['low'][0:100], df['close'][0:100], 9, 3, 3)
+        self.assertEqual("73.32", "%.2f" % k[0])
+        self.assertEqual("63.71", "%.2f" % d[0])
+        self.assertEqual("92.54", "%.2f" % j[0])
