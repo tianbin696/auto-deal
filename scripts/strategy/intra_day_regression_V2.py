@@ -10,8 +10,6 @@ import pandas as pd
 import scripts.ts_cli as ts
 from scripts.bs_volume import get_sell_vol, get_buy_vol
 from scripts.file_locator import get_path
-from scripts.strategy.intra_day_phiary import IntraDayPhiary
-from scripts.strategy.intra_day_dual_thrust import IntraDayDualThrust
 from scripts.strategy.intra_day_compose import IntraDayCompose
 
 
@@ -38,12 +36,16 @@ class IntraDayRegressionSingle:
         self.roe_per_year = 0
         self.sharp_ratio = 0
         self.max_drawdown = 0
+        self.close_increase = 0
+        self.buy_count = 0
+        self.sell_count = 0
 
     def update_position(self, response, close, date):
         direction = response[0]
         if direction != "N":
             print("code=%s, date=%s, direction=%s" % (self.code, date, direction))
         if direction == "B":
+            self.buy_count = self.buy_count + 1
             buy_price = response[1]
             max_cost = self.free_money * (1 - self.buy_fee)
             if self.volume == 0:
@@ -59,6 +61,7 @@ class IntraDayRegressionSingle:
                     intra_day_profit = buy_vol * (close * (1 - self.buy_fee - self.sell_fee) - buy_price)
                     self.free_money = self.free_money + intra_day_profit
         if direction == "S":
+            self.sell_count = self.sell_count + 1
             sell_price = response[1]
             sell_vol = get_sell_vol(self.volume, sell_price)
             self.volume = self.volume - sell_vol
@@ -80,10 +83,11 @@ class IntraDayRegressionSingle:
         var = numpy.var(self.daily_roes_array)
         var_sqrt = numpy.sqrt(var)
         self.sharp_ratio = (self.roe_per_year - roe_base)/var_sqrt
-        close_increase = (self.end_close - self.start_close)/self.start_close
-        self.final_statement = "%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f" % (self.code, close_increase, self.roe_total,
-                                                                           self.roe_per_year, self.max_drawdown,
-                                                                           self.sharp_ratio)
+        self.close_increase = (self.end_close - self.start_close)/self.start_close
+        self.final_statement = "%s\t%.2f\t%d\t%d\t%.2f\t%.2f\t%.2f\t%.2f" % (self.code, self.close_increase,
+                                                                                self.buy_count, self.sell_count,
+                                                                                self.roe_total, self.roe_per_year,
+                                                                                self.max_drawdown, self.sharp_ratio)
         print(self.final_statement)
         print("final position: close_value=%.2f, free_money=%.2f, market_value=%.2f, volume=%d, initial_money=%.2f" %
               (self.daily_values_array[-1], self.free_money, self.daily_values_array[-1] - self.free_money,
@@ -104,27 +108,63 @@ class IntraDayRegressionSingle:
             self.update_position(response, df_h['close'][i], df_h['trade_date'][i])
 
 
+class IntraDayRegressionCompose:
+    def __init__(self, codes=None):
+        self.codes = []
+        self.increases = []
+        self.roe_totals = []
+        self.roe_per_years = []
+        self.sharp_ratios = []
+        self.max_dropdowns = []
+        self.buy_counts = []
+        self.sell_counts = []
+        if not codes:
+            for code in list(open(get_path("code_candidates.txt"))):
+                self.codes.append(code.strip())
+        else:
+            self.codes = codes
+
+    def get_candidates(self):
+        result_file = get_path("intra_day_regression_V2_results.txt")
+        writer = open(result_file, 'w')
+        writer.write("code_name\tincr\tbuy\tsell\troe1\troe2\tdown\tsharp\n")
+        writer.flush()
+        code_res = []
+        for code in self.codes:
+            try:
+                code_new = code.strip()
+                if code_new.startswith('0') or code_new.startswith('3'):
+                    code_new = "%s.SZ" % code_new
+                else:
+                    code_new = "%s.SH" % code_new
+                regression_single = IntraDayRegressionSingle(IntraDayCompose(), code_new)
+                regression_single.regression()
+                regression_single.update_final_stats()
+                code_res.append(code.strip())
+                self.increases.append(regression_single.close_increase)
+                self.roe_totals.append(regression_single.roe_total)
+                self.roe_per_years.append(regression_single.roe_per_year)
+                self.sharp_ratios.append(regression_single.sharp_ratio)
+                self.max_dropdowns.append(regression_single.max_drawdown)
+                self.buy_counts.append(regression_single.buy_count)
+                self.sell_counts.append(regression_single.sell_count)
+                writer.write("%s\n" % regression_single.final_statement)
+                writer.flush()
+            except Exception as exe:
+                track = traceback.format_exc()
+                print(track)
+        writer.write("aver_info\t%.2f\t%d\t%d\t%.2f\t%.2f\t%.2f\t%.2f\n" % (float(numpy.mean(self.increases)),
+                                                                                int(numpy.mean(self.buy_counts)),
+                                                                                int(numpy.mean(self.sell_counts)),
+                                                                                float(numpy.mean(self.roe_totals)),
+                                                                                float(numpy.mean(self.roe_per_years)),
+                                                                                float(numpy.mean(self.max_dropdowns)),
+                                                                                float(numpy.mean(self.sharp_ratios))))
+        writer.close()
+        return code_res
+
+
 if __name__ == "__main__":
-    result_file = get_path("intra_day_regression_V2_results.txt")
-    writer = open(result_file, 'w')
-    writer.write("code_name\tincr\troe1\troe2\tdown\tsharp\n")
-    writer.flush()
-    sharp_array = []
-    for __code in list(open(get_path("code_candidates.txt"))):
-        try:
-            code_new = __code.strip()
-            if code_new.startswith('0') or code_new.startswith('3'):
-                code_new = "%s.SZ" % code_new
-            else:
-                code_new = "%s.SH" % code_new
-            regressionSingle = IntraDayRegressionSingle(IntraDayCompose(), code_new)
-            regressionSingle.regression()
-            regressionSingle.update_final_stats()
-            sharp_array.append(regressionSingle.sharp_ratio)
-            writer.write("%s\n" % regressionSingle.final_statement)
-            writer.flush()
-        except Exception as exe:
-            track = traceback.format_exc()
-            print(track)
-    writer.write("average sharp ratio: %.2f\n" % numpy.mean(sharp_array))
-    writer.close()
+    # regression = IntraDayRegressionCompose(codes=["300433", "300676"])
+    regression = IntraDayRegressionCompose()
+    regression.get_candidates()
